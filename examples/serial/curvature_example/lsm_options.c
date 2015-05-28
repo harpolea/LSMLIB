@@ -67,7 +67,7 @@ Options *createOptionsDefault(void)
   options->do_reinit = 1;  
   options->do_mask = 1;
 
-  options->narrow_band = 0;
+  options->narrow_band = 1;
   
   /* User additions */
   

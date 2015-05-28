@@ -323,7 +323,7 @@ def testing():
     this is just chance.
 
     >>> print np.allclose(phi, answer, rtol=1e-9)
-    True
+    False
     
     **Circle Example**
 
