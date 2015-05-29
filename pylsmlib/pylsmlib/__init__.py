@@ -1,6 +1,8 @@
 from lsmlib import computeDistanceFunction3d_
 from lsmlib import computeExtensionFields3d_
 from lsmlib import solveEikonalEquation3d_
+from lsmlib import lsm3dcomputesignedunitnormal_
+from lsmlib import lsm3dsurfaceareazerolevelset_
 import numpy as np
 
 __docformat__ = 'restructuredtext'
@@ -44,7 +46,7 @@ def getShape(phi, dx, order):
 
     if np.prod(dx) == 0:
         raise ValueError, 'dx must be greater than zero'
-    
+
     if len(shape) == 1:
         nx, ny = shape[0], 1
         dx, dy = dx[0], 1.
@@ -55,6 +57,93 @@ def getShape(phi, dx, order):
         raise Exception, "3D meshes not yet implemented"
 
     return nx, ny, dx, dy, shape, phi
+
+
+def lsm3dsurfaceareazerolevelset(phi0, phi_x, phi_y, phi_z,
+                            gbGradPhiLims, gbPhiLims, ibLims, dx=1.,
+                            epsilon=1.e-10, order=2):
+
+    nx, ny, dx, dy, shape, phi0 = getShape(phi0, dx, order)
+
+    ilo_grad_phi_gb = gbGradPhiLims[0]
+    ihi_grad_phi_gb = gbGradPhiLims[1]
+    jlo_grad_phi_gb = gbGradPhiLims[2]
+    jhi_grad_phi_gb = gbGradPhiLims[3]
+    klo_grad_phi_gb = gbGradPhiLims[4]
+    khi_grad_phi_gb = gbGradPhiLims[5]
+
+    ilo_phi_gb = gbPhiLims[0]
+    ihi_phi_gb = gbPhiLims[1]
+    jlo_phi_gb = gbPhiLims[2]
+    jhi_phi_gb = gbPhiLims[3]
+    klo_phi_gb = gbPhiLims[4]
+    khi_phi_gb = gbPhiLims[5]
+
+    ilo_ib = ibLims[0]
+    ihi_ib = ibLims[1]
+    jlo_ib = ibLims[2]
+    jhi_ib = ibLims[3]
+    klo_ib = ibLims[4]
+    khi_ib = ibLims[5]
+
+    return lsm3dsurfaceareazerolevelset_(phi0.flatten(), phi_x.flatten(),
+                                phi_y.flatten(), phi_z.flatten(),
+                                ilo_grad_phi_gb, ihi_grad_phi_gb,
+                                jlo_grad_phi_gb,
+                                jhi_grad_phi_gb, klo_grad_phi_gb,
+                                khi_grad_phi_gb,
+                                ilo_phi_gb, ihi_phi_gb, jlo_phi_gb,
+                                jhi_phi_gb, klo_phi_gb, khi_phi_gb,
+                                ilo_ib, ihi_ib, jlo_ib, jhi_ib, klo_ib, khi_ib,
+                                nx=nx, ny=ny, nz=1, dx=dx, dy=dy, dz=1.,
+                                epsilon=epsilon)
+
+
+
+def lsm3dcomputesignedunitnormal(phi0, phi_x, phi_y, phi_z, gbNormalLims,
+                            gbGradPhiLims, gbPhiLims, fbLims, dx=1., order=2):
+
+    """
+    Note: this is really inefficiently implemented currently and can deffo be improved.
+    """
+    nx, ny, dx, dy, shape, phi0 = getShape(phi0, dx, order)
+    ilo_normal_gb = gbNormalLims[0]
+    ihi_normal_gb = gbNormalLims[1]
+    jlo_normal_gb = gbNormalLims[2]
+    jhi_normal_gb = gbNormalLims[3]
+    klo_normal_gb = gbNormalLims[4]
+    khi_normal_gb = gbNormalLims[5]
+
+    ilo_grad_phi_gb = gbGradPhiLims[0]
+    ihi_grad_phi_gb = gbGradPhiLims[1]
+    jlo_grad_phi_gb = gbGradPhiLims[2]
+    jhi_grad_phi_gb = gbGradPhiLims[3]
+    klo_grad_phi_gb = gbGradPhiLims[4]
+    khi_grad_phi_gb = gbGradPhiLims[5]
+
+    ilo_phi_gb = gbPhiLims[0]
+    ihi_phi_gb = gbPhiLims[1]
+    jlo_phi_gb = gbPhiLims[2]
+    jhi_phi_gb = gbPhiLims[3]
+    klo_phi_gb = gbPhiLims[4]
+    khi_phi_gb = gbPhiLims[5]
+
+    ilo_fb = fbLims[0]
+    ihi_fb = fbLims[1]
+    jlo_fb = fbLims[2]
+    jhi_fb = fbLims[3]
+    klo_fb = fbLims[4]
+    khi_fb = fbLims[5]
+
+    return lsm3dcomputesignedunitnormal_(phi0.flatten(), phi_x.flatten(),
+                                phi_y.flatten(), phi_z.flatten(),
+                                ilo_normal_gb, ihi_normal_gb, jlo_normal_gb,
+                                jhi_normal_gb ,klo_normal_gb, khi_normal_gb,
+                                ilo_grad_phi_gb, ihi_grad_phi_gb, jlo_grad_phi_gb,
+                                jhi_grad_phi_gb, klo_grad_phi_gb, khi_grad_phi_gb,
+                                ilo_phi_gb, ihi_phi_gb, jlo_phi_gb,
+                                jhi_phi_gb, klo_phi_gb, khi_phi_gb,
+                                ilo_fb, ihi_fb, jlo_fb, jhi_fb, klo_fb, khi_fb, nx=nx, ny=ny, nz=1, dx=dx, dy=dy, dz=1.)
 
 def computeDistanceFunction(phi0, dx=1., order=2):
     r"""
@@ -174,7 +263,7 @@ def solveEikonalEquation(phi0, speed, dx=1., order=2):
       - `speed`: speed function, :math:`F`, shape is `phi0.shape`
       - `dx`: the cell dimensions
       - `order`: order of the computational stencil, either 1 or 2
-      
+
     :Returns:
 
       - the field calculated by solving the eikonal equation,
@@ -310,7 +399,7 @@ def testing():
     >>> phi = computeDistanceFunction(phi, order=2)
 
     The following values come form Scikit-fmm_.
-    
+
     >>> answer = [[-0.5,        -0.58578644, -1.08578644, -1.85136395],
     ...           [ 0.5,         0.29289322, -0.58578644, -1.54389939],
     ...           [ 1.30473785,  0.5,        -0.5,        -1.5       ],
@@ -324,7 +413,7 @@ def testing():
 
     >>> print np.allclose(phi, answer, rtol=1e-9)
     False
-    
+
     **Circle Example**
 
     Solve the level set equation in two dimensions for a circle.
@@ -449,7 +538,7 @@ def testing():
     ValueError: phi and speed must have the same shape
 
     **Test for 1D equality between `distance` and `travel_time`**
-    
+
     >>> phi = np.arange(-5, 5) + 0.499
     >>> d = distance(phi)
     >>> t = travel_time(phi, speed=np.ones_like(phi))
@@ -602,20 +691,20 @@ def testing():
     >>> ##np.testing.assert_array_equal(travel_time([1, 0, -1], [2, 2, 2]), [0.5, 0, 0.5])
 
     Travel time tests 2
-    
+
     >>> ##phi   = [1, 1, 1, -1, -1, -1]
     >>> ##t     = travel_time(phi, np.ones_like(phi))
     >>> ##exact = [2.5, 1.5, 0.5, 0.5, 1.5, 2.5]
     >>> ##np.testing.assert_allclose(t, exact)
 
     Travel time tests 3
-    
+
     >>> ##phi   = [-1, -1, -1, 1, 1, 1]
     >>> ##t     = travel_time(phi, np.ones_like(phi))
     >>> ##exact = [2.5, 1.5, 0.5, 0.5, 1.5, 2.5]
     >>> ##np.testing.assert_allclose(t, exact)
 
-    Corner case 
+    Corner case
 
     >>> np.testing.assert_array_almost_equal(distance([0, 0]), [0, 0])
     >>> ##np.testing.assert_array_equal(travel_time([0, 0], [1, 1]), [0, 0])
@@ -670,7 +759,7 @@ def testing():
     >>> np.testing.assert_allclose(d, exact, atol=dx)
 
     Planar level set
-    
+
     >>> N         = 50
     >>> X, Y      = np.meshgrid(np.linspace(-1, 1, N), np.linspace(-1, 1, N))
     >>> dx        = 2.0 / (N - 1)
@@ -681,7 +770,7 @@ def testing():
     >>> np.testing.assert_allclose(d, exact)
 
     Masked input
-    
+
     >>> N         = 50
     >>> X, Y      = np.meshgrid(np.linspace(-1, 1, N), np.linspace(-1, 1, N))
     >>> dx        = 2.0 / (N - 1)
@@ -699,7 +788,7 @@ def testing():
 
     >>> ##assert diff > 635 and diff < 645
 
-    Test eikonal solution 
+    Test eikonal solution
 
     >>> ##N     = 50
     >>> ##X, Y  = np.meshgrid(np.linspace(-1, 1, N), np.linspace(-1, 1, N))
@@ -744,7 +833,7 @@ def testing():
     >>> ## np.testing.assert_allclose(d, exact, atol=dx)
 
     Test default dx
-    
+
     >>> ##N     = 50
     >>> ##X, Y  = np.meshgrid(np.linspace(-1, 1, N), np.linspace(-1, 1, N))
     >>> ##r     = 0.5
@@ -753,7 +842,7 @@ def testing():
     >>> ##out = travel_time(phi, speed)
 
     Test non-square grid and dx different in different directions
-    
+
     >>> N      = 50
     >>> NX, NY = N, 5 * N
     >>> X, Y   = np.meshgrid(np.linspace(-1, 1, NY), np.linspace(-1, 1, NX))
@@ -764,7 +853,7 @@ def testing():
     >>> exact  = np.sqrt(X ** 2 + Y ** 2) - r
 
     >>> np.testing.assert_allclose(d, exact, atol=1.1*max(dx))
-    
+
     Shape mismatch test
 
     >>> travel_time([-1, 1], [2])
@@ -793,7 +882,7 @@ def testing():
       ...
     ValueError: could not convert string to float: a
 
-    
+
     """
 
     pass
