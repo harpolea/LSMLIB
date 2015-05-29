@@ -29,7 +29,7 @@ cdef extern int solveEikonalEquation3d(
 		int *grid_dims,
 		double *dx)
 
-cdef exterm	void lsm3dsurfaceareazerolevelset(
+cdef extern	void lsm3dsurfaceareazerolevelset_(
 		double *surface_area,
 		double *phi,
 		const int *ilo_phi_gb,
@@ -58,7 +58,7 @@ cdef exterm	void lsm3dsurfaceareazerolevelset(
 		double *dz,
 		double *epsilon)
 
-cdef extern void lsm3dcomputesignedunitnormal(
+cdef extern void lsm3dcomputesignedunitnormal_(
   	double *normal_x,
   	double *normal_y,
   	double *normal_z,
@@ -94,7 +94,7 @@ cdef extern void lsm3dcomputesignedunitnormal(
   	const double *dy,
   	const double *dz)
 
-cdef extern void lsm3dcomputemeancurvatureorder2local(
+cdef extern void lsm3dcomputemeancurvatureorder2local_(
 		double *kappa,
 		const int *ilo_kappa_gb,
 		const int *ihi_kappa_gb,

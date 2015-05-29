@@ -6,8 +6,9 @@ from numpy import int, double, int32
 from lsmlib cimport computeDistanceFunction3d
 from lsmlib cimport computeExtensionFields3d
 from lsmlib cimport solveEikonalEquation3d
-from lsmlib cimport lsm3dcomputesignedunitnormal
-from lsmlib cimport lsm3dcomputemeancurvatureorder2local
+from lsmlib cimport LSM3D_COMPUTE_SIGNED_UNIT_NORMAL
+from lsmlib cimport lsm3dcomputemeancurvatureorder2local_
+from lsmlib cimport lsm3dsurfaceareazerolevelset_
 from libc.stdlib cimport malloc, free
 
 def lsm3dcomputesignedunitnormal_(np.ndarray[double, ndim=1] phi,
@@ -22,32 +23,32 @@ def lsm3dcomputesignedunitnormal_(np.ndarray[double, ndim=1] phi,
                                   jhi_phi_gb, klo_phi_gb, khi_phi_gb,
                                   ilo_fb, ihi_fb, jlo_fb, jhi_fb, klo_fb, khi_fb,
                                   nx=1, ny=1, nz=1, dx=1., dy=1., dz=1.):
-"""
- * LSM3D_COMPUTE_SIGNED_UNIT_NORMAL() computes the signed unit normal
- * vector (sgn(phi)*normal) to the interface from \f$ \nabla \phi \f$
- * using the following smoothed sgn function
- *
- * \f[
- *
- *   sgn(\phi) = \phi / \sqrt{ \phi^2 + |\nabla \phi|^2 * dx^2 }
- *
- * \f]
- *
- * Arguments:
- *  - normal_* (out):     components of unit normal vector
- *  - phi_* (in):         components of \f$ \nabla \phi \f$
- *  - phi (in):           level set function
- *  - dx, dy, dz (in):    grid spacing
- *  - *_gb (in):          index range for ghostbox
- *  - *_fb (in):          index range for fillbox
- *
- * Return value:          none
- *
- * NOTES:
- * - When \f$ | \nabla \phi | \f$ is close to zero, the unit normal is
- *   arbitrarily set to be (1.0, 0.0, 0.0).
- *
-"""
+    """
+     * LSM3D_COMPUTE_SIGNED_UNIT_NORMAL() computes the signed unit normal
+     * vector (sgn(phi)*normal) to the interface from \f$ \nabla \phi \f$
+     * using the following smoothed sgn function
+     *
+     * \f[
+     *
+     *   sgn(\phi) = \phi / \sqrt{ \phi^2 + |\nabla \phi|^2 * dx^2 }
+     *
+     * \f]
+     *
+     * Arguments:
+     *  - normal_* (out):     components of unit normal vector
+     *  - phi_* (in):         components of \f$ \nabla \phi \f$
+     *  - phi (in):           level set function
+     *  - dx, dy, dz (in):    grid spacing
+     *  - *_gb (in):          index range for ghostbox
+     *  - *_fb (in):          index range for fillbox
+     *
+     * Return value:          none
+     *
+     * NOTES:
+     * - When \f$ | \nabla \phi | \f$ is close to zero, the unit normal is
+     *   arbitrarily set to be (1.0, 0.0, 0.0).
+     *
+    """
     cdef np.ndarray[double, ndim=1] normal_x = np.zeros((nx * ny * nz,))
     cdef np.ndarray[double, ndim=1] normal_y = np.zeros((nx * ny * nz,))
     cdef np.ndarray[double, ndim=1] normal_z = np.zeros((nx * ny * nz,))
@@ -79,7 +80,7 @@ def lsm3dcomputesignedunitnormal_(np.ndarray[double, ndim=1] phi,
     cdef double* _dy = &dy
     cdef double* _dz = &dz
 
-    lsm3dcomputesignedunitnormal(<double *> normal_x, <double *> normal_y, <double *> normal_z,
+    LSM3D_COMPUTE_SIGNED_UNIT_NORMAL(<double *> normal_x, <double *> normal_y, <double *> normal_z,
 	       <int *> _ilo_normal_gb.data, <int *> _ihi_normal_gb.data,
          <int *> _jlo_normal_gb.data,  <int *> _jhi_normal_gb.data,
          <int *> _klo_normal_gb.data, <int *> _khi_normal_gb.data,
@@ -152,7 +153,7 @@ def lsm3dsurfaceareazerolevelset_(np.ndarray[double, ndim=1] phi,
      cdef double* _dz = &dz
      cdef double* _epsilon = &epsilon
 
-     lsm3dsurfaceareazerolevelset(
+     lsm3dsurfaceareazerolevelset_(
         <double *> surface_area.data,
         <double *> phi.data,
         <int *> _ilo_phi_gb.data, <int *> _ihi_phi_gb.data, <int *> _jlo_phi_gb.data,
@@ -168,10 +169,31 @@ def lsm3dsurfaceareazerolevelset_(np.ndarray[double, ndim=1] phi,
         <double *> _dx.data, <double *> _dy.data, <double *> _dz.data,
         <double *> _epsilon.data);
 
-      return
+      return surface_area
 
 
-def lsm3dcomputemeancurvatureorder2local_():
+def lsm3dcomputemeancurvatureorder2local_(np.ndarray[double, ndim=1] kappa,
+                      ilo_kappa_gb, ihi_kappa_gb, jlo_kappa_gb,
+                      jhi_kappa_gb, klo_kappa_gb, khi_kappa_gb,
+                      np.ndarray[double, ndim=1] phi,
+                      ilo_phi_gb, ihi_phi_gb, jlo_phi_gb,
+                      jhi_phi_gb, klo_phi_gb, khi_phi_gb,
+                      np.ndarray[double, ndim=1] phi_x,
+                      np.ndarray[double, ndim=1] phi_y,
+                      np.ndarray[double, ndim=1] phi_z,
+                      np.ndarray[double, ndim=1] grad_phi_mag,
+                      ilo_grad_phi_gb, ihi_grad_phi_gb,
+                      jlo_grad_phi_gb, jhi_grad_phi_gb,
+                      klo_grad_phi_gb, khi_grad_phi_gb,
+                      nx=1, ny=1, nz=1, dx=1., dy=1., dz=1.,
+                      np.ndarray[double, ndim=1] index_x,
+                      np.ndarray[double, ndim=1] index_y,
+                      np.ndarray[double, ndim=1] index_z,
+                      nlo_index, nhi_index,
+                      narrow_band,
+                      ilo_nb_gb, ihi_nb_gb, jlo_nb_gb,
+                      jhi_nb_gb, klo_nb_gb, khi_nb_gb,
+                      mark_fb):
   """
   *
   *  LSM3D_COMPUTE_MEAN_CURVATURE_ORDER2_LOCAL() computes mean curvature
@@ -199,7 +221,6 @@ def lsm3dcomputemeancurvatureorder2local_():
   *
   """
 
-  cdef np.ndarray[double, ndim=1] surface_area = np.zeros((nx * ny * nz,))
   cdef int* _ilo_grad_phi_gb = &ilo_grad_phi_gb
   cdef int* _ihi_grad_phi_gb = &ihi_grad_phi_gb
   cdef int* _jlo_grad_phi_gb = &jlo_grad_phi_gb
@@ -253,9 +274,9 @@ def lsm3dcomputemeancurvatureorder2local_():
         <int *> _ilo_nb_gb.data, <int *> _ihi_nb_gb.data,
         <int *> _jlo_nb_gb.data, <int *> _jhi_nb_gb.data,
         <int *> _klo_nb_gb.data, <int *> _khi_nb_gb.data,
-        <char *> _mark_fb.data)
+        <char *> mark_fb.data)
 
-    return
+    return kappa
 
 
 def computeDistanceFunction3d_(np.ndarray[double, ndim=1] phi, nx=1, ny=1, nz=1, dx=1., dy=1., dz=1., order=2):

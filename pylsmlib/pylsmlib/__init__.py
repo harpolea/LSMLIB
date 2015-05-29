@@ -3,6 +3,7 @@ from lsmlib import computeExtensionFields3d_
 from lsmlib import solveEikonalEquation3d_
 from lsmlib import lsm3dcomputesignedunitnormal_
 from lsmlib import lsm3dsurfaceareazerolevelset_
+from lsmlib import lsm3dcomputemeancurvatureorder2local_
 import numpy as np
 
 __docformat__ = 'restructuredtext'
@@ -63,6 +64,25 @@ def lsm3dsurfaceareazerolevelset(phi0, phi_x, phi_y, phi_z,
                             gbGradPhiLims, gbPhiLims, ibLims, dx=1.,
                             epsilon=1.e-10, order=2):
 
+    r"""
+    * lsm3dsurfaceareazerolevelset() computes the surface area of the
+    * surface defined by the zero level set.
+    *
+    * Arguments:
+    *  - area (out):            area of the surface defined by the zero level
+    *                           set
+    *  - phi (in):              level set function
+    *  - phi_* (in):            components of \f$ \nabla \phi \f$
+    *  - dx, dy, dz (in):       grid spacing
+    *  - epsilon (in):          width of numerical smoothing to use for
+    *                           Heaviside function
+    *  - *_gb (in):             index range for ghostbox
+    *  - *_ib (in):             index range for interior box
+    *
+    * Return value:         none
+    *
+    """
+
     nx, ny, dx, dy, shape, phi0 = getShape(phi0, dx, order)
 
     ilo_grad_phi_gb = gbGradPhiLims[0]
@@ -98,12 +118,120 @@ def lsm3dsurfaceareazerolevelset(phi0, phi_x, phi_y, phi_z,
                                 nx=nx, ny=ny, nz=1, dx=dx, dy=dy, dz=1.,
                                 epsilon=epsilon)
 
+def lsm3dcomputemeancurvatureorder2local(phi0, phi_x, phi_y, phi_z,
+                            kappa, grad_phi_mag, gbKappaLims,
+                            index_x, index_y, index_z, narrow_band, mark_fb,
+                            gbGradPhiLims, gbPhiLims, nbgbLims, nbLims,
+                            dx=1., order=2):
+    """
+    *
+    *  lsm3dcomputemeancurvatureorder2local() computes mean curvature
+    *  kappa = div ( grad_phi / |grad_phi|)
+    *  kappa = ( phi_xx*phi_y^2 + phi_yy*phi_x^2 - 2*phi_xy*phi_x*phi_y +
+    *            phi_xx*phi_z^2 + phi_zz*phi_x^2 - 2*phi_xz*phi_x*phi_z +
+    *            phi_yy*phi_z^2 + phi_zz*phi_y^2 - 2*phi_yz*phi_y*phi_z )/
+    *          ( | grad phi | ^ 3 )
+    *  Note that this value is technically twice the mean curvature.
+    *  Standard centered 27 point stencil, second order differencing used.
+    *  First order derivatives assumed precomputed.
+    c
+    *  Arguments:
+    *    kappa     (in/out): curvature data array
+    *    phi          (in):  level set function
+    *    phi_*        (in):  first order derivatives of phi
+    *    grad_phi_mag (in):  gradient magnitude of phi
+    *    *_gb        (in):   index range for ghostbox
+    *    dx, dy      (in):   grid spacing
+    *    index_[xyz]  (in):  [xyz] coordinates of local (narrow band) points
+    *    n*_index    (in):  index range of points to loop over in index_*
+    *    narrow_band(in):   array that marks voxels outside desired fillbox
+    *    mark_fb(in):      upper limit narrow band value for voxels in
+    *                      fillbox
+    *
+    """
+
+    nx, ny, dx, dy, shape, phi0 = getShape(phi0, dx, order)
+    ilo_kappa_gb = gbKappaLims[0]
+    ihi_kappa_gb = gbKappaLims[1]
+    jlo_kappa_gb = gbKappaLims[2]
+    jhi_kappa_gb = gbKappaLims[3]
+    klo_kappa_gb = gbKappaLims[4]
+    khi_kappa_gb = gbKappaLims[5]
+
+    ilo_grad_phi_gb = gbGradPhiLims[0]
+    ihi_grad_phi_gb = gbGradPhiLims[1]
+    jlo_grad_phi_gb = gbGradPhiLims[2]
+    jhi_grad_phi_gb = gbGradPhiLims[3]
+    klo_grad_phi_gb = gbGradPhiLims[4]
+    khi_grad_phi_gb = gbGradPhiLims[5]
+
+    ilo_phi_gb = gbPhiLims[0]
+    ihi_phi_gb = gbPhiLims[1]
+    jlo_phi_gb = gbPhiLims[2]
+    jhi_phi_gb = gbPhiLims[3]
+    klo_phi_gb = gbPhiLims[4]
+    khi_phi_gb = gbPhiLims[5]
+
+    ilo_nb_gb = nbgbLims[0]
+    ihi_nb_gb = nbgbLims[1]
+    jlo_nb_gb = nbgbLims[2]
+    jhi_nb_gb = nbgbLims[3]
+    klo_nb_gb = nbgbLims[4]
+    khi_nb_gb = nbgbLims[5]
+
+    nlo_index = nbLims[0]
+    nhi_index = nbLims[1]
+
+    return lsm3dcomputemeancurvatureorder2local_(kappa.flatten(),
+                          ilo_kappa_gb, ihi_kappa_gb, jlo_kappa_gb,
+                          jhi_kappa_gb, klo_kappa_gb, khi_kappa_gb,
+                          phi0.flatten(),
+                          ilo_phi_gb, ihi_phi_gb, jlo_phi_gb,
+                          jhi_phi_gb, klo_phi_gb, khi_phi_gb,
+                          phi_x.flatten(), phi_y.flatten(), phi_z.flatten(),
+                          grad_phi_mag.flatten(),
+                          ilo_grad_phi_gb, ihi_grad_phi_gb,
+                          jlo_grad_phi_gb, jhi_grad_phi_gb,
+                          klo_grad_phi_gb, khi_grad_phi_gb,
+                          nx, ny, 1, dx, dy, 1.,
+                          index_x.flatten(),
+                          index_y.flatten(),
+                          index_z.flatten(),
+                          nlo_index, nhi_index,
+                          narrow_band,
+                          ilo_nb_gb, ihi_nb_gb, jlo_nb_gb,
+                          jhi_nb_gb, klo_nb_gb, khi_nb_gb,
+                          mark_fb)
+
 
 
 def lsm3dcomputesignedunitnormal(phi0, phi_x, phi_y, phi_z, gbNormalLims,
                             gbGradPhiLims, gbPhiLims, fbLims, dx=1., order=2):
-
-    """
+    r"""
+     * lsm3dcomputesignedunitnormal() computes the signed unit normal
+     * vector (sgn(phi)*normal) to the interface from \f$ \nabla \phi \f$
+     * using the following smoothed sgn function
+     *
+     * \f[
+     *
+     *   sgn(\phi) = \phi / \sqrt{ \phi^2 + |\nabla \phi|^2 * dx^2 }
+     *
+     * \f]
+     *
+     * Arguments:
+     *  - normal_* (out):     components of unit normal vector
+     *  - phi_* (in):         components of \f$ \nabla \phi \f$
+     *  - phi (in):           level set function
+     *  - dx, dy, dz (in):    grid spacing
+     *  - *_gb (in):          index range for ghostbox
+     *  - *_fb (in):          index range for fillbox
+     *
+     * Return value:          none
+     *
+     * NOTES:
+     * - When \f$ | \nabla \phi | \f$ is close to zero, the unit normal is
+     *   arbitrarily set to be (1.0, 0.0, 0.0).
+     *
     Note: this is really inefficiently implemented currently and can deffo be improved.
     """
     nx, ny, dx, dy, shape, phi0 = getShape(phi0, dx, order)
