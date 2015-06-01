@@ -1,9 +1,9 @@
 from lsmlib import computeDistanceFunction3d_
 from lsmlib import computeExtensionFields3d_
 from lsmlib import solveEikonalEquation3d_
-from lsmlib import lsm3dcomputesignedunitnormal_
-from lsmlib import lsm3dsurfaceareazerolevelset_
-from lsmlib import lsm3dcomputemeancurvatureorder2local_
+from lsmlib import lsm3dcomputesignedunitnormal
+from lsmlib import lsm3dsurfaceareazerolevelset
+from lsmlib import lsm3dcomputemeancurvatureorder2local
 import numpy as np
 
 __docformat__ = 'restructuredtext'
@@ -60,7 +60,7 @@ def getShape(phi, dx, order):
     return nx, ny, dx, dy, shape, phi
 
 
-def lsm3dsurfaceareazerolevelset(phi0, phi_x, phi_y, phi_z,
+def lsm3dsurfaceareazerolevelsetpy(phi0, phi_x, phi_y, phi_z,
                             gbGradPhiLims, gbPhiLims, ibLims, dx=1.,
                             epsilon=1.e-10, order=2):
 
@@ -106,7 +106,7 @@ def lsm3dsurfaceareazerolevelset(phi0, phi_x, phi_y, phi_z,
     klo_ib = ibLims[4]
     khi_ib = ibLims[5]
 
-    return lsm3dsurfaceareazerolevelset_(phi0.flatten(), phi_x.flatten(),
+    return lsm3dsurfaceareazerolevelset(phi0.flatten(), phi_x.flatten(),
                                 phi_y.flatten(), phi_z.flatten(),
                                 ilo_grad_phi_gb, ihi_grad_phi_gb,
                                 jlo_grad_phi_gb,
@@ -118,7 +118,7 @@ def lsm3dsurfaceareazerolevelset(phi0, phi_x, phi_y, phi_z,
                                 nx=nx, ny=ny, nz=1, dx=dx, dy=dy, dz=1.,
                                 epsilon=epsilon)
 
-def lsm3dcomputemeancurvatureorder2local(phi0, phi_x, phi_y, phi_z,
+def lsm3dcomputemeancurvatureorder2localpy(phi0, phi_x, phi_y, phi_z,
                             kappa, grad_phi_mag, gbKappaLims,
                             index_x, index_y, index_z, narrow_band, mark_fb,
                             gbGradPhiLims, gbPhiLims, nbgbLims, nbLims,
@@ -182,7 +182,7 @@ def lsm3dcomputemeancurvatureorder2local(phi0, phi_x, phi_y, phi_z,
     nlo_index = nbLims[0]
     nhi_index = nbLims[1]
 
-    return lsm3dcomputemeancurvatureorder2local_(kappa.flatten(),
+    return lsm3dcomputemeancurvatureorder2local(kappa.flatten(),
                           ilo_kappa_gb, ihi_kappa_gb, jlo_kappa_gb,
                           jhi_kappa_gb, klo_kappa_gb, khi_kappa_gb,
                           phi0.flatten(),
@@ -205,7 +205,7 @@ def lsm3dcomputemeancurvatureorder2local(phi0, phi_x, phi_y, phi_z,
 
 
 
-def lsm3dcomputesignedunitnormal(phi0, phi_x, phi_y, phi_z, gbNormalLims,
+def lsm3dcomputesignedunitnormalpy(phi0, phi_x, phi_y, phi_z, gbNormalLims,
                             gbGradPhiLims, gbPhiLims, fbLims, dx=1., order=2):
     r"""
      * lsm3dcomputesignedunitnormal() computes the signed unit normal
@@ -263,7 +263,7 @@ def lsm3dcomputesignedunitnormal(phi0, phi_x, phi_y, phi_z, gbNormalLims,
     klo_fb = fbLims[4]
     khi_fb = fbLims[5]
 
-    return lsm3dcomputesignedunitnormal_(phi0.flatten(), phi_x.flatten(),
+    return lsm3dcomputesignedunitnormal(phi0.flatten(), phi_x.flatten(),
                                 phi_y.flatten(), phi_z.flatten(),
                                 ilo_normal_gb, ihi_normal_gb, jlo_normal_gb,
                                 jhi_normal_gb ,klo_normal_gb, khi_normal_gb,
