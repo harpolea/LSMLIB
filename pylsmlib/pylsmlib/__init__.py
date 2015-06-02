@@ -60,7 +60,7 @@ def getShape(phi, dx, order):
     return nx, ny, dx, dy, shape, phi
 
 
-def lsm3dsurfaceareazerolevelsetpy(phi0, phi_x, phi_y, phi_z,
+def surfaceAreaZeroLevelSet(phi0, phi_x, phi_y, phi_z,
                             gbGradPhiLims, gbPhiLims, ibLims, dx=1.,
                             epsilon=1.e-10, order=2):
 
@@ -83,7 +83,7 @@ def lsm3dsurfaceareazerolevelsetpy(phi0, phi_x, phi_y, phi_z,
     *
     """
 
-    nx, ny, dx, dy, shape, phi0 = getShape(phi0, dx, order)
+    nx, ny, dx, dy, _, phi0 = getShape(phi0, dx, order)
 
     ilo_grad_phi_gb = gbGradPhiLims[0]
     ihi_grad_phi_gb = gbGradPhiLims[1]
@@ -118,7 +118,7 @@ def lsm3dsurfaceareazerolevelsetpy(phi0, phi_x, phi_y, phi_z,
                                 nx=nx, ny=ny, nz=1, dx=dx, dy=dy, dz=1.,
                                 epsilon=epsilon)
 
-def lsm3dcomputemeancurvatureorder2localpy(phi0, phi_x, phi_y, phi_z,
+def computeMeanCurvatureLocal(phi0, phi_x, phi_y, phi_z,
                             kappa, grad_phi_mag, gbKappaLims,
                             index_x, index_y, index_z, narrow_band, mark_fb,
                             gbGradPhiLims, gbPhiLims, nbgbLims, nbLims,
@@ -150,7 +150,7 @@ def lsm3dcomputemeancurvatureorder2localpy(phi0, phi_x, phi_y, phi_z,
     *
     """
 
-    nx, ny, dx, dy, shape, phi0 = getShape(phi0, dx, order)
+    nx, ny, dx, dy, _, phi0 = getShape(phi0, dx, order)
     ilo_kappa_gb = gbKappaLims[0]
     ihi_kappa_gb = gbKappaLims[1]
     jlo_kappa_gb = gbKappaLims[2]
@@ -205,7 +205,7 @@ def lsm3dcomputemeancurvatureorder2localpy(phi0, phi_x, phi_y, phi_z,
 
 
 
-def lsm3dcomputesignedunitnormalpy(phi0, phi_x, phi_y, phi_z, gbNormalLims,
+def computeSignedUnitNormal(phi0, phi_x, phi_y, phi_z, gbNormalLims,
                             gbGradPhiLims, gbPhiLims, fbLims, dx=1., order=2):
     r"""
      * lsm3dcomputesignedunitnormal() computes the signed unit normal
@@ -234,7 +234,7 @@ def lsm3dcomputesignedunitnormalpy(phi0, phi_x, phi_y, phi_z, gbNormalLims,
      *
     Note: this is really inefficiently implemented currently and can deffo be improved.
     """
-    nx, ny, dx, dy, shape, phi0 = getShape(phi0, dx, order)
+    nx, ny, dx, dy, _, phi0 = getShape(phi0, dx, order)
     ilo_normal_gb = gbNormalLims[0]
     ihi_normal_gb = gbNormalLims[1]
     jlo_normal_gb = gbNormalLims[2]
