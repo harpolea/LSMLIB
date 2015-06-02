@@ -14,6 +14,12 @@ Usage
 
 .. autofunction:: pylsmlib.solveEikonalEquation
 
+.. autofunction:: pylsmlib.surfaceAreaZeroLevelSet
+
+.. autofunction:: pylsmlib.computeMeanCurvatureLocal
+
+.. autofunction:: pylsmlib.computeSignedUnitNormal
+
 Doctests
 ========
 
@@ -25,4 +31,3 @@ Indices and tables
  * :ref:`genindex`
  * :ref:`modindex`
  * :ref:`search`
-

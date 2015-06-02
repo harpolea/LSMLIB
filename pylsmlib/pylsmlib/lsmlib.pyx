@@ -229,7 +229,7 @@ def lsm3dsurfaceareazerolevelset(np.ndarray[double, ndim=1] phi,
     """
 
     cdef:
-        np.ndarray[double, ndim=1] surface_area = np.zeros((nx * ny * nz,))
+        double surface_area = 0.0
         int _ilo_grad_phi_gb = ilo_grad_phi_gb
         int _ihi_grad_phi_gb = ihi_grad_phi_gb
         int _jlo_grad_phi_gb = jlo_grad_phi_gb
@@ -254,7 +254,7 @@ def lsm3dsurfaceareazerolevelset(np.ndarray[double, ndim=1] phi,
         double _epsilon = epsilon
 
     lsm3dsurfaceareazerolevelset_(
-        <double *> surface_area.data,
+        &surface_area,
         <double *> phi.data,
         &_ilo_phi_gb,  &_ihi_phi_gb,  &_jlo_phi_gb,
         &_jhi_phi_gb,  &_klo_phi_gb,  &_khi_phi_gb,

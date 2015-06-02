@@ -36,17 +36,23 @@ The following should get you most of the way to an install.
 
     $ pip install numpy
 
-Clone the git repository.
+Clone the git repository. To clone the original LSMLIB:
 
 ::
 
     $ git clone git://github.com/ktchu/LSMLIB.git LSMLIB
 
+Or to clone this version:
+
+::
+
+   $ git clone git://github.com/harpolea/LSMLIB.git LSMLIB
+
 See the Github_ project page for further details. After cloning,
 install LSMLIB_ (consult `LSMLIB's install`_ if you have issues).
 
 ::
-  
+
     $ cd .../LSMLIB
     $ mkdir build
     $ cd build
@@ -61,6 +67,23 @@ To install PyLSMLIB_.
     $ cd .../LSMLIB/pylsmlib
     $ python setup.py install
 
+To recompile after changing Cython code
+
+::
+
+   $ cd .../LSMLIB
+   $ python setup.py build_ext --inplace
+
+If have altered ``__init__.py``, will then need to copy  from
+``.../LSMLIB/pylsmlib/build/lib.linux-x86_64-2.7/pylsmlib`` to ``.../LSMLIB/pylsmlib/pylsmlib``, i.e.
+
+::
+
+   $ cd .../LSMLIB/pylsmlib
+   $ cp build/lib.linux-x86_64-2.7/pylsmlib/__init__.py pylsmlib/
+
+
+
 Testing
 =======
 
@@ -74,12 +97,23 @@ To run the tests
 Documentation
 =============
 
-To generate the PyLSMLIB_ documentation.
+To generate the PyLSMLIB_ documentation as html:
 
 ::
 
     $ cd .../LSMLIB/pylsmlib/doc
     $ make html
+
+To generate as a pdf:
+
+::
+
+   $ cd .../LSMLIB/pylsmlib/doc
+   $ make latexpdf
+
+The pdf can then be found in ``.../LSMLIB/pylsmlib/doc/_build/latex``.
+
+If have added new functions to the Cython wrapper, don't forget to add them to ``.../LSMLIB/pylsmlib/doc/index.rst`` so that they are added to the documentation.
 
 .. _LSMLIB: http://ktchu.serendipityresearch.org/software/lsmlib/index.html
 .. _PyLSMLIB: https://github.com/ktchu/LSMLIB/tree/master/pylsmlib

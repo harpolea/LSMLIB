@@ -1069,7 +1069,7 @@ static PyObject *__pyx_pf_8pylsmlib_6lsmlib_computeDistanceFunction3d_(CYTHON_UN
 static PyObject *__pyx_pf_8pylsmlib_6lsmlib_2computeExtensionFields3d_(CYTHON_UNUSED PyObject *__pyx_self, PyArrayObject *__pyx_v_phi, PyArrayObject *__pyx_v_extensionFields, PyArrayObject *__pyx_v_mask, PyArrayObject *__pyx_v_extension_mask, PyObject *__pyx_v_nx, PyObject *__pyx_v_ny, PyObject *__pyx_v_nz, PyObject *__pyx_v_dx, PyObject *__pyx_v_dy, PyObject *__pyx_v_dz, PyObject *__pyx_v_order); /* proto */
 static PyObject *__pyx_pf_8pylsmlib_6lsmlib_4solveEikonalEquation3d_(CYTHON_UNUSED PyObject *__pyx_self, PyArrayObject *__pyx_v_phi, PyArrayObject *__pyx_v_speed, PyObject *__pyx_v_nx, PyObject *__pyx_v_ny, PyObject *__pyx_v_nz, PyObject *__pyx_v_dx, PyObject *__pyx_v_dy, PyObject *__pyx_v_dz, PyObject *__pyx_v_order); /* proto */
 static PyObject *__pyx_pf_8pylsmlib_6lsmlib_6lsm3dcomputesignedunitnormal(CYTHON_UNUSED PyObject *__pyx_self, PyArrayObject *__pyx_v_phi, PyArrayObject *__pyx_v_phi_x, PyArrayObject *__pyx_v_phi_y, PyArrayObject *__pyx_v_phi_z, PyObject *__pyx_v_ilo_normal_gb, PyObject *__pyx_v_ihi_normal_gb, PyObject *__pyx_v_jlo_normal_gb, PyObject *__pyx_v_jhi_normal_gb, PyObject *__pyx_v_klo_normal_gb, PyObject *__pyx_v_khi_normal_gb, PyObject *__pyx_v_ilo_grad_phi_gb, PyObject *__pyx_v_ihi_grad_phi_gb, PyObject *__pyx_v_jlo_grad_phi_gb, PyObject *__pyx_v_jhi_grad_phi_gb, PyObject *__pyx_v_klo_grad_phi_gb, PyObject *__pyx_v_khi_grad_phi_gb, PyObject *__pyx_v_ilo_phi_gb, PyObject *__pyx_v_ihi_phi_gb, PyObject *__pyx_v_jlo_phi_gb, PyObject *__pyx_v_jhi_phi_gb, PyObject *__pyx_v_klo_phi_gb, PyObject *__pyx_v_khi_phi_gb, PyObject *__pyx_v_ilo_fb, PyObject *__pyx_v_ihi_fb, PyObject *__pyx_v_jlo_fb, PyObject *__pyx_v_jhi_fb, PyObject *__pyx_v_klo_fb, PyObject *__pyx_v_khi_fb, PyObject *__pyx_v_nx, PyObject *__pyx_v_ny, PyObject *__pyx_v_nz, PyObject *__pyx_v_dx, PyObject *__pyx_v_dy, PyObject *__pyx_v_dz); /* proto */
-static PyObject *__pyx_pf_8pylsmlib_6lsmlib_8lsm3dsurfaceareazerolevelset(CYTHON_UNUSED PyObject *__pyx_self, PyArrayObject *__pyx_v_phi, PyArrayObject *__pyx_v_phi_x, PyArrayObject *__pyx_v_phi_y, PyArrayObject *__pyx_v_phi_z, PyObject *__pyx_v_ilo_grad_phi_gb, PyObject *__pyx_v_ihi_grad_phi_gb, PyObject *__pyx_v_jlo_grad_phi_gb, PyObject *__pyx_v_jhi_grad_phi_gb, PyObject *__pyx_v_klo_grad_phi_gb, PyObject *__pyx_v_khi_grad_phi_gb, PyObject *__pyx_v_ilo_phi_gb, PyObject *__pyx_v_ihi_phi_gb, PyObject *__pyx_v_jlo_phi_gb, PyObject *__pyx_v_jhi_phi_gb, PyObject *__pyx_v_klo_phi_gb, PyObject *__pyx_v_khi_phi_gb, PyObject *__pyx_v_ilo_ib, PyObject *__pyx_v_ihi_ib, PyObject *__pyx_v_jlo_ib, PyObject *__pyx_v_jhi_ib, PyObject *__pyx_v_klo_ib, PyObject *__pyx_v_khi_ib, PyObject *__pyx_v_nx, PyObject *__pyx_v_ny, PyObject *__pyx_v_nz, PyObject *__pyx_v_dx, PyObject *__pyx_v_dy, PyObject *__pyx_v_dz, PyObject *__pyx_v_epsilon); /* proto */
+static PyObject *__pyx_pf_8pylsmlib_6lsmlib_8lsm3dsurfaceareazerolevelset(CYTHON_UNUSED PyObject *__pyx_self, PyArrayObject *__pyx_v_phi, PyArrayObject *__pyx_v_phi_x, PyArrayObject *__pyx_v_phi_y, PyArrayObject *__pyx_v_phi_z, PyObject *__pyx_v_ilo_grad_phi_gb, PyObject *__pyx_v_ihi_grad_phi_gb, PyObject *__pyx_v_jlo_grad_phi_gb, PyObject *__pyx_v_jhi_grad_phi_gb, PyObject *__pyx_v_klo_grad_phi_gb, PyObject *__pyx_v_khi_grad_phi_gb, PyObject *__pyx_v_ilo_phi_gb, PyObject *__pyx_v_ihi_phi_gb, PyObject *__pyx_v_jlo_phi_gb, PyObject *__pyx_v_jhi_phi_gb, PyObject *__pyx_v_klo_phi_gb, PyObject *__pyx_v_khi_phi_gb, PyObject *__pyx_v_ilo_ib, PyObject *__pyx_v_ihi_ib, PyObject *__pyx_v_jlo_ib, PyObject *__pyx_v_jhi_ib, PyObject *__pyx_v_klo_ib, PyObject *__pyx_v_khi_ib, CYTHON_UNUSED PyObject *__pyx_v_nx, CYTHON_UNUSED PyObject *__pyx_v_ny, CYTHON_UNUSED PyObject *__pyx_v_nz, PyObject *__pyx_v_dx, PyObject *__pyx_v_dy, PyObject *__pyx_v_dz, PyObject *__pyx_v_epsilon); /* proto */
 static PyObject *__pyx_pf_8pylsmlib_6lsmlib_10lsm3dcomputemeancurvatureorder2local(CYTHON_UNUSED PyObject *__pyx_self, PyArrayObject *__pyx_v_kappa, int __pyx_v_ilo_kappa_gb, int __pyx_v_ihi_kappa_gb, int __pyx_v_jlo_kappa_gb, int __pyx_v_jhi_kappa_gb, int __pyx_v_klo_kappa_gb, int __pyx_v_khi_kappa_gb, PyArrayObject *__pyx_v_phi, int __pyx_v_ilo_phi_gb, int __pyx_v_ihi_phi_gb, int __pyx_v_jlo_phi_gb, int __pyx_v_jhi_phi_gb, int __pyx_v_klo_phi_gb, int __pyx_v_khi_phi_gb, PyArrayObject *__pyx_v_phi_x, PyArrayObject *__pyx_v_phi_y, PyArrayObject *__pyx_v_phi_z, PyArrayObject *__pyx_v_grad_phi_mag, int __pyx_v_ilo_grad_phi_gb, int __pyx_v_ihi_grad_phi_gb, int __pyx_v_jlo_grad_phi_gb, int __pyx_v_jhi_grad_phi_gb, int __pyx_v_klo_grad_phi_gb, int __pyx_v_khi_grad_phi_gb, PyArrayObject *__pyx_v_index_x, PyArrayObject *__pyx_v_index_y, PyArrayObject *__pyx_v_index_z, int __pyx_v_nlo_index, int __pyx_v_nhi_index, PyObject *__pyx_v_narrow_band, int __pyx_v_ilo_nb_gb, int __pyx_v_ihi_nb_gb, int __pyx_v_jlo_nb_gb, int __pyx_v_jhi_nb_gb, int __pyx_v_klo_nb_gb, int __pyx_v_khi_nb_gb, PyObject *__pyx_v_mark_fb, CYTHON_UNUSED PyObject *__pyx_v_nx, CYTHON_UNUSED PyObject *__pyx_v_ny, CYTHON_UNUSED PyObject *__pyx_v_nz, PyObject *__pyx_v_dx, PyObject *__pyx_v_dy, PyObject *__pyx_v_dz); /* proto */
 static int __pyx_pf_5numpy_7ndarray___getbuffer__(PyArrayObject *__pyx_v_self, Py_buffer *__pyx_v_info, int __pyx_v_flags); /* proto */
 static void __pyx_pf_5numpy_7ndarray_2__releasebuffer__(PyArrayObject *__pyx_v_self, Py_buffer *__pyx_v_info); /* proto */
@@ -4266,9 +4266,9 @@ static PyObject *__pyx_pw_8pylsmlib_6lsmlib_9lsm3dsurfaceareazerolevelset(PyObje
   PyObject *__pyx_v_jhi_ib = 0;
   PyObject *__pyx_v_klo_ib = 0;
   PyObject *__pyx_v_khi_ib = 0;
-  PyObject *__pyx_v_nx = 0;
-  PyObject *__pyx_v_ny = 0;
-  PyObject *__pyx_v_nz = 0;
+  CYTHON_UNUSED PyObject *__pyx_v_nx = 0;
+  CYTHON_UNUSED PyObject *__pyx_v_ny = 0;
+  CYTHON_UNUSED PyObject *__pyx_v_nz = 0;
   PyObject *__pyx_v_dx = 0;
   PyObject *__pyx_v_dy = 0;
   PyObject *__pyx_v_dz = 0;
@@ -4562,8 +4562,8 @@ static PyObject *__pyx_pw_8pylsmlib_6lsmlib_9lsm3dsurfaceareazerolevelset(PyObje
   return __pyx_r;
 }
 
-static PyObject *__pyx_pf_8pylsmlib_6lsmlib_8lsm3dsurfaceareazerolevelset(CYTHON_UNUSED PyObject *__pyx_self, PyArrayObject *__pyx_v_phi, PyArrayObject *__pyx_v_phi_x, PyArrayObject *__pyx_v_phi_y, PyArrayObject *__pyx_v_phi_z, PyObject *__pyx_v_ilo_grad_phi_gb, PyObject *__pyx_v_ihi_grad_phi_gb, PyObject *__pyx_v_jlo_grad_phi_gb, PyObject *__pyx_v_jhi_grad_phi_gb, PyObject *__pyx_v_klo_grad_phi_gb, PyObject *__pyx_v_khi_grad_phi_gb, PyObject *__pyx_v_ilo_phi_gb, PyObject *__pyx_v_ihi_phi_gb, PyObject *__pyx_v_jlo_phi_gb, PyObject *__pyx_v_jhi_phi_gb, PyObject *__pyx_v_klo_phi_gb, PyObject *__pyx_v_khi_phi_gb, PyObject *__pyx_v_ilo_ib, PyObject *__pyx_v_ihi_ib, PyObject *__pyx_v_jlo_ib, PyObject *__pyx_v_jhi_ib, PyObject *__pyx_v_klo_ib, PyObject *__pyx_v_khi_ib, PyObject *__pyx_v_nx, PyObject *__pyx_v_ny, PyObject *__pyx_v_nz, PyObject *__pyx_v_dx, PyObject *__pyx_v_dy, PyObject *__pyx_v_dz, PyObject *__pyx_v_epsilon) {
-  PyArrayObject *__pyx_v_surface_area = 0;
+static PyObject *__pyx_pf_8pylsmlib_6lsmlib_8lsm3dsurfaceareazerolevelset(CYTHON_UNUSED PyObject *__pyx_self, PyArrayObject *__pyx_v_phi, PyArrayObject *__pyx_v_phi_x, PyArrayObject *__pyx_v_phi_y, PyArrayObject *__pyx_v_phi_z, PyObject *__pyx_v_ilo_grad_phi_gb, PyObject *__pyx_v_ihi_grad_phi_gb, PyObject *__pyx_v_jlo_grad_phi_gb, PyObject *__pyx_v_jhi_grad_phi_gb, PyObject *__pyx_v_klo_grad_phi_gb, PyObject *__pyx_v_khi_grad_phi_gb, PyObject *__pyx_v_ilo_phi_gb, PyObject *__pyx_v_ihi_phi_gb, PyObject *__pyx_v_jlo_phi_gb, PyObject *__pyx_v_jhi_phi_gb, PyObject *__pyx_v_klo_phi_gb, PyObject *__pyx_v_khi_phi_gb, PyObject *__pyx_v_ilo_ib, PyObject *__pyx_v_ihi_ib, PyObject *__pyx_v_jlo_ib, PyObject *__pyx_v_jhi_ib, PyObject *__pyx_v_klo_ib, PyObject *__pyx_v_khi_ib, CYTHON_UNUSED PyObject *__pyx_v_nx, CYTHON_UNUSED PyObject *__pyx_v_ny, CYTHON_UNUSED PyObject *__pyx_v_nz, PyObject *__pyx_v_dx, PyObject *__pyx_v_dy, PyObject *__pyx_v_dz, PyObject *__pyx_v_epsilon) {
+  double __pyx_v_surface_area;
   int __pyx_v__ilo_grad_phi_gb;
   int __pyx_v__ihi_grad_phi_gb;
   int __pyx_v__jlo_grad_phi_gb;
@@ -4594,26 +4594,15 @@ static PyObject *__pyx_pf_8pylsmlib_6lsmlib_8lsm3dsurfaceareazerolevelset(CYTHON
   __Pyx_Buffer __pyx_pybuffer_phi_y;
   __Pyx_LocalBuf_ND __pyx_pybuffernd_phi_z;
   __Pyx_Buffer __pyx_pybuffer_phi_z;
-  __Pyx_LocalBuf_ND __pyx_pybuffernd_surface_area;
-  __Pyx_Buffer __pyx_pybuffer_surface_area;
   PyObject *__pyx_r = NULL;
   __Pyx_RefNannyDeclarations
-  PyObject *__pyx_t_1 = NULL;
-  PyObject *__pyx_t_2 = NULL;
+  int __pyx_t_1;
+  double __pyx_t_2;
   PyObject *__pyx_t_3 = NULL;
-  PyObject *__pyx_t_4 = NULL;
-  PyObject *__pyx_t_5 = NULL;
-  PyArrayObject *__pyx_t_6 = NULL;
-  int __pyx_t_7;
-  double __pyx_t_8;
   int __pyx_lineno = 0;
   const char *__pyx_filename = NULL;
   int __pyx_clineno = 0;
   __Pyx_RefNannySetupContext("lsm3dsurfaceareazerolevelset", 0);
-  __pyx_pybuffer_surface_area.pybuffer.buf = NULL;
-  __pyx_pybuffer_surface_area.refcount = 0;
-  __pyx_pybuffernd_surface_area.data = NULL;
-  __pyx_pybuffernd_surface_area.rcbuffer = &__pyx_pybuffer_surface_area;
   __pyx_pybuffer_phi.pybuffer.buf = NULL;
   __pyx_pybuffer_phi.refcount = 0;
   __pyx_pybuffernd_phi.data = NULL;
@@ -4654,84 +4643,31 @@ static PyObject *__pyx_pf_8pylsmlib_6lsmlib_8lsm3dsurfaceareazerolevelset(CYTHON
   /* "pylsmlib/lsmlib.pyx":232
  * 
  *     cdef:
- *         np.ndarray[double, ndim=1] surface_area = np.zeros((nx * ny * nz,))             # <<<<<<<<<<<<<<
+ *         double surface_area = 0.0             # <<<<<<<<<<<<<<
  *         int _ilo_grad_phi_gb = ilo_grad_phi_gb
  *         int _ihi_grad_phi_gb = ihi_grad_phi_gb
  */
-  __pyx_t_2 = __Pyx_GetModuleGlobalName(__pyx_n_s_np); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 232; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_3 = __Pyx_PyObject_GetAttrStr(__pyx_t_2, __pyx_n_s_zeros); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 232; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_3);
-  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_2 = PyNumber_Multiply(__pyx_v_nx, __pyx_v_ny); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 232; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_2);
-  __pyx_t_4 = PyNumber_Multiply(__pyx_t_2, __pyx_v_nz); if (unlikely(!__pyx_t_4)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 232; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_4);
-  __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-  __pyx_t_2 = PyTuple_New(1); if (unlikely(!__pyx_t_2)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 232; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __Pyx_GOTREF(__pyx_t_2);
-  PyTuple_SET_ITEM(__pyx_t_2, 0, __pyx_t_4);
-  __Pyx_GIVEREF(__pyx_t_4);
-  __pyx_t_4 = 0;
-  __pyx_t_4 = NULL;
-  if (CYTHON_COMPILING_IN_CPYTHON && unlikely(PyMethod_Check(__pyx_t_3))) {
-    __pyx_t_4 = PyMethod_GET_SELF(__pyx_t_3);
-    if (likely(__pyx_t_4)) {
-      PyObject* function = PyMethod_GET_FUNCTION(__pyx_t_3);
-      __Pyx_INCREF(__pyx_t_4);
-      __Pyx_INCREF(function);
-      __Pyx_DECREF_SET(__pyx_t_3, function);
-    }
-  }
-  if (!__pyx_t_4) {
-    __pyx_t_1 = __Pyx_PyObject_CallOneArg(__pyx_t_3, __pyx_t_2); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 232; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-    __Pyx_DECREF(__pyx_t_2); __pyx_t_2 = 0;
-    __Pyx_GOTREF(__pyx_t_1);
-  } else {
-    __pyx_t_5 = PyTuple_New(1+1); if (unlikely(!__pyx_t_5)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 232; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-    __Pyx_GOTREF(__pyx_t_5);
-    PyTuple_SET_ITEM(__pyx_t_5, 0, __pyx_t_4); __Pyx_GIVEREF(__pyx_t_4); __pyx_t_4 = NULL;
-    PyTuple_SET_ITEM(__pyx_t_5, 0+1, __pyx_t_2);
-    __Pyx_GIVEREF(__pyx_t_2);
-    __pyx_t_2 = 0;
-    __pyx_t_1 = __Pyx_PyObject_Call(__pyx_t_3, __pyx_t_5, NULL); if (unlikely(!__pyx_t_1)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 232; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-    __Pyx_GOTREF(__pyx_t_1);
-    __Pyx_DECREF(__pyx_t_5); __pyx_t_5 = 0;
-  }
-  __Pyx_DECREF(__pyx_t_3); __pyx_t_3 = 0;
-  if (!(likely(((__pyx_t_1) == Py_None) || likely(__Pyx_TypeTest(__pyx_t_1, __pyx_ptype_5numpy_ndarray))))) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 232; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __pyx_t_6 = ((PyArrayObject *)__pyx_t_1);
-  {
-    __Pyx_BufFmt_StackElem __pyx_stack[1];
-    if (unlikely(__Pyx_GetBufferAndValidate(&__pyx_pybuffernd_surface_area.rcbuffer->pybuffer, (PyObject*)__pyx_t_6, &__Pyx_TypeInfo_double, PyBUF_FORMAT| PyBUF_STRIDES, 1, 0, __pyx_stack) == -1)) {
-      __pyx_v_surface_area = ((PyArrayObject *)Py_None); __Pyx_INCREF(Py_None); __pyx_pybuffernd_surface_area.rcbuffer->pybuffer.buf = NULL;
-      {__pyx_filename = __pyx_f[0]; __pyx_lineno = 232; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-    } else {__pyx_pybuffernd_surface_area.diminfo[0].strides = __pyx_pybuffernd_surface_area.rcbuffer->pybuffer.strides[0]; __pyx_pybuffernd_surface_area.diminfo[0].shape = __pyx_pybuffernd_surface_area.rcbuffer->pybuffer.shape[0];
-    }
-  }
-  __pyx_t_6 = 0;
-  __pyx_v_surface_area = ((PyArrayObject *)__pyx_t_1);
-  __pyx_t_1 = 0;
+  __pyx_v_surface_area = 0.0;
 
   /* "pylsmlib/lsmlib.pyx":233
  *     cdef:
- *         np.ndarray[double, ndim=1] surface_area = np.zeros((nx * ny * nz,))
+ *         double surface_area = 0.0
  *         int _ilo_grad_phi_gb = ilo_grad_phi_gb             # <<<<<<<<<<<<<<
  *         int _ihi_grad_phi_gb = ihi_grad_phi_gb
  *         int _jlo_grad_phi_gb = jlo_grad_phi_gb
  */
-  __pyx_t_7 = __Pyx_PyInt_As_int(__pyx_v_ilo_grad_phi_gb); if (unlikely((__pyx_t_7 == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 233; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __pyx_v__ilo_grad_phi_gb = __pyx_t_7;
+  __pyx_t_1 = __Pyx_PyInt_As_int(__pyx_v_ilo_grad_phi_gb); if (unlikely((__pyx_t_1 == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 233; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_v__ilo_grad_phi_gb = __pyx_t_1;
 
   /* "pylsmlib/lsmlib.pyx":234
- *         np.ndarray[double, ndim=1] surface_area = np.zeros((nx * ny * nz,))
+ *         double surface_area = 0.0
  *         int _ilo_grad_phi_gb = ilo_grad_phi_gb
  *         int _ihi_grad_phi_gb = ihi_grad_phi_gb             # <<<<<<<<<<<<<<
  *         int _jlo_grad_phi_gb = jlo_grad_phi_gb
  *         int _jhi_grad_phi_gb = jhi_grad_phi_gb
  */
-  __pyx_t_7 = __Pyx_PyInt_As_int(__pyx_v_ihi_grad_phi_gb); if (unlikely((__pyx_t_7 == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 234; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __pyx_v__ihi_grad_phi_gb = __pyx_t_7;
+  __pyx_t_1 = __Pyx_PyInt_As_int(__pyx_v_ihi_grad_phi_gb); if (unlikely((__pyx_t_1 == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 234; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_v__ihi_grad_phi_gb = __pyx_t_1;
 
   /* "pylsmlib/lsmlib.pyx":235
  *         int _ilo_grad_phi_gb = ilo_grad_phi_gb
@@ -4740,8 +4676,8 @@ static PyObject *__pyx_pf_8pylsmlib_6lsmlib_8lsm3dsurfaceareazerolevelset(CYTHON
  *         int _jhi_grad_phi_gb = jhi_grad_phi_gb
  *         int _klo_grad_phi_gb = klo_grad_phi_gb
  */
-  __pyx_t_7 = __Pyx_PyInt_As_int(__pyx_v_jlo_grad_phi_gb); if (unlikely((__pyx_t_7 == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 235; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __pyx_v__jlo_grad_phi_gb = __pyx_t_7;
+  __pyx_t_1 = __Pyx_PyInt_As_int(__pyx_v_jlo_grad_phi_gb); if (unlikely((__pyx_t_1 == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 235; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_v__jlo_grad_phi_gb = __pyx_t_1;
 
   /* "pylsmlib/lsmlib.pyx":236
  *         int _ihi_grad_phi_gb = ihi_grad_phi_gb
@@ -4750,8 +4686,8 @@ static PyObject *__pyx_pf_8pylsmlib_6lsmlib_8lsm3dsurfaceareazerolevelset(CYTHON
  *         int _klo_grad_phi_gb = klo_grad_phi_gb
  *         int _khi_grad_phi_gb = khi_grad_phi_gb
  */
-  __pyx_t_7 = __Pyx_PyInt_As_int(__pyx_v_jhi_grad_phi_gb); if (unlikely((__pyx_t_7 == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 236; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __pyx_v__jhi_grad_phi_gb = __pyx_t_7;
+  __pyx_t_1 = __Pyx_PyInt_As_int(__pyx_v_jhi_grad_phi_gb); if (unlikely((__pyx_t_1 == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 236; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_v__jhi_grad_phi_gb = __pyx_t_1;
 
   /* "pylsmlib/lsmlib.pyx":237
  *         int _jlo_grad_phi_gb = jlo_grad_phi_gb
@@ -4760,8 +4696,8 @@ static PyObject *__pyx_pf_8pylsmlib_6lsmlib_8lsm3dsurfaceareazerolevelset(CYTHON
  *         int _khi_grad_phi_gb = khi_grad_phi_gb
  *         int _ilo_phi_gb = ilo_phi_gb
  */
-  __pyx_t_7 = __Pyx_PyInt_As_int(__pyx_v_klo_grad_phi_gb); if (unlikely((__pyx_t_7 == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 237; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __pyx_v__klo_grad_phi_gb = __pyx_t_7;
+  __pyx_t_1 = __Pyx_PyInt_As_int(__pyx_v_klo_grad_phi_gb); if (unlikely((__pyx_t_1 == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 237; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_v__klo_grad_phi_gb = __pyx_t_1;
 
   /* "pylsmlib/lsmlib.pyx":238
  *         int _jhi_grad_phi_gb = jhi_grad_phi_gb
@@ -4770,8 +4706,8 @@ static PyObject *__pyx_pf_8pylsmlib_6lsmlib_8lsm3dsurfaceareazerolevelset(CYTHON
  *         int _ilo_phi_gb = ilo_phi_gb
  *         int _ihi_phi_gb = ihi_phi_gb
  */
-  __pyx_t_7 = __Pyx_PyInt_As_int(__pyx_v_khi_grad_phi_gb); if (unlikely((__pyx_t_7 == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 238; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __pyx_v__khi_grad_phi_gb = __pyx_t_7;
+  __pyx_t_1 = __Pyx_PyInt_As_int(__pyx_v_khi_grad_phi_gb); if (unlikely((__pyx_t_1 == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 238; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_v__khi_grad_phi_gb = __pyx_t_1;
 
   /* "pylsmlib/lsmlib.pyx":239
  *         int _klo_grad_phi_gb = klo_grad_phi_gb
@@ -4780,8 +4716,8 @@ static PyObject *__pyx_pf_8pylsmlib_6lsmlib_8lsm3dsurfaceareazerolevelset(CYTHON
  *         int _ihi_phi_gb = ihi_phi_gb
  *         int _jlo_phi_gb = jlo_phi_gb
  */
-  __pyx_t_7 = __Pyx_PyInt_As_int(__pyx_v_ilo_phi_gb); if (unlikely((__pyx_t_7 == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 239; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __pyx_v__ilo_phi_gb = __pyx_t_7;
+  __pyx_t_1 = __Pyx_PyInt_As_int(__pyx_v_ilo_phi_gb); if (unlikely((__pyx_t_1 == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 239; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_v__ilo_phi_gb = __pyx_t_1;
 
   /* "pylsmlib/lsmlib.pyx":240
  *         int _khi_grad_phi_gb = khi_grad_phi_gb
@@ -4790,8 +4726,8 @@ static PyObject *__pyx_pf_8pylsmlib_6lsmlib_8lsm3dsurfaceareazerolevelset(CYTHON
  *         int _jlo_phi_gb = jlo_phi_gb
  *         int _jhi_phi_gb = jhi_phi_gb
  */
-  __pyx_t_7 = __Pyx_PyInt_As_int(__pyx_v_ihi_phi_gb); if (unlikely((__pyx_t_7 == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 240; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __pyx_v__ihi_phi_gb = __pyx_t_7;
+  __pyx_t_1 = __Pyx_PyInt_As_int(__pyx_v_ihi_phi_gb); if (unlikely((__pyx_t_1 == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 240; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_v__ihi_phi_gb = __pyx_t_1;
 
   /* "pylsmlib/lsmlib.pyx":241
  *         int _ilo_phi_gb = ilo_phi_gb
@@ -4800,8 +4736,8 @@ static PyObject *__pyx_pf_8pylsmlib_6lsmlib_8lsm3dsurfaceareazerolevelset(CYTHON
  *         int _jhi_phi_gb = jhi_phi_gb
  *         int _klo_phi_gb = klo_phi_gb
  */
-  __pyx_t_7 = __Pyx_PyInt_As_int(__pyx_v_jlo_phi_gb); if (unlikely((__pyx_t_7 == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 241; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __pyx_v__jlo_phi_gb = __pyx_t_7;
+  __pyx_t_1 = __Pyx_PyInt_As_int(__pyx_v_jlo_phi_gb); if (unlikely((__pyx_t_1 == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 241; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_v__jlo_phi_gb = __pyx_t_1;
 
   /* "pylsmlib/lsmlib.pyx":242
  *         int _ihi_phi_gb = ihi_phi_gb
@@ -4810,8 +4746,8 @@ static PyObject *__pyx_pf_8pylsmlib_6lsmlib_8lsm3dsurfaceareazerolevelset(CYTHON
  *         int _klo_phi_gb = klo_phi_gb
  *         int _khi_phi_gb = khi_phi_gb
  */
-  __pyx_t_7 = __Pyx_PyInt_As_int(__pyx_v_jhi_phi_gb); if (unlikely((__pyx_t_7 == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 242; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __pyx_v__jhi_phi_gb = __pyx_t_7;
+  __pyx_t_1 = __Pyx_PyInt_As_int(__pyx_v_jhi_phi_gb); if (unlikely((__pyx_t_1 == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 242; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_v__jhi_phi_gb = __pyx_t_1;
 
   /* "pylsmlib/lsmlib.pyx":243
  *         int _jlo_phi_gb = jlo_phi_gb
@@ -4820,8 +4756,8 @@ static PyObject *__pyx_pf_8pylsmlib_6lsmlib_8lsm3dsurfaceareazerolevelset(CYTHON
  *         int _khi_phi_gb = khi_phi_gb
  *         int _ilo_ib = ilo_ib
  */
-  __pyx_t_7 = __Pyx_PyInt_As_int(__pyx_v_klo_phi_gb); if (unlikely((__pyx_t_7 == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 243; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __pyx_v__klo_phi_gb = __pyx_t_7;
+  __pyx_t_1 = __Pyx_PyInt_As_int(__pyx_v_klo_phi_gb); if (unlikely((__pyx_t_1 == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 243; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_v__klo_phi_gb = __pyx_t_1;
 
   /* "pylsmlib/lsmlib.pyx":244
  *         int _jhi_phi_gb = jhi_phi_gb
@@ -4830,8 +4766,8 @@ static PyObject *__pyx_pf_8pylsmlib_6lsmlib_8lsm3dsurfaceareazerolevelset(CYTHON
  *         int _ilo_ib = ilo_ib
  *         int _ihi_ib = ihi_ib
  */
-  __pyx_t_7 = __Pyx_PyInt_As_int(__pyx_v_khi_phi_gb); if (unlikely((__pyx_t_7 == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 244; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __pyx_v__khi_phi_gb = __pyx_t_7;
+  __pyx_t_1 = __Pyx_PyInt_As_int(__pyx_v_khi_phi_gb); if (unlikely((__pyx_t_1 == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 244; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_v__khi_phi_gb = __pyx_t_1;
 
   /* "pylsmlib/lsmlib.pyx":245
  *         int _klo_phi_gb = klo_phi_gb
@@ -4840,8 +4776,8 @@ static PyObject *__pyx_pf_8pylsmlib_6lsmlib_8lsm3dsurfaceareazerolevelset(CYTHON
  *         int _ihi_ib = ihi_ib
  *         int _jlo_ib = jlo_ib
  */
-  __pyx_t_7 = __Pyx_PyInt_As_int(__pyx_v_ilo_ib); if (unlikely((__pyx_t_7 == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 245; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __pyx_v__ilo_ib = __pyx_t_7;
+  __pyx_t_1 = __Pyx_PyInt_As_int(__pyx_v_ilo_ib); if (unlikely((__pyx_t_1 == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 245; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_v__ilo_ib = __pyx_t_1;
 
   /* "pylsmlib/lsmlib.pyx":246
  *         int _khi_phi_gb = khi_phi_gb
@@ -4850,8 +4786,8 @@ static PyObject *__pyx_pf_8pylsmlib_6lsmlib_8lsm3dsurfaceareazerolevelset(CYTHON
  *         int _jlo_ib = jlo_ib
  *         int _jhi_ib = jhi_ib
  */
-  __pyx_t_7 = __Pyx_PyInt_As_int(__pyx_v_ihi_ib); if (unlikely((__pyx_t_7 == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 246; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __pyx_v__ihi_ib = __pyx_t_7;
+  __pyx_t_1 = __Pyx_PyInt_As_int(__pyx_v_ihi_ib); if (unlikely((__pyx_t_1 == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 246; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_v__ihi_ib = __pyx_t_1;
 
   /* "pylsmlib/lsmlib.pyx":247
  *         int _ilo_ib = ilo_ib
@@ -4860,8 +4796,8 @@ static PyObject *__pyx_pf_8pylsmlib_6lsmlib_8lsm3dsurfaceareazerolevelset(CYTHON
  *         int _jhi_ib = jhi_ib
  *         int _klo_ib = klo_ib
  */
-  __pyx_t_7 = __Pyx_PyInt_As_int(__pyx_v_jlo_ib); if (unlikely((__pyx_t_7 == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 247; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __pyx_v__jlo_ib = __pyx_t_7;
+  __pyx_t_1 = __Pyx_PyInt_As_int(__pyx_v_jlo_ib); if (unlikely((__pyx_t_1 == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 247; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_v__jlo_ib = __pyx_t_1;
 
   /* "pylsmlib/lsmlib.pyx":248
  *         int _ihi_ib = ihi_ib
@@ -4870,8 +4806,8 @@ static PyObject *__pyx_pf_8pylsmlib_6lsmlib_8lsm3dsurfaceareazerolevelset(CYTHON
  *         int _klo_ib = klo_ib
  *         int _khi_ib = khi_ib
  */
-  __pyx_t_7 = __Pyx_PyInt_As_int(__pyx_v_jhi_ib); if (unlikely((__pyx_t_7 == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 248; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __pyx_v__jhi_ib = __pyx_t_7;
+  __pyx_t_1 = __Pyx_PyInt_As_int(__pyx_v_jhi_ib); if (unlikely((__pyx_t_1 == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 248; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_v__jhi_ib = __pyx_t_1;
 
   /* "pylsmlib/lsmlib.pyx":249
  *         int _jlo_ib = jlo_ib
@@ -4880,8 +4816,8 @@ static PyObject *__pyx_pf_8pylsmlib_6lsmlib_8lsm3dsurfaceareazerolevelset(CYTHON
  *         int _khi_ib = khi_ib
  *         double _dx = dx
  */
-  __pyx_t_7 = __Pyx_PyInt_As_int(__pyx_v_klo_ib); if (unlikely((__pyx_t_7 == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 249; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __pyx_v__klo_ib = __pyx_t_7;
+  __pyx_t_1 = __Pyx_PyInt_As_int(__pyx_v_klo_ib); if (unlikely((__pyx_t_1 == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 249; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_v__klo_ib = __pyx_t_1;
 
   /* "pylsmlib/lsmlib.pyx":250
  *         int _jhi_ib = jhi_ib
@@ -4890,8 +4826,8 @@ static PyObject *__pyx_pf_8pylsmlib_6lsmlib_8lsm3dsurfaceareazerolevelset(CYTHON
  *         double _dx = dx
  *         double _dy = dy
  */
-  __pyx_t_7 = __Pyx_PyInt_As_int(__pyx_v_khi_ib); if (unlikely((__pyx_t_7 == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 250; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __pyx_v__khi_ib = __pyx_t_7;
+  __pyx_t_1 = __Pyx_PyInt_As_int(__pyx_v_khi_ib); if (unlikely((__pyx_t_1 == (int)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 250; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_v__khi_ib = __pyx_t_1;
 
   /* "pylsmlib/lsmlib.pyx":251
  *         int _klo_ib = klo_ib
@@ -4900,8 +4836,8 @@ static PyObject *__pyx_pf_8pylsmlib_6lsmlib_8lsm3dsurfaceareazerolevelset(CYTHON
  *         double _dy = dy
  *         double _dz = dz
  */
-  __pyx_t_8 = __pyx_PyFloat_AsDouble(__pyx_v_dx); if (unlikely((__pyx_t_8 == (double)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 251; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __pyx_v__dx = __pyx_t_8;
+  __pyx_t_2 = __pyx_PyFloat_AsDouble(__pyx_v_dx); if (unlikely((__pyx_t_2 == (double)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 251; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_v__dx = __pyx_t_2;
 
   /* "pylsmlib/lsmlib.pyx":252
  *         int _khi_ib = khi_ib
@@ -4910,8 +4846,8 @@ static PyObject *__pyx_pf_8pylsmlib_6lsmlib_8lsm3dsurfaceareazerolevelset(CYTHON
  *         double _dz = dz
  *         double _epsilon = epsilon
  */
-  __pyx_t_8 = __pyx_PyFloat_AsDouble(__pyx_v_dy); if (unlikely((__pyx_t_8 == (double)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 252; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __pyx_v__dy = __pyx_t_8;
+  __pyx_t_2 = __pyx_PyFloat_AsDouble(__pyx_v_dy); if (unlikely((__pyx_t_2 == (double)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 252; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_v__dy = __pyx_t_2;
 
   /* "pylsmlib/lsmlib.pyx":253
  *         double _dx = dx
@@ -4920,8 +4856,8 @@ static PyObject *__pyx_pf_8pylsmlib_6lsmlib_8lsm3dsurfaceareazerolevelset(CYTHON
  *         double _epsilon = epsilon
  * 
  */
-  __pyx_t_8 = __pyx_PyFloat_AsDouble(__pyx_v_dz); if (unlikely((__pyx_t_8 == (double)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 253; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __pyx_v__dz = __pyx_t_8;
+  __pyx_t_2 = __pyx_PyFloat_AsDouble(__pyx_v_dz); if (unlikely((__pyx_t_2 == (double)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 253; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_v__dz = __pyx_t_2;
 
   /* "pylsmlib/lsmlib.pyx":254
  *         double _dy = dy
@@ -4930,17 +4866,17 @@ static PyObject *__pyx_pf_8pylsmlib_6lsmlib_8lsm3dsurfaceareazerolevelset(CYTHON
  * 
  *     lsm3dsurfaceareazerolevelset_(
  */
-  __pyx_t_8 = __pyx_PyFloat_AsDouble(__pyx_v_epsilon); if (unlikely((__pyx_t_8 == (double)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 254; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
-  __pyx_v__epsilon = __pyx_t_8;
+  __pyx_t_2 = __pyx_PyFloat_AsDouble(__pyx_v_epsilon); if (unlikely((__pyx_t_2 == (double)-1) && PyErr_Occurred())) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 254; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __pyx_v__epsilon = __pyx_t_2;
 
   /* "pylsmlib/lsmlib.pyx":256
  *         double _epsilon = epsilon
  * 
  *     lsm3dsurfaceareazerolevelset_(             # <<<<<<<<<<<<<<
- *         <double *> surface_area.data,
+ *         &surface_area,
  *         <double *> phi.data,
  */
-  lsm3dsurfaceareazerolevelset_(((double *)__pyx_v_surface_area->data), ((double *)__pyx_v_phi->data), (&__pyx_v__ilo_phi_gb), (&__pyx_v__ihi_phi_gb), (&__pyx_v__jlo_phi_gb), (&__pyx_v__jhi_phi_gb), (&__pyx_v__klo_phi_gb), (&__pyx_v__khi_phi_gb), ((double *)__pyx_v_phi_x->data), ((double *)__pyx_v_phi_y->data), ((double *)__pyx_v_phi_z->data), (&__pyx_v__ilo_grad_phi_gb), (&__pyx_v__ihi_grad_phi_gb), (&__pyx_v__jlo_grad_phi_gb), (&__pyx_v__jhi_grad_phi_gb), (&__pyx_v__klo_grad_phi_gb), (&__pyx_v__khi_grad_phi_gb), (&__pyx_v__ilo_ib), (&__pyx_v__ihi_ib), (&__pyx_v__jlo_ib), (&__pyx_v__jhi_ib), (&__pyx_v__klo_ib), (&__pyx_v__khi_ib), (&__pyx_v__dx), (&__pyx_v__dy), (&__pyx_v__dz), (&__pyx_v__epsilon));
+  lsm3dsurfaceareazerolevelset_((&__pyx_v_surface_area), ((double *)__pyx_v_phi->data), (&__pyx_v__ilo_phi_gb), (&__pyx_v__ihi_phi_gb), (&__pyx_v__jlo_phi_gb), (&__pyx_v__jhi_phi_gb), (&__pyx_v__klo_phi_gb), (&__pyx_v__khi_phi_gb), ((double *)__pyx_v_phi_x->data), ((double *)__pyx_v_phi_y->data), ((double *)__pyx_v_phi_z->data), (&__pyx_v__ilo_grad_phi_gb), (&__pyx_v__ihi_grad_phi_gb), (&__pyx_v__jlo_grad_phi_gb), (&__pyx_v__jhi_grad_phi_gb), (&__pyx_v__klo_grad_phi_gb), (&__pyx_v__khi_grad_phi_gb), (&__pyx_v__ilo_ib), (&__pyx_v__ihi_ib), (&__pyx_v__jlo_ib), (&__pyx_v__jhi_ib), (&__pyx_v__klo_ib), (&__pyx_v__khi_ib), (&__pyx_v__dx), (&__pyx_v__dy), (&__pyx_v__dz), (&__pyx_v__epsilon));
 
   /* "pylsmlib/lsmlib.pyx":272
  *         &_epsilon)
@@ -4950,8 +4886,10 @@ static PyObject *__pyx_pf_8pylsmlib_6lsmlib_8lsm3dsurfaceareazerolevelset(CYTHON
  * 
  */
   __Pyx_XDECREF(__pyx_r);
-  __Pyx_INCREF(((PyObject *)__pyx_v_surface_area));
-  __pyx_r = ((PyObject *)__pyx_v_surface_area);
+  __pyx_t_3 = PyFloat_FromDouble(__pyx_v_surface_area); if (unlikely(!__pyx_t_3)) {__pyx_filename = __pyx_f[0]; __pyx_lineno = 272; __pyx_clineno = __LINE__; goto __pyx_L1_error;}
+  __Pyx_GOTREF(__pyx_t_3);
+  __pyx_r = __pyx_t_3;
+  __pyx_t_3 = 0;
   goto __pyx_L0;
 
   /* "pylsmlib/lsmlib.pyx":201
@@ -4964,18 +4902,13 @@ static PyObject *__pyx_pf_8pylsmlib_6lsmlib_8lsm3dsurfaceareazerolevelset(CYTHON
 
   /* function exit code */
   __pyx_L1_error:;
-  __Pyx_XDECREF(__pyx_t_1);
-  __Pyx_XDECREF(__pyx_t_2);
   __Pyx_XDECREF(__pyx_t_3);
-  __Pyx_XDECREF(__pyx_t_4);
-  __Pyx_XDECREF(__pyx_t_5);
   { PyObject *__pyx_type, *__pyx_value, *__pyx_tb;
     __Pyx_ErrFetch(&__pyx_type, &__pyx_value, &__pyx_tb);
     __Pyx_SafeReleaseBuffer(&__pyx_pybuffernd_phi.rcbuffer->pybuffer);
     __Pyx_SafeReleaseBuffer(&__pyx_pybuffernd_phi_x.rcbuffer->pybuffer);
     __Pyx_SafeReleaseBuffer(&__pyx_pybuffernd_phi_y.rcbuffer->pybuffer);
     __Pyx_SafeReleaseBuffer(&__pyx_pybuffernd_phi_z.rcbuffer->pybuffer);
-    __Pyx_SafeReleaseBuffer(&__pyx_pybuffernd_surface_area.rcbuffer->pybuffer);
   __Pyx_ErrRestore(__pyx_type, __pyx_value, __pyx_tb);}
   __Pyx_AddTraceback("pylsmlib.lsmlib.lsm3dsurfaceareazerolevelset", __pyx_clineno, __pyx_lineno, __pyx_filename);
   __pyx_r = NULL;
@@ -4985,9 +4918,7 @@ static PyObject *__pyx_pf_8pylsmlib_6lsmlib_8lsm3dsurfaceareazerolevelset(CYTHON
   __Pyx_SafeReleaseBuffer(&__pyx_pybuffernd_phi_x.rcbuffer->pybuffer);
   __Pyx_SafeReleaseBuffer(&__pyx_pybuffernd_phi_y.rcbuffer->pybuffer);
   __Pyx_SafeReleaseBuffer(&__pyx_pybuffernd_phi_z.rcbuffer->pybuffer);
-  __Pyx_SafeReleaseBuffer(&__pyx_pybuffernd_surface_area.rcbuffer->pybuffer);
   __pyx_L2:;
-  __Pyx_XDECREF((PyObject *)__pyx_v_surface_area);
   __Pyx_XGIVEREF(__pyx_r);
   __Pyx_RefNannyFinishContext();
   return __pyx_r;
