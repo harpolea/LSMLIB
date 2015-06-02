@@ -59,6 +59,40 @@ def getShape(phi, dx, order):
 
     return nx, ny, dx, dy, shape, phi
 
+def get3dShape(phi, dx, order):
+    phi = toFloatArray(phi)
+
+    shape = phi.shape
+    #print(shape)
+
+    if len(shape) < 3:
+        nx, ny, dx, dy, shape, phi = getShape(phi, dx, order)
+        nz = 1
+        dz = 0.
+    elif len(shape) == 3:
+        if type(dx) in (int, float, tuple, list):
+            dx = np.array(dx)
+
+        if dx.shape == ():
+            dx = np.resize(dx, (len(shape),))
+
+        if len(dx) != len(shape):
+            raise ValueError, "dx must be of length len(phi.shape)"
+
+        if order not in (1, 2):
+            raise ValueError, 'order must be 1 or 2'
+
+        dx = dx.astype(float)
+
+        if np.prod(dx) == 0:
+            raise ValueError, 'dx must be greater than zero'
+
+        nz, ny, nx = shape
+        dz, dy, dx = dx[0], dx[1], dx[2]
+
+
+    return nx, ny, nz, dx, dy, dz, shape, phi
+
 
 def surfaceAreaZeroLevelSet(phi0, phi_x, phi_y, phi_z,
                             gbGradPhiLims, gbPhiLims, ibLims, dx=1.,
@@ -82,7 +116,9 @@ def surfaceAreaZeroLevelSet(phi0, phi_x, phi_y, phi_z,
 
     """
 
-    nx, ny, dx, dy, _, phi0 = getShape(phi0, dx, order)
+    nx, ny, nz, dx, dy, dz, _, phi0 = get3dShape(phi0, dx, order)
+
+    #print(nx,ny,nz,dx,dy,dz)
 
     ilo_grad_phi_gb = gbGradPhiLims[0]
     ihi_grad_phi_gb = gbGradPhiLims[1]
@@ -153,7 +189,7 @@ def computeMeanCurvatureLocal(phi0, phi_x, phi_y, phi_z,
         - `index_[xyz]`:  [xyz] coordinates of local (narrow band) points
         - `n*_index`:  index range of points to loop over in index_*
         - `narrow_band`:   array that marks voxels outside desired fillbox
-        - `mark_fb`(in):      upper limit narrow band value for voxels in fillbox
+        - `mark_fb`:      upper limit narrow band value for voxels in fillbox
 
     :Returns:
 
@@ -161,7 +197,7 @@ def computeMeanCurvatureLocal(phi0, phi_x, phi_y, phi_z,
 
     """
 
-    nx, ny, dx, dy, shape, phi0 = getShape(phi0, dx, order)
+    nx, ny, nz, dx, dy, dz, shape, phi0 = get3dShape(phi0, dx, order)
     ilo_kappa_gb = gbKappaLims[0]
     ihi_kappa_gb = gbKappaLims[1]
     jlo_kappa_gb = gbKappaLims[2]
@@ -193,6 +229,8 @@ def computeMeanCurvatureLocal(phi0, phi_x, phi_y, phi_z,
     nlo_index = nbLims[0]
     nhi_index = nbLims[1]
 
+    print(ilo_nb_gb, ihi_nb_gb, jlo_nb_gb)
+
     kappa = lsm3dcomputemeancurvatureorder2local(kappa.flatten(),
                           ilo_kappa_gb, ihi_kappa_gb, jlo_kappa_gb,
                           jhi_kappa_gb, klo_kappa_gb, khi_kappa_gb,
@@ -205,9 +243,9 @@ def computeMeanCurvatureLocal(phi0, phi_x, phi_y, phi_z,
                           jlo_grad_phi_gb, jhi_grad_phi_gb,
                           klo_grad_phi_gb, khi_grad_phi_gb,
                           nx, ny, 1, dx, dy, 1.,
-                          index_x.flatten(),
-                          index_y.flatten(),
-                          index_z.flatten(),
+                          index_x,
+                          index_y,
+                          index_z,
                           nlo_index, nhi_index,
                           narrow_band,
                           ilo_nb_gb, ihi_nb_gb, jlo_nb_gb,
@@ -247,7 +285,7 @@ def computeSignedUnitNormal(phi0, phi_x, phi_y, phi_z, gbNormalLims,
         - When :math:`| \nabla \phi |`  is close to zero, the unit normal is arbitrarily set to be :math:`(1.0, 0.0, 0.0)`.
         - Note: this is really inefficiently implemented currently and can deffo be improved.
     """
-    nx, ny, dx, dy, shape, phi0 = getShape(phi0, dx, order)
+    nx, ny, nz, dx, dy, dz, shape, phi0 = get3dShape(phi0, dx, order)
     ilo_normal_gb = gbNormalLims[0]
     ihi_normal_gb = gbNormalLims[1]
     jlo_normal_gb = gbNormalLims[2]
@@ -1025,6 +1063,51 @@ def testing():
       ...
     ValueError: could not convert string to float: a
 
+
+    **Testing new functions**
+
+    Test get3dShape
+
+    >>> a = np.zeros((2,5))
+    >>> exact = [5, 2, 1, 1.0, 1.0, 0.0, (2, 5),
+    ...         np.array([[ 0.,  0.,  0.,  0.,  0.],
+    ...                [ 0.,  0.,  0.,  0.,  0.]])]
+    >>> print(get3dShape(a, 1., 2))
+    (5, 2, 1, 1.0, 1.0, 0.0, (2, 5), array([[ 0.,  0.,  0.,  0.,  0.],
+           [ 0.,  0.,  0.,  0.,  0.]]))
+
+    >>> b = np.random.rand(4,8,20)
+    >>> nx,ny,nz,dx,dy,dz,_,c = get3dShape(b,.5,2)
+    >>> print(nx,ny,nz)
+    (20, 8, 4)
+    >>> print(dx, dy, dz)
+    (0.5, 0.5, 0.5)
+    >>> np.testing.assert_allclose(b, c)
+
+
+    surfaceAreaZeroLevelSet
+
+    >>> phi = np.array([[[-1., -1., -1., -1.],
+    ...                                [ 1.,  1., -1., -1.],
+    ...                                [ 1.,  1., -1., -1.],
+    ...                                [ 1.,  1., -1., -1.]],
+    ...                                [[-1., -1., -1., -1.],
+    ...                                [ 1.,  1., -1., -1.],
+    ...                                [ 1.,  1., -1., -1.],
+    ...                                [ 1.,  1., -1., -1.]]])
+    >>> phix = np.zeros_like(phi)
+    >>> lim = np.array([0,3,0,3,0,1])
+    >>> gblim = np.zeros_like(lim)
+    >>> print(surfaceAreaZeroLevelSet(phi,phix,phix,phix,lim,lim,gblim))
+
+    computeMeanCurvatureLocal
+
+    >>> kappa = np.zeros_like(phi)
+    >>> narrow_band = np.zeros_like(phi)
+    >>> mark_fb = np.zeros_like(phi)
+    >>> print(computeMeanCurvatureLocal(phi,phix,phix,phix, kappa, phi, lim,
+    ...         range(4), range(4), range(4), narrow_band, mark_fb,
+    ...         lim, lim, lim, lim))
 
     """
 
