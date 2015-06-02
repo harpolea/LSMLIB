@@ -5,7 +5,7 @@
 ##              (c) 2009 Kevin T. Chu.  All rights reserved.
 ## Revision:    $Revision$
 ## Modified:    $Date$
-## Description: autoconf macro for setting the build mode 
+## Description: autoconf macro for setting the build mode
 ##
 
 #
@@ -69,8 +69,8 @@ case "$CC" in
     # no position-independent code for BlueGene/L
   ;;
   *)
-    # do not use compiler flags for position-independent code 
-esac 
+    # do not use compiler flags for position-independent code
+esac
 
 case "$CXX" in
   g++)
@@ -86,8 +86,8 @@ case "$CXX" in
     # no position-independent code for BlueGene/L
   ;;
   *)
-    # do not use compiler flags for position-independent code 
-esac 
+    # do not use compiler flags for position-independent code
+esac
 
 case "$F77" in
   g77)
@@ -106,8 +106,9 @@ case "$F77" in
     # no position-independent code for BlueGene/L
   ;;
   *)
-    # do not use compiler flags for position-independent code 
-esac 
+    FFLAGS="-fPIC $FFLAGS"
+    # do not use compiler flags for position-independent code
+esac
 
 
 case $build_mode in
@@ -128,7 +129,7 @@ case $build_mode in
       *)
         CFLAGS="-O $CFLAGS"
         AC_MSG_WARN([m4_text_wrap([unrecognized C compiler...trying '-O' compiler flag...])])
-    esac 
+    esac
 
     case "$CXX" in
       g++)
@@ -146,7 +147,7 @@ case $build_mode in
       *)
         CXXFLAGS="-O $CXXFLAGS"
         AC_MSG_WARN([m4_text_wrap([unrecognized C++ compiler...trying '-O' compiler flag...])])
-    esac 
+    esac
 
     case "$F77" in
       g77)
@@ -165,9 +166,9 @@ case $build_mode in
         FFLAGS="-O3 -qmaxmem=64000 -qarch=440 $FFLAGS"
       ;;
       *)
-        FFLAGS="-O $FFLAGS"
+        FFLAGS="-O -fPIC $FFLAGS"
         AC_MSG_WARN([m4_text_wrap([unrecognized Fortran compiler...trying '-O' compiler flag...])])
-    esac 
+    esac
   ;;
 
   debug)
@@ -187,7 +188,7 @@ case $build_mode in
       *)
         CFLAGS="-g $CFLAGS"
         AC_MSG_WARN([m4_text_wrap([unrecognized C compiler...trying '-g' compiler flag...])])
-    esac 
+    esac
 
     case "$CXX" in
       g++)
@@ -205,7 +206,7 @@ case $build_mode in
       *)
         CXXFLAGS="-g $CXXFLAGS"
         AC_MSG_WARN([m4_text_wrap([unrecognized C++ compiler...trying '-g' compiler flag...])])
-    esac 
+    esac
 
     case "$F77" in
       g77)
@@ -226,7 +227,7 @@ case $build_mode in
       *)
         FFLAGS="-g $FFLAGS"
         AC_MSG_WARN([m4_text_wrap([unrecognized Fortran compiler...trying '-g' compiler flag...])])
-    esac 
+    esac
   ;;
 
   profile)
@@ -246,7 +247,7 @@ case $build_mode in
       *)
         CFLAGS="-pg $CFLAGS"
         AC_MSG_WARN([m4_text_wrap([unrecognized C compiler...trying '-pg' compiler flag...])])
-    esac 
+    esac
 
     case "$CXX" in
       g++)
@@ -264,7 +265,7 @@ case $build_mode in
       *)
         CXXFLAGS="-pg $CXXFLAGS"
         AC_MSG_WARN([m4_text_wrap([unrecognized C++ compiler...trying '-pg' compiler flag...])])
-    esac 
+    esac
 
     case "$F77" in
       g77)
@@ -285,7 +286,7 @@ case $build_mode in
       *)
         FFLAGS="-pg $FFLAGS"
         AC_MSG_WARN([m4_text_wrap([unrecognized Fortran compiler...trying '-pg' compiler flag...])])
-    esac 
+    esac
   ;;
 
 esac

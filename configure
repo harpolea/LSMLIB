@@ -3735,7 +3735,7 @@ ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $
 ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 ac_ext=f
-ac_compile='$F77 -c $FFLAGS conftest.$ac_ext >&5'
+ac_compile='$F77 -c -fPIC $FFLAGS conftest.$ac_ext >&5'
 ac_link='$F77 -o conftest$ac_exeext $FFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
 ac_compiler_gnu=$ac_cv_f77_compiler_gnu
 if test -n "$ac_tool_prefix"; then
@@ -3895,7 +3895,7 @@ fi
 $as_echo "$ac_cv_f77_compiler_gnu" >&6; }
 ac_ext=$ac_save_ext
 ac_test_FFLAGS=${FFLAGS+set}
-ac_save_FFLAGS=$FFLAGS
+ac_save_FFLAGS=" -fPIC $FFLAGS"
 FFLAGS=
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether $F77 accepts -g" >&5
 $as_echo_n "checking whether $F77 accepts -g... " >&6; }
@@ -3922,7 +3922,7 @@ if test "$ac_test_FFLAGS" = set; then
   FFLAGS=$ac_save_FFLAGS
 elif test $ac_cv_prog_f77_g = yes; then
   if test "x$ac_cv_f77_compiler_gnu" = xyes; then
-    FFLAGS="-g -O2"
+    FFLAGS="-fPIC -g -O2"
   else
     FFLAGS="-g"
   fi
