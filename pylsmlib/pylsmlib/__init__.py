@@ -63,21 +63,17 @@ def get3dShape(phi, dx, order):
     phi = toFloatArray(phi)
 
     shape = phi.shape
-    #print(shape)
 
     if len(shape) < 3:
         nx, ny, dx, dy, shape, phi = getShape(phi, dx, order)
         nz = 1
         dz = 0.
     elif len(shape) == 3:
-        #if type(dx) in (int, float, tuple, list):
-        #    dx = np.array(dx)
-        dx = np.array(dx)
-        dx = np.resize(dx, (3,))
+        if type(dx) in (int, float, tuple, list):
+            dx = np.array(dx)
 
         if dx.shape == ():
-            #dx = np.resize(dx, (len(shape),))
-            dx = np.resize(dx, (3,))
+            dx = np.resize(dx, (len(shape),))
 
         if len(dx) != len(shape):
             raise ValueError, "dx must be of length len(phi.shape)"
@@ -99,7 +95,7 @@ def get3dShape(phi, dx, order):
 
 def surfaceAreaZeroLevelSet(phi0, phi_x, phi_y, phi_z,
                             gbGradPhiLims, gbPhiLims, ibLims, dx=1.,
-                            epsilon=1.e-10, order=2):
+                            epsilon=1., order=2):
 
     r"""
     Computes the surface area of the surface defined by the zero level set.
@@ -1068,7 +1064,7 @@ def testing():
 
     **Testing new functions**
 
-    Test get3dShape
+    Test ``get3dShape``
 
     >>> a = np.zeros((2,5))
     >>> exact = [5, 2, 1, 1.0, 1.0, 0.0, (2, 5),
@@ -1087,7 +1083,9 @@ def testing():
     >>> np.testing.assert_allclose(b, c)
 
 
-    surfaceAreaZeroLevelSet
+    ``surfaceAreaZeroLevelSet``
+
+    This doesn't work - there is something up with the pointers as the surface area is passed by reference in ``lsmlib.pyx`` to the C function, but not updated by it. I strongly suspect it has something to do with the way the C function is called - I can change the ``#define`` statement in ``lsm_geometry3d.h`` so that it has a different name (e.g. ``lsm3dComputeSignedUnitNormal`` rather than ``lsm3dcomputesignedunitnormal_``), recompile and it will still run. If you look at the examples (e.g. ``curvature_model3d.c``), the C functions are all called using the CAPITAL_NAMES rather than the ones in the ``#define`` statements.
 
     >>> phi = np.array([[[-1., -1., -1., -1.],
     ...                                [ 1.,  1., -1., -1.],
@@ -1103,8 +1101,33 @@ def testing():
     >>> gblim = np.zeros_like(lim)
     >>> print(surfaceAreaZeroLevelSet(phi,phix,phix,phix,lim,lim,gblim))
 
-    computeMeanCurvatureLocal
+    >>> phi = np.array([[[-1., -1., -1., -1.],
+    ...                                [ 8.,  0., -1., -1.],
+    ...                                [ 10.,  0., -1., -1.],
+    ...                                [ 1.,  0., -10., -15.]],
+    ...                                [[-1., -1, -1., -1.],
+    ...                                [ 1.,  0., -0.1, -1.],
+    ...                                [ 0.,  -1., -1., -1.],
+    ...                                [ 0.,  -1., -1.9, -6.]]])
+    >>> phix = np.zeros_like(phi, dtype=np.float64)
+    >>> phix[0,:,2] = np.ones_like(phix[0,:,2])
+    >>> print(surfaceAreaZeroLevelSet(phi,phix,phix,phix,lim,lim,gblim, epsilon=2.))
 
+
+    ``computeMeanCurvatureLocal``
+
+    This doesn't work either, but does at least return different answers for the two tests, implying it's doing something.
+
+    >>> phi = np.array([[[-1., -1., -1., -1.],
+    ...                                [ 1.,  1., -1., -1.],
+    ...                                [ 1.,  1., -1., -1.],
+    ...                                [ 1.,  1., -1., -1.]],
+    ...                                [[-1., -1., -1., -1.],
+    ...                                [ 1.,  1., -1., -1.],
+    ...                                [ 1.,  1., -1., -1.],
+    ...                                [ 1.,  1., -1., -1.]]])
+    >>> phix = np.zeros_like(phi, dtype=np.float64)
+    >>> phix[:,1,2] = np.ones_like(phix[:,1,2])
     >>> kappa = np.zeros_like(phi, dtype=np.float64)
     >>> isinstance(kappa[1,2,3], np.float64)
     True
@@ -1123,8 +1146,49 @@ def testing():
     ...         a, a, a, narrow_band, mark_fb,
     ...         lim, lim, lim, lim, dx=0.5))
 
+    >>> phi = np.array([[[-1., -1., -1., -1.],
+    ...                                [ 8.,  5., -1., -1.],
+    ...                                [ 10.,  1., -1., -1.],
+    ...                                [ 1.,  1., -10., -15.]],
+    ...                                [[-1., -1, -1., -1.],
+    ...                                [ 1.,  1., -0.1, -1.],
+    ...                                [ 1.,  -1., -1., -1.],
+    ...                                [ 1.,  -1., -1.9, -6.]]])
+    >>> phix = np.zeros_like(phi, dtype=np.float64)
+    >>> phix[0,:,2] = np.ones_like(phix[0,:,2])
+    >>> print(computeMeanCurvatureLocal(phi, phix, phix, phix, kappa,
+    ...         phix, lim,
+    ...         a, a, a, narrow_band, mark_fb,
+    ...         lim, lim, lim, lim, dx=0.5))
+
+
     computeSignedUnitNormal
 
+    This doesn't work either, but does at least return different answers for the two tests, implying it's doing something.
+
+    >>> phi = np.array([[[-1., -1., -1., -1.],
+    ...                                [ 1.,  1., -1., -1.],
+    ...                                [ 1.,  1., -1., -1.],
+    ...                                [ 1.,  1., -1., -1.]],
+    ...                                [[-1., -1., -1., -1.],
+    ...                                [ 1.,  1., -1., -1.],
+    ...                                [ 1.,  1., -1., -1.],
+    ...                                [ 1.,  1., -1., -1.]]])
+    >>> phix = np.zeros_like(phi, dtype=np.float64)
+    >>> phix[:,1,2] = np.ones_like(phix[:,1,2])
+    >>> print(computeSignedUnitNormal(phi,phix, phix, phix,
+    ...                                 lim, lim, lim, lim))
+
+    >>> phi = np.array([[[-1., -1., -1., -1.],
+    ...                                [ 8.,  5., -1., -1.],
+    ...                                [ 10.,  1., -1., -1.],
+    ...                                [ 1.,  1., -10., -15.]],
+    ...                                [[-1., -2.5, -1., -1.],
+    ...                                [ 1.,  1., -0.1, -1.],
+    ...                                [ 1.,  -1., -1., -1.],
+    ...                                [ 1.,  -1., -1.9, -6.]]])
+    >>> phix = np.zeros_like(phi, dtype=np.float64)
+    >>> phix[0,:,2] = np.ones_like(phix[0,:,2])
     >>> print(computeSignedUnitNormal(phi,phix, phix, phix,
     ...                                 lim, lim, lim, lim))
 

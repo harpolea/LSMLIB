@@ -58,7 +58,7 @@ install LSMLIB_ (consult `LSMLIB's install`_ if you have issues).
     $ cd build
     $ ../configure
     $ make
-    $ make install
+    $ sudo make install
 
 To install PyLSMLIB_.
 

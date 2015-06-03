@@ -9,6 +9,7 @@ from lsmlib cimport solveEikonalEquation3d
 from lsmlib cimport lsm3dcomputesignedunitnormal_
 from lsmlib cimport lsm3dcomputemeancurvatureorder2local_
 from lsmlib cimport lsm3dsurfaceareazerolevelset_
+#from lsmlib cimport LSM3D_SURFACE_AREA_ZERO_LEVEL_SET
 from libc.stdlib cimport malloc, free
 
 def computeDistanceFunction3d_(np.ndarray[double, ndim=1] phi,
@@ -229,7 +230,8 @@ def lsm3dsurfaceareazerolevelset(np.ndarray[double, ndim=1] phi,
     """
 
     cdef:
-        double surface_area = 0.0
+        double surface_area = 10.0
+        double *_surface_area = &surface_area
         int _ilo_grad_phi_gb = ilo_grad_phi_gb
         int _ihi_grad_phi_gb = ihi_grad_phi_gb
         int _jlo_grad_phi_gb = jlo_grad_phi_gb
@@ -254,7 +256,8 @@ def lsm3dsurfaceareazerolevelset(np.ndarray[double, ndim=1] phi,
         double _epsilon = epsilon
 
     lsm3dsurfaceareazerolevelset_(
-        &surface_area,
+    #LSM3D_SURFACE_AREA_ZERO_LEVEL_SET(
+        _surface_area,
         <double *> phi.data,
         &_ilo_phi_gb,  &_ihi_phi_gb,  &_jlo_phi_gb,
         &_jhi_phi_gb,  &_klo_phi_gb,  &_khi_phi_gb,
@@ -269,7 +272,7 @@ def lsm3dsurfaceareazerolevelset(np.ndarray[double, ndim=1] phi,
         &_dx,  &_dy,  &_dz,
         &_epsilon)
 
-    return surface_area
+    return _surface_area[0]
 
 
 def lsm3dcomputemeancurvatureorder2local(np.ndarray[double, ndim=1] kappa,
