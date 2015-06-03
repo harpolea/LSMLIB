@@ -70,11 +70,14 @@ def get3dShape(phi, dx, order):
         nz = 1
         dz = 0.
     elif len(shape) == 3:
-        if type(dx) in (int, float, tuple, list):
-            dx = np.array(dx)
+        #if type(dx) in (int, float, tuple, list):
+        #    dx = np.array(dx)
+        dx = np.array(dx)
+        dx = np.resize(dx, (3,))
 
         if dx.shape == ():
-            dx = np.resize(dx, (len(shape),))
+            #dx = np.resize(dx, (len(shape),))
+            dx = np.resize(dx, (3,))
 
         if len(dx) != len(shape):
             raise ValueError, "dx must be of length len(phi.shape)"
@@ -193,7 +196,7 @@ def computeMeanCurvatureLocal(phi0, phi_x, phi_y, phi_z,
 
     :Returns:
 
-        -`kappa`: curvature data array
+        - `kappa`: curvature data array
 
     """
 
@@ -229,8 +232,6 @@ def computeMeanCurvatureLocal(phi0, phi_x, phi_y, phi_z,
     nlo_index = nbLims[0]
     nhi_index = nbLims[1]
 
-    print(ilo_nb_gb, ihi_nb_gb, jlo_nb_gb)
-
     kappa = lsm3dcomputemeancurvatureorder2local(kappa.flatten(),
                           ilo_kappa_gb, ihi_kappa_gb, jlo_kappa_gb,
                           jhi_kappa_gb, klo_kappa_gb, khi_kappa_gb,
@@ -242,7 +243,6 @@ def computeMeanCurvatureLocal(phi0, phi_x, phi_y, phi_z,
                           ilo_grad_phi_gb, ihi_grad_phi_gb,
                           jlo_grad_phi_gb, jhi_grad_phi_gb,
                           klo_grad_phi_gb, khi_grad_phi_gb,
-                          nx, ny, 1, dx, dy, 1.,
                           index_x,
                           index_y,
                           index_z,
@@ -250,7 +250,8 @@ def computeMeanCurvatureLocal(phi0, phi_x, phi_y, phi_z,
                           narrow_band,
                           ilo_nb_gb, ihi_nb_gb, jlo_nb_gb,
                           jhi_nb_gb, klo_nb_gb, khi_nb_gb,
-                          mark_fb)
+                          mark_fb,
+                          nx=nx, ny=ny, nz=nz, dx=dx, dy=dy, dz=dz)
 
     return kappa.reshape(shape)
 
@@ -314,7 +315,8 @@ def computeSignedUnitNormal(phi0, phi_x, phi_y, phi_z, gbNormalLims,
     klo_fb = fbLims[4]
     khi_fb = fbLims[5]
 
-    normal_x, normal_y, normal_z = lsm3dcomputesignedunitnormal(phi0.flatten(), phi_x.flatten(),
+    normal_x, normal_y, normal_z = lsm3dcomputesignedunitnormal(phi0.flatten(),
+                                phi_x.flatten(),
                                 phi_y.flatten(), phi_z.flatten(),
                                 ilo_normal_gb, ihi_normal_gb, jlo_normal_gb,
                                 jhi_normal_gb ,klo_normal_gb, khi_normal_gb,
@@ -324,7 +326,7 @@ def computeSignedUnitNormal(phi0, phi_x, phi_y, phi_z, gbNormalLims,
                                 jhi_phi_gb, klo_phi_gb, khi_phi_gb,
                                 ilo_fb, ihi_fb, jlo_fb, jhi_fb, klo_fb, khi_fb, nx=nx, ny=ny, nz=1, dx=dx, dy=dy, dz=1.)
 
-    return normal_x.reshape(shape), normal_y.reshape(shape), normal_z.reshape(shape)
+    return normal_x.reshape((ny,nx)), normal_y.reshape((ny,nx)), normal_z.reshape((ny,nx))
 
 def computeDistanceFunction(phi0, dx=1., order=2):
     r"""
@@ -1095,19 +1097,36 @@ def testing():
     ...                                [ 1.,  1., -1., -1.],
     ...                                [ 1.,  1., -1., -1.],
     ...                                [ 1.,  1., -1., -1.]]])
-    >>> phix = np.zeros_like(phi)
-    >>> lim = np.array([0,3,0,3,0,1])
+    >>> phix = np.zeros_like(phi, dtype=np.float64)
+    >>> phix[:,1,2] = np.ones_like(phix[:,1,2])
+    >>> lim = np.array([0,3,0,3,0,1], dtype=np.intc)
     >>> gblim = np.zeros_like(lim)
     >>> print(surfaceAreaZeroLevelSet(phi,phix,phix,phix,lim,lim,gblim))
 
     computeMeanCurvatureLocal
 
-    >>> kappa = np.zeros_like(phi)
-    >>> narrow_band = np.zeros_like(phi)
-    >>> mark_fb = np.zeros_like(phi)
-    >>> print(computeMeanCurvatureLocal(phi,phix,phix,phix, kappa, phi, lim,
-    ...         range(4), range(4), range(4), narrow_band, mark_fb,
-    ...         lim, lim, lim, lim))
+    >>> kappa = np.zeros_like(phi, dtype=np.float64)
+    >>> isinstance(kappa[1,2,3], np.float64)
+    True
+    >>> #narrow_band = np.chararray(phi.shape)
+    >>> #narrow_band[:] = '0'
+    >>> #narrow_band = narrow_band.tostring()
+    >>> narrow_band = '0'
+    >>> mark_fb = narrow_band
+    >>> isinstance(lim[5], np.intc)
+    True
+    >>> a = np.linspace(0,3,4, dtype=np.intc)
+    >>> isinstance(a[3], np.intc)
+    True
+    >>> print(computeMeanCurvatureLocal(phi, phix, phix, phix, kappa,
+    ...         phix, lim,
+    ...         a, a, a, narrow_band, mark_fb,
+    ...         lim, lim, lim, lim, dx=0.5))
+
+    computeSignedUnitNormal
+
+    >>> print(computeSignedUnitNormal(phi,phix, phix, phix,
+    ...                                 lim, lim, lim, lim))
 
     """
 

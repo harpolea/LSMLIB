@@ -285,9 +285,9 @@ def lsm3dcomputemeancurvatureorder2local(np.ndarray[double, ndim=1] kappa,
                   int ilo_grad_phi_gb, int ihi_grad_phi_gb,
                   int jlo_grad_phi_gb, int jhi_grad_phi_gb,
                   int klo_grad_phi_gb, int khi_grad_phi_gb,
-                  np.ndarray[double, ndim=1] index_x,
-                  np.ndarray[double, ndim=1] index_y,
-                  np.ndarray[double, ndim=1] index_z,
+                  np.ndarray[int, ndim=1] index_x,
+                  np.ndarray[int, ndim=1] index_y,
+                  np.ndarray[int, ndim=1] index_z,
                   int nlo_index, int nhi_index,
                   narrow_band,
                   int ilo_nb_gb, int ihi_nb_gb, int jlo_nb_gb,
@@ -349,13 +349,12 @@ def lsm3dcomputemeancurvatureorder2local(np.ndarray[double, ndim=1] kappa,
         double _dx = dx
         double _dy = dy
         double _dz = dz
-        int _index_x = index_x
-        int _index_y = index_y
-        int _index_z = index_z
         int _nlo_index = nlo_index
         int _nhi_index = nhi_index
-        char* _narrow_band = narrow_band
-        char* _mark_fb = mark_fb
+        narrow_band_byte = narrow_band.encode('UTF-8')
+        char* _narrow_band = narrow_band_byte
+        mark_fb_byte = mark_fb.encode('UTF-8')
+        char* _mark_fb = mark_fb_byte
 
     lsm3dcomputemeancurvatureorder2local_(<double *> kappa.data,
         &_ilo_kappa_gb, &_ihi_kappa_gb,
@@ -371,7 +370,7 @@ def lsm3dcomputemeancurvatureorder2local(np.ndarray[double, ndim=1] kappa,
         &_jlo_grad_phi_gb,  &_jhi_grad_phi_gb,
         &_klo_grad_phi_gb, &_khi_grad_phi_gb,
         &_dx,  &_dy,  &_dz,
-        &_index_x, &_index_y,  &_index_z,
+        <int *> index_x.data, <int *> index_y.data,  <int *> index_z.data,
         &_nlo_index, &_nhi_index,
         <const unsigned char *> _narrow_band,
         &_ilo_nb_gb,  &_ihi_nb_gb,
