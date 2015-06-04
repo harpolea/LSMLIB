@@ -10,6 +10,8 @@ from lsmlib cimport lsm3dcomputesignedunitnormal_
 from lsmlib cimport lsm3dcomputemeancurvatureorder2local_
 from lsmlib cimport lsm3dsurfaceareazerolevelset_
 #from lsmlib cimport LSM3D_SURFACE_AREA_ZERO_LEVEL_SET
+from lsmlib cimport lsm3dcomputemeancurvatureorder2_
+from lsmlib cimport lsm3dcomputegaussiancurvatureorder2_
 from libc.stdlib cimport malloc, free
 
 def computeDistanceFunction3d_(np.ndarray[double, ndim=1] phi,
@@ -380,5 +382,188 @@ def lsm3dcomputemeancurvatureorder2local(np.ndarray[double, ndim=1] kappa,
         &_jlo_nb_gb,  &_jhi_nb_gb,
         &_klo_nb_gb, &_khi_nb_gb,
         <const unsigned char *> _mark_fb)
+
+    return kappa
+
+
+def lsm3dcomputemeancurvatureorder2(np.ndarray[double, ndim=1] kappa,
+                  int ilo_kappa_gb, int ihi_kappa_gb, int jlo_kappa_gb,
+                  int jhi_kappa_gb, int klo_kappa_gb, int khi_kappa_gb,
+                  np.ndarray[double, ndim=1] phi,
+                  int ilo_phi_gb, int ihi_phi_gb, int jlo_phi_gb,
+                  int jhi_phi_gb, int klo_phi_gb, int khi_phi_gb,
+                  np.ndarray[double, ndim=1] phi_x,
+                  np.ndarray[double, ndim=1] phi_y,
+                  np.ndarray[double, ndim=1] phi_z,
+                  np.ndarray[double, ndim=1] grad_phi_mag,
+                  int ilo_grad_phi_gb, int ihi_grad_phi_gb,
+                  int jlo_grad_phi_gb, int jhi_grad_phi_gb,
+                  int klo_grad_phi_gb, int khi_grad_phi_gb,
+                  int ilo_kappa_fb, int ihi_kappa_fb, int jlo_kappa_fb,
+                  int jhi_kappa_fb, int klo_kappa_fb, int khi_kappa_fb,
+                  nx=1, ny=1, nz=1, dx=1., dy=1., dz=1.):
+    """
+    /*!
+    *  LSM3D_COMPUTE_MEAN_CURVATURE_ORDER2) computes mean curvature
+    *  kappa = ( phi_xx*phi_y^2 + phi_yy*phi_x^2 - 2*phi_xy*phi_x*phi_y +
+    *            phi_xx*phi_z^2 + phi_zz*phi_x^2 - 2*phi_xz*phi_x*phi_z +
+    *            phi_yy*phi_z^2 + phi_zz*phi_y^2 - 2*phi_yz*phi_y*phi_z )
+    *          ( | grad phi | ^ 3 )
+    *  Standard centered 27 point stencil, second order differencing used.
+    *  First order derivatives assumed precomputed.
+    *
+    *  Arguments:
+    *    kappa       (out):  curvature data array
+    *    phi          (in):  level set function
+    *    phi_*        (in):  first order derivatives of phi
+    *    grad_phi_mag (in):  gradient magnitude of phi
+    *    *_gb         (in):   index range for ghostbox
+    *    dx, dy, dz  (in):   grid spacing
+    *
+    *  Notes:
+    *   - memory for 'kappa' array assumed preallocated
+    */
+    """
+
+    cdef:
+        int _ilo_grad_phi_gb = ilo_grad_phi_gb
+        int _ihi_grad_phi_gb = ihi_grad_phi_gb
+        int _jlo_grad_phi_gb = jlo_grad_phi_gb
+        int _jhi_grad_phi_gb = jhi_grad_phi_gb
+        int _klo_grad_phi_gb = klo_grad_phi_gb
+        int _khi_grad_phi_gb = khi_grad_phi_gb
+        int _ilo_phi_gb = ilo_phi_gb
+        int _ihi_phi_gb = ihi_phi_gb
+        int _jlo_phi_gb = jlo_phi_gb
+        int _jhi_phi_gb = jhi_phi_gb
+        int _klo_phi_gb = klo_phi_gb
+        int _khi_phi_gb = khi_phi_gb
+        int _ilo_kappa_fb = ilo_kappa_fb
+        int _ihi_kappa_fb = ihi_kappa_fb
+        int _jlo_kappa_fb = jlo_kappa_fb
+        int _jhi_kappa_fb = jhi_kappa_fb
+        int _klo_kappa_fb = klo_kappa_fb
+        int _khi_kappa_fb = khi_kappa_fb
+        int _ilo_kappa_gb = ilo_kappa_gb
+        int _ihi_kappa_gb = ihi_kappa_gb
+        int _jlo_kappa_gb = jlo_kappa_gb
+        int _jhi_kappa_gb = jhi_kappa_gb
+        int _klo_kappa_gb = klo_kappa_gb
+        int _khi_kappa_gb = khi_kappa_gb
+        double _dx = dx
+        double _dy = dy
+        double _dz = dz
+
+    lsm3dcomputemeancurvatureorder2_(<double *> kappa.data,
+        &_ilo_kappa_gb, &_ihi_kappa_gb,
+        &_jlo_kappa_gb,  &_jhi_kappa_gb,
+        &_klo_kappa_gb, &_khi_kappa_gb,
+        <double *> phi.data,
+        &_ilo_phi_gb,  &_ihi_phi_gb,
+        &_jlo_phi_gb,  &_jhi_phi_gb,
+        &_klo_phi_gb,  &_khi_phi_gb,
+        <double *> phi_x.data, <double *> phi_y.data, <double *> phi_z.data,
+        <double *> grad_phi_mag.data,
+        &_ilo_grad_phi_gb,  &_ihi_grad_phi_gb,
+        &_jlo_grad_phi_gb,  &_jhi_grad_phi_gb,
+        &_klo_grad_phi_gb, &_khi_grad_phi_gb,
+        &_ilo_kappa_fb,  &_ihi_kappa_fb,
+        &_jlo_kappa_fb,  &_jhi_kappa_fb,
+        &_klo_kappa_fb, &_khi_kappa_fb,
+        &_dx,  &_dy,  &_dz)
+
+    return kappa
+
+
+def lsm3dcomputegaussiancurvatureorder2(np.ndarray[double, ndim=1] kappa,
+                  int ilo_kappa_gb, int ihi_kappa_gb, int jlo_kappa_gb,
+                  int jhi_kappa_gb, int klo_kappa_gb, int khi_kappa_gb,
+                  np.ndarray[double, ndim=1] phi,
+                  int ilo_phi_gb, int ihi_phi_gb, int jlo_phi_gb,
+                  int jhi_phi_gb, int klo_phi_gb, int khi_phi_gb,
+                  np.ndarray[double, ndim=1] phi_x,
+                  np.ndarray[double, ndim=1] phi_y,
+                  np.ndarray[double, ndim=1] phi_z,
+                  np.ndarray[double, ndim=1] grad_phi_mag,
+                  int ilo_grad_phi_gb, int ihi_grad_phi_gb,
+                  int jlo_grad_phi_gb, int jhi_grad_phi_gb,
+                  int klo_grad_phi_gb, int khi_grad_phi_gb,
+                  int ilo_kappa_fb, int ihi_kappa_fb, int jlo_kappa_fb,
+                  int jhi_kappa_fb, int klo_kappa_fb, int khi_kappa_fb,
+                  nx=1, ny=1, nz=1, dx=1., dy=1., dz=1.):
+    """
+    /*!
+    *
+    *  lsm3dComputeGaussianCurvatureOrder2() computes Gaussian curvature
+    *  kappa = [  phi_x^2*(phi_yy*phi_zz - phi_yz^2) +
+    *             phi_y^2*(phi_xx*phi_zz - phi_xz^2) +
+    *             phi_z^2*(phi_xx*phi_yy - phi_xy^2) +
+    *         2*( phi_x*phi_y*(phi_xz*phi_yz - phi_xy*phi_zz) +
+    *             phi_y*phi_z*(phi_xy*phi_xz - phi_yz*phi_xx) +
+    *             phi_x*phi_z*(phi_xy*phi_yz - phi_xz*phi_yy) ) ] /
+    *          ( | grad phi | ^ 4 )
+    *  Standard centered 27 point stencil, second order differencing used.
+    *  First order derivatives assumed precomputed.
+    *
+    *  Arguments:
+    *    kappa     (in/out): curvature data array
+    *    phi          (in):  level set function
+    *    phi_*        (in):  first order derivatives of phi
+    *    grad_phi_mag (in):  gradient magnitude of phi
+    *    *_gb        (in):   index range for ghostbox
+    *    *_fb        (in):   index range for fillbox
+    *    dx,dy,dz    (in):   grid spacing
+    *
+    *   NOTES: Data array 'kappa' assumed pre-allocated
+    *
+    */
+    """
+
+    cdef:
+        int _ilo_grad_phi_gb = ilo_grad_phi_gb
+        int _ihi_grad_phi_gb = ihi_grad_phi_gb
+        int _jlo_grad_phi_gb = jlo_grad_phi_gb
+        int _jhi_grad_phi_gb = jhi_grad_phi_gb
+        int _klo_grad_phi_gb = klo_grad_phi_gb
+        int _khi_grad_phi_gb = khi_grad_phi_gb
+        int _ilo_phi_gb = ilo_phi_gb
+        int _ihi_phi_gb = ihi_phi_gb
+        int _jlo_phi_gb = jlo_phi_gb
+        int _jhi_phi_gb = jhi_phi_gb
+        int _klo_phi_gb = klo_phi_gb
+        int _khi_phi_gb = khi_phi_gb
+        int _ilo_kappa_fb = ilo_kappa_fb
+        int _ihi_kappa_fb = ihi_kappa_fb
+        int _jlo_kappa_fb = jlo_kappa_fb
+        int _jhi_kappa_fb = jhi_kappa_fb
+        int _klo_kappa_fb = klo_kappa_fb
+        int _khi_kappa_fb = khi_kappa_fb
+        int _ilo_kappa_gb = ilo_kappa_gb
+        int _ihi_kappa_gb = ihi_kappa_gb
+        int _jlo_kappa_gb = jlo_kappa_gb
+        int _jhi_kappa_gb = jhi_kappa_gb
+        int _klo_kappa_gb = klo_kappa_gb
+        int _khi_kappa_gb = khi_kappa_gb
+        double _dx = dx
+        double _dy = dy
+        double _dz = dz
+
+    lsm3dcomputegaussiancurvatureorder2_(<double *> kappa.data,
+        &_ilo_kappa_gb, &_ihi_kappa_gb,
+        &_jlo_kappa_gb,  &_jhi_kappa_gb,
+        &_klo_kappa_gb, &_khi_kappa_gb,
+        <double *> phi.data,
+        &_ilo_phi_gb,  &_ihi_phi_gb,
+        &_jlo_phi_gb,  &_jhi_phi_gb,
+        &_klo_phi_gb,  &_khi_phi_gb,
+        <double *> phi_x.data, <double *> phi_y.data, <double *> phi_z.data,
+        <double *> grad_phi_mag.data,
+        &_ilo_grad_phi_gb,  &_ihi_grad_phi_gb,
+        &_jlo_grad_phi_gb,  &_jhi_grad_phi_gb,
+        &_klo_grad_phi_gb, &_khi_grad_phi_gb,
+        &_ilo_kappa_fb,  &_ihi_kappa_fb,
+        &_jlo_kappa_fb,  &_jhi_kappa_fb,
+        &_klo_kappa_fb, &_khi_kappa_fb,
+        &_dx,  &_dy,  &_dz)
 
     return kappa

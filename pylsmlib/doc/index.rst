@@ -18,6 +18,10 @@ Usage
 
 .. autofunction:: pylsmlib.computeMeanCurvatureLocal
 
+.. autofunction:: pylsmlib.computeMeanCurvature
+
+.. autofunction:: pylsmlib.computeGaussianCurvature
+
 .. autofunction:: pylsmlib.computeSignedUnitNormal
 
 Doctests

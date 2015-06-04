@@ -4,6 +4,8 @@ from lsmlib import solveEikonalEquation3d_
 from lsmlib import lsm3dcomputesignedunitnormal
 from lsmlib import lsm3dsurfaceareazerolevelset
 from lsmlib import lsm3dcomputemeancurvatureorder2local
+from lsmlib import lsm3dcomputemeancurvatureorder2
+from lsmlib import lsm3dcomputegaussiancurvatureorder2
 import numpy as np
 
 __docformat__ = 'restructuredtext'
@@ -253,6 +255,172 @@ def computeMeanCurvatureLocal(phi0, phi_x, phi_y, phi_z,
 
 
 
+def computeMeanCurvature(phi0, phi_x, phi_y, phi_z,
+                            kappa, grad_phi_mag, gbKappaLims,
+                            gbGradPhiLims, gbPhiLims, fbKappaLims,
+                            dx=1., order=2):
+    r"""
+
+      Computes mean curvature
+
+      .. math::
+
+        \kappa = ( \phi_{xx}\phi_y^2 + \phi_{yy}\phi_x^2 - 2\phi_{xy}\phi_x\phi_y +
+                    \phi_{xx}\phi_z^2 + \phi_{zz}\phi_x^2 - 2\phi_{xz}\phi_x\phi_z +\\
+                    \phi_{yy}\phi_z^2 + \phi_{zz}\phi_y^2 - 2\phi_{yz}\phi_y\phi_z )
+                  ( | \nabla \phi | ^ 3 )
+
+      Standard centered 27 point stencil, second order differencing used.
+      First order derivatives assumed precomputed.
+
+      :Parameters:
+
+        - `kappa`: curvature data array
+        - `phi0`:  level set function
+        - `phi_*`:  first order derivatives of :math:`\phi`
+        - `grad_phi_mag`:  gradient magnitude of :math:`\phi`
+        - `*_gb`:   index range for ghostbox
+        - `*_fb`:   index range for fillbox
+        - `dx`:   grid spacing
+
+    :Returns:
+
+        - `kappa`: curvature data array
+
+    """
+
+    nx, ny, nz, dx, dy, dz, shape, phi0 = get3dShape(phi0, dx, order)
+    ilo_kappa_gb = gbKappaLims[0]
+    ihi_kappa_gb = gbKappaLims[1]
+    jlo_kappa_gb = gbKappaLims[2]
+    jhi_kappa_gb = gbKappaLims[3]
+    klo_kappa_gb = gbKappaLims[4]
+    khi_kappa_gb = gbKappaLims[5]
+
+    ilo_grad_phi_gb = gbGradPhiLims[0]
+    ihi_grad_phi_gb = gbGradPhiLims[1]
+    jlo_grad_phi_gb = gbGradPhiLims[2]
+    jhi_grad_phi_gb = gbGradPhiLims[3]
+    klo_grad_phi_gb = gbGradPhiLims[4]
+    khi_grad_phi_gb = gbGradPhiLims[5]
+
+    ilo_phi_gb = gbPhiLims[0]
+    ihi_phi_gb = gbPhiLims[1]
+    jlo_phi_gb = gbPhiLims[2]
+    jhi_phi_gb = gbPhiLims[3]
+    klo_phi_gb = gbPhiLims[4]
+    khi_phi_gb = gbPhiLims[5]
+
+    ilo_kappa_fb = fbKappaLims[0]
+    ihi_kappa_fb = fbKappaLims[1]
+    jlo_kappa_fb = fbKappaLims[2]
+    jhi_kappa_fb = fbKappaLims[3]
+    klo_kappa_fb = fbKappaLims[4]
+    khi_kappa_fb = fbKappaLims[5]
+
+    kappa = lsm3dcomputemeancurvatureorder2(kappa.flatten(),
+                          ilo_kappa_gb, ihi_kappa_gb, jlo_kappa_gb,
+                          jhi_kappa_gb, klo_kappa_gb, khi_kappa_gb,
+                          phi0.flatten(),
+                          ilo_phi_gb, ihi_phi_gb, jlo_phi_gb,
+                          jhi_phi_gb, klo_phi_gb, khi_phi_gb,
+                          phi_x.flatten(), phi_y.flatten(), phi_z.flatten(),
+                          grad_phi_mag.flatten(),
+                          ilo_grad_phi_gb, ihi_grad_phi_gb,
+                          jlo_grad_phi_gb, jhi_grad_phi_gb,
+                          klo_grad_phi_gb, khi_grad_phi_gb,
+                          ilo_kappa_fb, ihi_kappa_fb, jlo_kappa_fb,
+                          jhi_kappa_fb, klo_kappa_fb, khi_kappa_fb,
+                          nx=nx, ny=ny, nz=nz, dx=dx, dy=dy, dz=dz)
+
+    return kappa.reshape(shape)
+
+
+def computeGaussianCurvature(phi0, phi_x, phi_y, phi_z,
+                            kappa, grad_phi_mag, gbKappaLims,
+                            gbGradPhiLims, gbPhiLims, fbKappaLims,
+                            dx=1., order=2):
+    r"""
+
+      Computes Gaussian curvature
+
+      .. math::
+
+        \kappa = [  \phi_x^2(\phi_{yy}\phi_{zz} - \phi_{yz}^2) +
+                     \phi_y^2(\phi_{xx}\phi_{zz} - \phi_{xz}^2) +
+                     \phi_z^2(\phi_{xx}\phi_{yy} - \phi_{xy}^2) + \\
+                 2( \phi_x\phi_y(\phi_{xz}\phi_{yz} - \phi_{xy}\phi_{zz}) +
+                     \phi_y\phi_z(\phi_{xy}\phi_{xz} - \phi_{yz}\phi_{xx}) +
+                     \phi_x\phi_z(\phi_{xy}\phi_{yz} - \phi_{xz}\phi_{yy}) ) ] /
+                  ( | \nabla \phi | ^ 4 )
+
+      Standard centered 27 point stencil, second order differencing used.
+      First order derivatives assumed precomputed.
+
+      :Parameters:
+
+        - `kappa`: curvature data array
+        - `phi0`:  level set function
+        - `phi_*`:  first order derivatives of :math:`\phi`
+        - `grad_phi_mag`:  gradient magnitude of :math:`\phi`
+        - `*_gb`:   index range for ghostbox
+        - `*_fb`:   index range for fillbox
+        - `dx`:   grid spacing
+
+    :Returns:
+
+        - `kappa`: curvature data array
+
+    """
+
+    nx, ny, nz, dx, dy, dz, shape, phi0 = get3dShape(phi0, dx, order)
+    ilo_kappa_gb = gbKappaLims[0]
+    ihi_kappa_gb = gbKappaLims[1]
+    jlo_kappa_gb = gbKappaLims[2]
+    jhi_kappa_gb = gbKappaLims[3]
+    klo_kappa_gb = gbKappaLims[4]
+    khi_kappa_gb = gbKappaLims[5]
+
+    ilo_grad_phi_gb = gbGradPhiLims[0]
+    ihi_grad_phi_gb = gbGradPhiLims[1]
+    jlo_grad_phi_gb = gbGradPhiLims[2]
+    jhi_grad_phi_gb = gbGradPhiLims[3]
+    klo_grad_phi_gb = gbGradPhiLims[4]
+    khi_grad_phi_gb = gbGradPhiLims[5]
+
+    ilo_phi_gb = gbPhiLims[0]
+    ihi_phi_gb = gbPhiLims[1]
+    jlo_phi_gb = gbPhiLims[2]
+    jhi_phi_gb = gbPhiLims[3]
+    klo_phi_gb = gbPhiLims[4]
+    khi_phi_gb = gbPhiLims[5]
+
+    ilo_kappa_fb = fbKappaLims[0]
+    ihi_kappa_fb = fbKappaLims[1]
+    jlo_kappa_fb = fbKappaLims[2]
+    jhi_kappa_fb = fbKappaLims[3]
+    klo_kappa_fb = fbKappaLims[4]
+    khi_kappa_fb = fbKappaLims[5]
+
+    kappa = lsm3dcomputegaussiancurvatureorder2(kappa.flatten(),
+                          ilo_kappa_gb, ihi_kappa_gb, jlo_kappa_gb,
+                          jhi_kappa_gb, klo_kappa_gb, khi_kappa_gb,
+                          phi0.flatten(),
+                          ilo_phi_gb, ihi_phi_gb, jlo_phi_gb,
+                          jhi_phi_gb, klo_phi_gb, khi_phi_gb,
+                          phi_x.flatten(), phi_y.flatten(), phi_z.flatten(),
+                          grad_phi_mag.flatten(),
+                          ilo_grad_phi_gb, ihi_grad_phi_gb,
+                          jlo_grad_phi_gb, jhi_grad_phi_gb,
+                          klo_grad_phi_gb, khi_grad_phi_gb,
+                          ilo_kappa_fb, ihi_kappa_fb, jlo_kappa_fb,
+                          jhi_kappa_fb, klo_kappa_fb, khi_kappa_fb,
+                          nx=nx, ny=ny, nz=nz, dx=dx, dy=dy, dz=dz)
+
+    return kappa.reshape(shape)
+
+
+
 def computeSignedUnitNormal(phi0, phi_x, phi_y, phi_z, gbNormalLims,
                             gbGradPhiLims, gbPhiLims, fbLims, dx=1., order=2):
     r"""
@@ -348,8 +516,8 @@ def computeDistanceFunction(phi0, dx=1., order=2):
       - the calculated distance function, :math:`\phi`
 
     """
-    nx, ny, dx, dy, shape, phi0 = getShape(phi0, dx, order)
-    return computeDistanceFunction3d_(phi0.flatten(), nx=nx, ny=ny, dx=dx, dy=dy, order=order).reshape(shape)
+    nx, ny, nz, dx, dy, dz, shape, phi0 = get3dShape(phi0, dx, order)
+    return computeDistanceFunction3d_(phi0.flatten(), nx=nx, ny=ny, nz=nz, dx=dx, dy=dy, dz=dz, order=order).reshape(shape)
 
 def computeExtensionFields(phi0, speed, dx=1., order=2, mask=None, ext_mask=None, ):
     r"""
@@ -1002,9 +1170,9 @@ def testing():
     >>> phi[0, 0, 0] = -1.0
     >>> dx           = 2.0 / (N - 1)
     >>> d            = distance(phi, dx)
-    Traceback (most recent call last):
-      ...
-    Exception: 3D meshes not yet implemented
+    >>> ##Traceback (most recent call last):
+    >>> ##  ...
+    >>> ##Exception: 3D meshes not yet implemented
     >>> exact        = np.sqrt((X + 1) ** 2 +
     ...                        (Y + 1)[:, np.newaxis] ** 2 +
     ...                        (Z + 1)[:, np.newaxis, np.newaxis] ** 2)
@@ -1095,6 +1263,7 @@ def testing():
     ...                                [ 1.,  1., -1., -1.],
     ...                                [ 1.,  1., -1., -1.],
     ...                                [ 1.,  1., -1., -1.]]])
+    >>> phi = computeDistanceFunction(phi, dx=0.5)
     >>> phix = np.zeros_like(phi, dtype=np.float64)
     >>> phix[:,1,2] = np.ones_like(phix[:,1,2])
     >>> lim = np.array([0,3,0,3,0,1], dtype=np.intc)
@@ -1109,6 +1278,7 @@ def testing():
     ...                                [ 1.,  0., -0.1, -1.],
     ...                                [ 0.,  -1., -1., -1.],
     ...                                [ 0.,  -1., -1.9, -6.]]])
+    >>> phi = computeDistanceFunction(phi, dx=0.5)
     >>> phix = np.zeros_like(phi, dtype=np.float64)
     >>> phix[0,:,2] = np.ones_like(phix[0,:,2])
     >>> print(surfaceAreaZeroLevelSet(phi,phix,phix,phix,lim,lim,gblim, epsilon=2.))
@@ -1126,6 +1296,7 @@ def testing():
     ...                                [ 1.,  1., -1., -1.],
     ...                                [ 1.,  1., -1., -1.],
     ...                                [ 1.,  1., -1., -1.]]])
+    >>> phi = computeDistanceFunction(phi, dx=0.5)
     >>> phix = np.zeros_like(phi, dtype=np.float64)
     >>> phix[:,1,2] = np.ones_like(phix[:,1,2])
     >>> kappa = np.zeros_like(phi, dtype=np.float64)
@@ -1154,6 +1325,7 @@ def testing():
     ...                                [ 1.,  1., -0.1, -1.],
     ...                                [ 1.,  -1., -1., -1.],
     ...                                [ 1.,  -1., -1.9, -6.]]])
+    >>> phi = computeDistanceFunction(phi, dx=0.5)
     >>> phix = np.zeros_like(phi, dtype=np.float64)
     >>> phix[0,:,2] = np.ones_like(phix[0,:,2])
     >>> print(computeMeanCurvatureLocal(phi, phix, phix, phix, kappa,
@@ -1162,7 +1334,84 @@ def testing():
     ...         lim, lim, lim, lim, dx=0.5))
 
 
-    computeSignedUnitNormal
+    ``computeMeanCurvature``
+
+    >>> phi = np.array([[[-1., -1., -1., -1.],
+    ...                                [ 1.,  1., -1., -1.],
+    ...                                [ 1.,  1., -1., -1.],
+    ...                                [ 1.,  1., -1., -1.]],
+    ...                                [[-1., -1., -1., -1.],
+    ...                                [ 1.,  1., -1., -1.],
+    ...                                [ 1.,  1., -1., -1.],
+    ...                                [ 1.,  1., -1., -1.]]])
+    >>> phi = computeDistanceFunction(phi, dx=0.5)
+    >>> phix = np.zeros_like(phi, dtype=np.float64)
+    >>> phix[:,1,2] = np.ones_like(phix[:,1,2])
+    >>> kappa = np.zeros_like(phi, dtype=np.float64)
+    >>> isinstance(kappa[1,2,3], np.float64)
+    True
+    >>> isinstance(lim[5], np.intc)
+    True
+    >>> a = np.linspace(0,3,4, dtype=np.intc)
+    >>> isinstance(a[3], np.intc)
+    True
+    >>> print(computeMeanCurvature(phi, phix, phix, phix, kappa,
+    ...         phix, lim, lim, lim, lim, dx=0.5))
+
+    >>> phi = np.array([[[-1., -1., -1., -1.],
+    ...                                [ 8.,  5., -1., -1.],
+    ...                                [ 10.,  1., -1., -1.],
+    ...                                [ 1.,  1., -10., -15.]],
+    ...                                [[-1., -1, -1., -1.],
+    ...                                [ 1.,  1., -0.1, -1.],
+    ...                                [ 1.,  -1., -1., -1.],
+    ...                                [ 1.,  -1., -1.9, -6.]]])
+    >>> phi = computeDistanceFunction(phi, dx=0.5)
+    >>> phix = np.zeros_like(phi, dtype=np.float64)
+    >>> phix[0,:,2] = np.ones_like(phix[0,:,2])
+    >>> print(computeMeanCurvature(phi, phix, phix, phix, kappa,
+    ...         phix, lim, lim, lim, lim, dx=0.5))
+
+    ``computeGaussianCurvature``
+
+    >>> phi = np.array([[[-1., -1., -1., -1.],
+    ...                                [ 1.,  1., -1., -1.],
+    ...                                [ 1.,  1., -1., -1.],
+    ...                                [ 1.,  1., -1., -1.]],
+    ...                                [[-1., -1., -1., -1.],
+    ...                                [ 1.,  1., -1., -1.],
+    ...                                [ 1.,  1., -1., -1.],
+    ...                                [ 1.,  1., -1., -1.]]])
+    >>> phi = computeDistanceFunction(phi, dx=0.5)
+    >>> phix = np.zeros_like(phi, dtype=np.float64)
+    >>> phix[:,1,2] = np.ones_like(phix[:,1,2])
+    >>> kappa = np.zeros_like(phi, dtype=np.float64)
+    >>> isinstance(kappa[1,2,3], np.float64)
+    True
+    >>> isinstance(lim[5], np.intc)
+    True
+    >>> a = np.linspace(0,3,4, dtype=np.intc)
+    >>> isinstance(a[3], np.intc)
+    True
+    >>> print(computeGaussianCurvature(phi, phix, phix, phix, kappa,
+    ...         phix, lim, lim, lim, lim, dx=0.5))
+
+    >>> phi = np.array([[[-1., -1., -1., -1.],
+    ...                                [ 8.,  5., -1., -1.],
+    ...                                [ 10.,  1., -1., -1.],
+    ...                                [ 1.,  1., -10., -15.]],
+    ...                                [[-1., -1, -1., -1.],
+    ...                                [ 1.,  1., -0.1, -1.],
+    ...                                [ 1.,  -1., -1., -1.],
+    ...                                [ 1.,  -1., -1.9, -6.]]])
+    >>> phi = computeDistanceFunction(phi, dx=0.5)
+    >>> phix = np.zeros_like(phi, dtype=np.float64)
+    >>> phix[0,:,2] = np.ones_like(phix[0,:,2])
+    >>> print(computeGaussianCurvature(phi, phix, phix, phix, kappa,
+    ...         phix, lim, lim, lim, lim, dx=0.5))
+
+
+    ``computeSignedUnitNormal``
 
     This doesn't work either, but does at least return different answers for the two tests, implying it's doing something.
 
@@ -1174,6 +1423,7 @@ def testing():
     ...                                [ 1.,  1., -1., -1.],
     ...                                [ 1.,  1., -1., -1.],
     ...                                [ 1.,  1., -1., -1.]]])
+    >>> phi = computeDistanceFunction(phi, dx=0.5)
     >>> phix = np.zeros_like(phi, dtype=np.float64)
     >>> phix[:,1,2] = np.ones_like(phix[:,1,2])
     >>> print(computeSignedUnitNormal(phi,phix, phix, phix,
@@ -1187,6 +1437,7 @@ def testing():
     ...                                [ 1.,  1., -0.1, -1.],
     ...                                [ 1.,  -1., -1., -1.],
     ...                                [ 1.,  -1., -1.9, -6.]]])
+    >>> phi = computeDistanceFunction(phi, dx=0.5)
     >>> phix = np.zeros_like(phi, dtype=np.float64)
     >>> phix[0,:,2] = np.ones_like(phix[0,:,2])
     >>> print(computeSignedUnitNormal(phi,phix, phix, phix,
