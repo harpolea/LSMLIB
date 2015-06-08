@@ -1250,12 +1250,7 @@ def testing():
     (0.5, 0.5, 0.5)
     >>> np.testing.assert_allclose(b, c)
 
-
-    ``surfaceAreaZeroLevelSet``
-
-    This doesn't work - there is something up with the pointers as the surface area is passed by reference in ``lsmlib.pyx`` to the C function, but not updated by it. I strongly suspect it has something to do with the way the C function is called - I can change the ``#define`` statement in ``lsm_geometry3d.h`` so that it has a different name (e.g. ``lsm3dComputeSignedUnitNormal`` rather than ``lsm3dcomputesignedunitnormal_``), recompile and it will still run. If you look at the examples (e.g. ``curvature_model3d.c``), the C functions are all called using the CAPITAL_NAMES rather than the ones in the ``#define`` statements.
-
-    >>> phi = np.array([[[-1., -1., -1., -1.],
+    >>> phi1 = np.array([[[-1., -1., -1., -1.],
     ...                                [ 1.,  1., -1., -1.],
     ...                                [ 1.,  1., -1., -1.],
     ...                                [ 1.,  1., -1., -1.]],
@@ -1263,14 +1258,14 @@ def testing():
     ...                                [ 1.,  1., -1., -1.],
     ...                                [ 1.,  1., -1., -1.],
     ...                                [ 1.,  1., -1., -1.]]])
-    >>> phi = computeDistanceFunction(phi, dx=0.5)
-    >>> phix = np.zeros_like(phi, dtype=np.float64)
-    >>> phix[:,1,2] = np.ones_like(phix[:,1,2])
+    >>> phi1 = computeDistanceFunction(phi1, dx=1.)
+    >>> print(phi1)
+
+    >>> phix1 = np.zeros_like(phi1, dtype=np.float64)
+    >>> phix1[:,1,2] = np.ones_like(phix1[:,1,2])
     >>> lim = np.array([0,3,0,3,0,1], dtype=np.intc)
     >>> gblim = np.zeros_like(lim)
-    >>> print(surfaceAreaZeroLevelSet(phi,phix,phix,phix,lim,lim,gblim))
-
-    >>> phi = np.array([[[-1., -1., -1., -1.],
+    >>> phi2 = np.array([[[-1., -1., -1., -1.],
     ...                                [ 8.,  0., -1., -1.],
     ...                                [ 10.,  0., -1., -1.],
     ...                                [ 1.,  0., -10., -15.]],
@@ -1278,31 +1273,30 @@ def testing():
     ...                                [ 1.,  0., -0.1, -1.],
     ...                                [ 0.,  -1., -1., -1.],
     ...                                [ 0.,  -1., -1.9, -6.]]])
-    >>> phi = computeDistanceFunction(phi, dx=0.5)
-    >>> phix = np.zeros_like(phi, dtype=np.float64)
-    >>> phix[0,:,2] = np.ones_like(phix[0,:,2])
-    >>> print(surfaceAreaZeroLevelSet(phi,phix,phix,phix,lim,lim,gblim, epsilon=2.))
+    >>> phi2 = computeDistanceFunction(phi2, dx=0.5)
+    >>> print(phi2)
+
+    >>> phix2 = np.zeros_like(phi2, dtype=np.float64)
+    >>> phix2[0,:,2] = np.ones_like(phix2[0,:,2])
+
+
+    ``surfaceAreaZeroLevelSet``
+
+    This doesn't work - there is something up with the pointers as the surface area is passed by reference in ``lsmlib.pyx`` to the C function, but not updated by it. I strongly suspect it has something to do with the way the C function is called - I can change the ``#define`` statement in ``lsm_geometry3d.h`` so that it has a different name (e.g. ``lsm3dComputeSignedUnitNormal`` rather than ``lsm3dcomputesignedunitnormal_``), recompile and it will still run. If you look at the examples (e.g. ``curvature_model3d.c``), the C functions are all called using the CAPITAL_NAMES rather than the ones in the ``#define`` statements.
+
+    >>> print(surfaceAreaZeroLevelSet(phi1,phix1,phix1,phix1,lim,lim,gblim))
+
+    >>> print(surfaceAreaZeroLevelSet(phi2,phix2,phix2,phix2,lim,lim,gblim, dx=0.5, epsilon=2.))
 
 
     ``computeMeanCurvatureLocal``
 
     This doesn't work either, but does at least return different answers for the two tests, implying it's doing something.
 
-    >>> phi = np.array([[[-1., -1., -1., -1.],
-    ...                                [ 1.,  1., -1., -1.],
-    ...                                [ 1.,  1., -1., -1.],
-    ...                                [ 1.,  1., -1., -1.]],
-    ...                                [[-1., -1., -1., -1.],
-    ...                                [ 1.,  1., -1., -1.],
-    ...                                [ 1.,  1., -1., -1.],
-    ...                                [ 1.,  1., -1., -1.]]])
-    >>> phi = computeDistanceFunction(phi, dx=0.5)
-    >>> phix = np.zeros_like(phi, dtype=np.float64)
-    >>> phix[:,1,2] = np.ones_like(phix[:,1,2])
-    >>> kappa = np.zeros_like(phi, dtype=np.float64)
+    >>> kappa = np.zeros_like(phi1, dtype=np.float64)
     >>> isinstance(kappa[1,2,3], np.float64)
     True
-    >>> #narrow_band = np.chararray(phi.shape)
+    >>> #narrow_band = np.chararray(phi1.shape)
     >>> #narrow_band[:] = '0'
     >>> #narrow_band = narrow_band.tostring()
     >>> narrow_band = '0'
@@ -1312,136 +1306,43 @@ def testing():
     >>> a = np.linspace(0,3,4, dtype=np.intc)
     >>> isinstance(a[3], np.intc)
     True
-    >>> print(computeMeanCurvatureLocal(phi, phix, phix, phix, kappa,
-    ...         phix, lim,
+    >>> print(computeMeanCurvatureLocal(phi1, phix1, phix1, phix1, kappa,
+    ...         phix1, lim,
     ...         a, a, a, narrow_band, mark_fb,
-    ...         lim, lim, lim, lim, dx=0.5))
+    ...         lim, lim, lim, lim))
 
-    >>> phi = np.array([[[-1., -1., -1., -1.],
-    ...                                [ 8.,  5., -1., -1.],
-    ...                                [ 10.,  1., -1., -1.],
-    ...                                [ 1.,  1., -10., -15.]],
-    ...                                [[-1., -1, -1., -1.],
-    ...                                [ 1.,  1., -0.1, -1.],
-    ...                                [ 1.,  -1., -1., -1.],
-    ...                                [ 1.,  -1., -1.9, -6.]]])
-    >>> phi = computeDistanceFunction(phi, dx=0.5)
-    >>> phix = np.zeros_like(phi, dtype=np.float64)
-    >>> phix[0,:,2] = np.ones_like(phix[0,:,2])
-    >>> print(computeMeanCurvatureLocal(phi, phix, phix, phix, kappa,
-    ...         phix, lim,
+    >>> print(computeMeanCurvatureLocal(phi2, phix2, phix2, phix2, kappa,
+    ...         phix2, lim,
     ...         a, a, a, narrow_band, mark_fb,
     ...         lim, lim, lim, lim, dx=0.5))
 
 
     ``computeMeanCurvature``
 
-    >>> phi = np.array([[[-1., -1., -1., -1.],
-    ...                                [ 1.,  1., -1., -1.],
-    ...                                [ 1.,  1., -1., -1.],
-    ...                                [ 1.,  1., -1., -1.]],
-    ...                                [[-1., -1., -1., -1.],
-    ...                                [ 1.,  1., -1., -1.],
-    ...                                [ 1.,  1., -1., -1.],
-    ...                                [ 1.,  1., -1., -1.]]])
-    >>> phi = computeDistanceFunction(phi, dx=0.5)
-    >>> phix = np.zeros_like(phi, dtype=np.float64)
-    >>> phix[:,1,2] = np.ones_like(phix[:,1,2])
-    >>> kappa = np.zeros_like(phi, dtype=np.float64)
-    >>> isinstance(kappa[1,2,3], np.float64)
-    True
-    >>> isinstance(lim[5], np.intc)
-    True
-    >>> a = np.linspace(0,3,4, dtype=np.intc)
-    >>> isinstance(a[3], np.intc)
-    True
-    >>> print(computeMeanCurvature(phi, phix, phix, phix, kappa,
-    ...         phix, lim, lim, lim, lim, dx=0.5))
+    >>> print(computeMeanCurvature(phi1, phix1, phix1, phix1, kappa,
+    ...         phix1, lim, lim, lim, lim))
 
-    >>> phi = np.array([[[-1., -1., -1., -1.],
-    ...                                [ 8.,  5., -1., -1.],
-    ...                                [ 10.,  1., -1., -1.],
-    ...                                [ 1.,  1., -10., -15.]],
-    ...                                [[-1., -1, -1., -1.],
-    ...                                [ 1.,  1., -0.1, -1.],
-    ...                                [ 1.,  -1., -1., -1.],
-    ...                                [ 1.,  -1., -1.9, -6.]]])
-    >>> phi = computeDistanceFunction(phi, dx=0.5)
-    >>> phix = np.zeros_like(phi, dtype=np.float64)
-    >>> phix[0,:,2] = np.ones_like(phix[0,:,2])
-    >>> print(computeMeanCurvature(phi, phix, phix, phix, kappa,
-    ...         phix, lim, lim, lim, lim, dx=0.5))
+    >>> print(computeMeanCurvature(phi2, phix2, phix2, phix2, kappa,
+    ...         phix2, lim, lim, lim, lim, dx=0.5))
 
     ``computeGaussianCurvature``
 
-    >>> phi = np.array([[[-1., -1., -1., -1.],
-    ...                                [ 1.,  1., -1., -1.],
-    ...                                [ 1.,  1., -1., -1.],
-    ...                                [ 1.,  1., -1., -1.]],
-    ...                                [[-1., -1., -1., -1.],
-    ...                                [ 1.,  1., -1., -1.],
-    ...                                [ 1.,  1., -1., -1.],
-    ...                                [ 1.,  1., -1., -1.]]])
-    >>> phi = computeDistanceFunction(phi, dx=0.5)
-    >>> phix = np.zeros_like(phi, dtype=np.float64)
-    >>> phix[:,1,2] = np.ones_like(phix[:,1,2])
-    >>> kappa = np.zeros_like(phi, dtype=np.float64)
-    >>> isinstance(kappa[1,2,3], np.float64)
-    True
-    >>> isinstance(lim[5], np.intc)
-    True
-    >>> a = np.linspace(0,3,4, dtype=np.intc)
-    >>> isinstance(a[3], np.intc)
-    True
-    >>> print(computeGaussianCurvature(phi, phix, phix, phix, kappa,
-    ...         phix, lim, lim, lim, lim, dx=0.5))
+    >>> print(computeGaussianCurvature(phi1, phix1, phix1, phix1, kappa,
+    ...         phix1, lim, lim, lim, lim))
 
-    >>> phi = np.array([[[-1., -1., -1., -1.],
-    ...                                [ 8.,  5., -1., -1.],
-    ...                                [ 10.,  1., -1., -1.],
-    ...                                [ 1.,  1., -10., -15.]],
-    ...                                [[-1., -1, -1., -1.],
-    ...                                [ 1.,  1., -0.1, -1.],
-    ...                                [ 1.,  -1., -1., -1.],
-    ...                                [ 1.,  -1., -1.9, -6.]]])
-    >>> phi = computeDistanceFunction(phi, dx=0.5)
-    >>> phix = np.zeros_like(phi, dtype=np.float64)
-    >>> phix[0,:,2] = np.ones_like(phix[0,:,2])
-    >>> print(computeGaussianCurvature(phi, phix, phix, phix, kappa,
-    ...         phix, lim, lim, lim, lim, dx=0.5))
+    >>> print(computeGaussianCurvature(phi2, phix2, phix2, phix2, kappa,
+    ...         phix2, lim, lim, lim, lim, dx=0.5))
 
 
     ``computeSignedUnitNormal``
 
     This doesn't work either, but does at least return different answers for the two tests, implying it's doing something.
 
-    >>> phi = np.array([[[-1., -1., -1., -1.],
-    ...                                [ 1.,  1., -1., -1.],
-    ...                                [ 1.,  1., -1., -1.],
-    ...                                [ 1.,  1., -1., -1.]],
-    ...                                [[-1., -1., -1., -1.],
-    ...                                [ 1.,  1., -1., -1.],
-    ...                                [ 1.,  1., -1., -1.],
-    ...                                [ 1.,  1., -1., -1.]]])
-    >>> phi = computeDistanceFunction(phi, dx=0.5)
-    >>> phix = np.zeros_like(phi, dtype=np.float64)
-    >>> phix[:,1,2] = np.ones_like(phix[:,1,2])
-    >>> print(computeSignedUnitNormal(phi,phix, phix, phix,
+    >>> print(computeSignedUnitNormal(phi1,phix1, phix1, phix1,
     ...                                 lim, lim, lim, lim))
 
-    >>> phi = np.array([[[-1., -1., -1., -1.],
-    ...                                [ 8.,  5., -1., -1.],
-    ...                                [ 10.,  1., -1., -1.],
-    ...                                [ 1.,  1., -10., -15.]],
-    ...                                [[-1., -2.5, -1., -1.],
-    ...                                [ 1.,  1., -0.1, -1.],
-    ...                                [ 1.,  -1., -1., -1.],
-    ...                                [ 1.,  -1., -1.9, -6.]]])
-    >>> phi = computeDistanceFunction(phi, dx=0.5)
-    >>> phix = np.zeros_like(phi, dtype=np.float64)
-    >>> phix[0,:,2] = np.ones_like(phix[0,:,2])
-    >>> print(computeSignedUnitNormal(phi,phix, phix, phix,
-    ...                                 lim, lim, lim, lim))
+    >>> print(computeSignedUnitNormal(phi2,phix2, phix2, phix2,
+    ...                                 lim, lim, lim, lim, dx=0.5))
 
     """
 
