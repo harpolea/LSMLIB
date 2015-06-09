@@ -208,3 +208,31 @@ cdef extern void lsm3dcomputegaussiancurvatureorder2_(
 	double *dy,
 	double *dz
 )
+
+cdef extern void lsm3dcentralgradorder4_(
+	double *phi_x,
+	double *phi_y,
+	double *phi_z,
+	const int *ilo_grad_phi_gb,
+	const int *ihi_grad_phi_gb,
+	const int *jlo_grad_phi_gb,
+	const int *jhi_grad_phi_gb,
+	const int *klo_grad_phi_gb,
+	const int *khi_grad_phi_gb,
+	const double *phi,
+	const int *ilo_phi_gb,
+	const int *ihi_phi_gb,
+	const int *jlo_phi_gb,
+	const int *jhi_phi_gb,
+	const int *klo_phi_gb,
+	const int *khi_phi_gb,
+	const int *ilo_fb,
+	const int *ihi_fb,
+	const int *jlo_fb,
+	const int *jhi_fb,
+	const int *klo_fb,
+	const int *khi_fb,
+	const double *dx,
+	const double *dy,
+	const double *dz
+)

@@ -6,6 +6,7 @@ from lsmlib import lsm3dsurfaceareazerolevelset
 from lsmlib import lsm3dcomputemeancurvatureorder2local
 from lsmlib import lsm3dcomputemeancurvatureorder2
 from lsmlib import lsm3dcomputegaussiancurvatureorder2
+from lsmlib import lsm3dcentralgradorder4
 import numpy as np
 
 __docformat__ = 'restructuredtext'
@@ -491,6 +492,69 @@ def computeSignedUnitNormal(phi0, phi_x, phi_y, phi_z, gbNormalLims,
                                 ilo_fb, ihi_fb, jlo_fb, jhi_fb, klo_fb, khi_fb, nx=nx, ny=ny, nz=1, dx=dx, dy=dy, dz=1.)
 
     return normal_x.reshape((ny,nx)), normal_y.reshape((ny,nx)), normal_z.reshape((ny,nx))
+
+
+def centralGradOrder4(phi0, gbGradPhiLims, gbPhiLims, fbLims, dx=1.,
+                        order=2):
+    r"""
+    Computes the fourth-order, central,
+    finite difference approximation to the gradient of :math:`\phi`
+    using the formula:
+
+    .. math::
+
+       \left( \frac{\partial \phi}{\partial x} \right)_i \approx
+          \frac{ -\phi_{i+2} + 8 \phi_{i+1} - 8 \phi_{i-1} + \phi_{i-2} }
+               { 12 dx }
+
+
+
+    :Arguments:
+        - `\phi`:         :math:`\phi`
+        - `dx`, `dy`, `dz`:  grid cell size
+        - `*_gb`:        index range for ghostbox
+        - `*_fb`:        index range for fillbox
+
+    :Returns:
+        - `phi_*`:      components of  :math:`\nabla \phi`
+    """
+
+    nx, ny, nz, dx, dy, dz, shape, phi0 = get3dShape(phi0, dx, order)
+
+    ilo_grad_phi_gb = gbGradPhiLims[0]
+    ihi_grad_phi_gb = gbGradPhiLims[1]
+    jlo_grad_phi_gb = gbGradPhiLims[2]
+    jhi_grad_phi_gb = gbGradPhiLims[3]
+    klo_grad_phi_gb = gbGradPhiLims[4]
+    khi_grad_phi_gb = gbGradPhiLims[5]
+
+    ilo_phi_gb = gbPhiLims[0]
+    ihi_phi_gb = gbPhiLims[1]
+    jlo_phi_gb = gbPhiLims[2]
+    jhi_phi_gb = gbPhiLims[3]
+    klo_phi_gb = gbPhiLims[4]
+    khi_phi_gb = gbPhiLims[5]
+
+    ilo_fb = fbLims[0]
+    ihi_fb = fbLims[1]
+    jlo_fb = fbLims[2]
+    jhi_fb = fbLims[3]
+    klo_fb = fbLims[4]
+    khi_fb = fbLims[5]
+
+    phi_x, phi_y, phi_z = lsm3dcentralgradorder4(ilo_grad_phi_gb,
+                ihi_grad_phi_gb,
+                jlo_grad_phi_gb, jhi_grad_phi_gb,
+                klo_grad_phi_gb, khi_grad_phi_gb,
+                phi0.flatten(),
+                ilo_phi_gb, ihi_phi_gb, jlo_phi_gb,
+                jhi_phi_gb, klo_phi_gb, khi_phi_gb,
+                ilo_fb, ihi_fb, jlo_fb,
+                jhi_fb, klo_fb, khi_fb,
+                nx=nx, ny=ny, nz=nz, dx=dx, dy=dy, dz=dz)
+
+    return phi_x.reshape(shape), phi_y.reshape(shape), phi_z.reshape(shape)
+
 
 def computeDistanceFunction(phi0, dx=1., order=2):
     r"""
@@ -1250,43 +1314,99 @@ def testing():
     (0.5, 0.5, 0.5)
     >>> np.testing.assert_allclose(b, c)
 
-    >>> phi1 = np.array([[[-1., -1., -1., -1.],
-    ...                                [ 1.,  1., -1., -1.],
-    ...                                [ 1.,  1., -1., -1.],
-    ...                                [ 1.,  1., -1., -1.]],
-    ...                                [[-1., -1., -1., -1.],
-    ...                                [ 1.,  1., -1., -1.],
-    ...                                [ 1.,  1., -1., -1.],
-    ...                                [ 1.,  1., -1., -1.]]])
+    >>> phi1 = np.array([[[-1., -1., -1., -1., -1., -1.],
+    ...                   [-1., -1., -1., -1., -1., -1.],
+    ...                   [ 1.,  1., 1.,  1., -1., -1.],
+    ...                   [ 1.,  1., 1.,  1., -1., -1.],
+    ...                   [ 1.,  1., 1.,  1., -1., -1.],
+    ...                   [ 1.,  1., 1.,  1., -1., -1.]],
+    ...                   [[-1., -1., -1., -1., -1., -1.],
+    ...                   [-1., -1., -1., -1., -1., -1.],
+    ...                   [ 1.,  1., 1.,  1., -1., -1.],
+    ...                   [ 1.,  1., 1.,  1., -1., -1.],
+    ...                   [ 1.,  1., 1.,  1., -1., -1.],
+    ...                   [ 1.,  1., 1.,  1., -1., -1.]],
+    ...                   [[-1., -1., -1., -1., -1., -1.],
+    ...                   [-1., -1., -1., -1., -1., -1.],
+    ...                   [ 1.,  1., 1.,  1., -1., -1.],
+    ...                   [ 1.,  1., 1.,  1., -1., -1.],
+    ...                   [ 1.,  1., 1.,  1., -1., -1.],
+    ...                   [ 1.,  1., 1.,  1., -1., -1.]],
+    ...                   [[-1., -1., -1., -1., -1., -1.],
+    ...                   [-1., -1., -1., -1., -1., -1.],
+    ...                   [ 1.,  1., 1.,  1., -1., -1.],
+    ...                   [ 1.,  1., 1.,  1., -1., -1.],
+    ...                   [ 1.,  1., 1.,  1., -1., -1.],
+    ...                   [ 1.,  1., 1.,  1., -1., -1.]],
+    ...                   [[-1., -1., -1., -1., -1., -1.],
+    ...                   [-1., -1., -1., -1., -1., -1.],
+    ...                   [ 1.,  1., 1.,  1., -1., -1.],
+    ...                   [ 1.,  1., 1.,  1., -1., -1.],
+    ...                   [ 1.,  1., 1.,  1., -1., -1.],
+    ...                   [ 1.,  1., 1.,  1., -1., -1.]]])
     >>> phi1 = computeDistanceFunction(phi1, dx=1.)
     >>> print(phi1)
 
     >>> phix1 = np.zeros_like(phi1, dtype=np.float64)
     >>> phix1[:,1,2] = np.ones_like(phix1[:,1,2])
-    >>> lim = np.array([0,3,0,3,0,1], dtype=np.intc)
-    >>> gblim = np.zeros_like(lim)
-    >>> phi2 = np.array([[[-1., -1., -1., -1.],
-    ...                                [ 8.,  0., -1., -1.],
-    ...                                [ 10.,  0., -1., -1.],
-    ...                                [ 1.,  0., -10., -15.]],
-    ...                                [[-1., -1, -1., -1.],
-    ...                                [ 1.,  0., -0.1, -1.],
-    ...                                [ 0.,  -1., -1., -1.],
-    ...                                [ 0.,  -1., -1.9, -6.]]])
+    >>> lim = np.array([1,6,1,6,1,5], dtype=np.intc)
+    >>> fblim = np.array([3,4,3,4,3,3], dtype=np.intc)
+    >>> phi2 = np.array([[[-1., -1., -1., -1., -1., -1.],
+    ...                   [-1., -1., -1., -1., -1., -1.],
+    ...                   [10., 10.,  8.,  0., -1., -1.],
+    ...                   [11., 11., 10.,  0., -1., -1.],
+    ...                   [ 5.,  3., 1.,  0., -10., -15.],
+    ...                   [ 5.,  3., 1.,  0., -10., -15.]],
+    ...                  [[-1., -1., -1., -1., -1., -1.],
+    ...                   [-1., -1., -1., -1., -1., -1.],
+    ...                   [10., 10.,  8.,  0., -1., -1.],
+    ...                   [11., 11., 10.,  0., -1., -1.],
+    ...                   [ 5.,  3., 1.,  0., -10., -15.],
+    ...                   [ 5.,  3., 1.,  0., -10., -15.]],
+    ...                  [[-1., -1., -1., -1., -1., -1.],
+    ...                   [-1., -1., -1., -1., -1., -1.],
+    ...                   [10., 10.,  8.,  0., -1., -1.],
+    ...                   [11., 11., 10.,  0., -1., -1.],
+    ...                   [ 5.,  3., 1.,  0., -10., -15.],
+    ...                   [ 5.,  3., 1.,  0., -10., -15.]],
+    ...                  [[-1., -1., -1., -1., -1., -1.],
+    ...                   [-1., -1., -1., -1., -1., -1.],
+    ...                   [ 3.,  2.,  1.,  0., -0.1, -1.],
+    ...                   [ 3.,  2.,  0.,  -1., -1., -1.],
+    ...                   [ 3.,  2.,  0.,  -1., -1.9, -6.],
+    ...                   [ 3.,  2.,  0.,  -1., -1.9, -6.]],
+    ...                  [[-1., -1., -1., -1., -1., -1.],
+    ...                   [-1., -1., -1., -1., -1., -1.],
+    ...                   [ 3.,  2.,  1.,  0., -0.1, -1.],
+    ...                   [ 3.,  2.,  0.,  -1., -1., -1.],
+    ...                   [ 3.,  2.,  0.,  -1., -1.9, -6.],
+    ...                   [ 3.,  2.,  0.,  -1., -1.9, -6.]]])
     >>> phi2 = computeDistanceFunction(phi2, dx=0.5)
     >>> print(phi2)
 
     >>> phix2 = np.zeros_like(phi2, dtype=np.float64)
     >>> phix2[0,:,2] = np.ones_like(phix2[0,:,2])
 
+    ``centralGradOrder4``
+
+    >>> phi_x, phi_y, phi_z = centralGradOrder4(phi1, lim, lim, fblim)
+    >>> print(phi_x)
+
+    >>> print(phi_y)
+
+    >>> print(phi_z)
+
+    >>> phi_x, phi_y, phi_z = centralGradOrder4(phi2, lim, lim, fblim, dx=0.5)
+    >>> print(phi_z)
+
 
     ``surfaceAreaZeroLevelSet``
 
     This doesn't work - there is something up with the pointers as the surface area is passed by reference in ``lsmlib.pyx`` to the C function, but not updated by it. I strongly suspect it has something to do with the way the C function is called - I can change the ``#define`` statement in ``lsm_geometry3d.h`` so that it has a different name (e.g. ``lsm3dComputeSignedUnitNormal`` rather than ``lsm3dcomputesignedunitnormal_``), recompile and it will still run. If you look at the examples (e.g. ``curvature_model3d.c``), the C functions are all called using the CAPITAL_NAMES rather than the ones in the ``#define`` statements.
 
-    >>> print(surfaceAreaZeroLevelSet(phi1,phix1,phix1,phix1,lim,lim,gblim))
+    >>> print(surfaceAreaZeroLevelSet(phi1,phix1,phix1,phix1,lim,lim,fblim))
 
-    >>> print(surfaceAreaZeroLevelSet(phi2,phix2,phix2,phix2,lim,lim,gblim, dx=0.5, epsilon=2.))
+    >>> print(surfaceAreaZeroLevelSet(phi2,phix2,phix2,phix2,lim,lim,fblim, dx=0.5, epsilon=2.))
 
 
     ``computeMeanCurvatureLocal``
@@ -1320,18 +1440,18 @@ def testing():
     ``computeMeanCurvature``
 
     >>> print(computeMeanCurvature(phi1, phix1, phix1, phix1, kappa,
-    ...         phix1, lim, lim, lim, lim))
+    ...         phix1, lim, lim, lim, fblim))
 
     >>> print(computeMeanCurvature(phi2, phix2, phix2, phix2, kappa,
-    ...         phix2, lim, lim, lim, lim, dx=0.5))
+    ...         phix2, lim, lim, lim, fblim, dx=0.5))
 
     ``computeGaussianCurvature``
 
     >>> print(computeGaussianCurvature(phi1, phix1, phix1, phix1, kappa,
-    ...         phix1, lim, lim, lim, lim))
+    ...         phix1, lim, lim, lim, fblim))
 
     >>> print(computeGaussianCurvature(phi2, phix2, phix2, phix2, kappa,
-    ...         phix2, lim, lim, lim, lim, dx=0.5))
+    ...         phix2, lim, lim, lim, fblim, dx=0.5))
 
 
     ``computeSignedUnitNormal``
@@ -1339,10 +1459,11 @@ def testing():
     This doesn't work either, but does at least return different answers for the two tests, implying it's doing something.
 
     >>> print(computeSignedUnitNormal(phi1,phix1, phix1, phix1,
-    ...                                 lim, lim, lim, lim))
+    ...                                 lim, lim, lim, fblim))
 
     >>> print(computeSignedUnitNormal(phi2,phix2, phix2, phix2,
-    ...                                 lim, lim, lim, lim, dx=0.5))
+    ...                                 lim, lim, lim, fblim, dx=0.5))
+
 
     """
 

@@ -12,6 +12,7 @@ from lsmlib cimport lsm3dsurfaceareazerolevelset_
 #from lsmlib cimport LSM3D_SURFACE_AREA_ZERO_LEVEL_SET
 from lsmlib cimport lsm3dcomputemeancurvatureorder2_
 from lsmlib cimport lsm3dcomputegaussiancurvatureorder2_
+from lsmlib cimport lsm3dcentralgradorder4_
 from libc.stdlib cimport malloc, free
 
 def computeDistanceFunction3d_(np.ndarray[double, ndim=1] phi,
@@ -258,7 +259,6 @@ def lsm3dsurfaceareazerolevelset(np.ndarray[double, ndim=1] phi,
         double _epsilon = epsilon
 
     lsm3dsurfaceareazerolevelset_(
-    #LSM3D_SURFACE_AREA_ZERO_LEVEL_SET(
         _surface_area,
         <double *> phi.data,
         &_ilo_phi_gb,  &_ihi_phi_gb,  &_jlo_phi_gb,
@@ -567,3 +567,79 @@ def lsm3dcomputegaussiancurvatureorder2(np.ndarray[double, ndim=1] kappa,
         &_dx,  &_dy,  &_dz)
 
     return kappa
+
+
+def lsm3dcentralgradorder4(int ilo_grad_phi_gb, int ihi_grad_phi_gb,
+            int jlo_grad_phi_gb, int jhi_grad_phi_gb,
+            int klo_grad_phi_gb, int khi_grad_phi_gb,
+            np.ndarray[double, ndim=1] phi,
+            int ilo_phi_gb, int ihi_phi_gb, int jlo_phi_gb,
+            int jhi_phi_gb, int klo_phi_gb, int khi_phi_gb,
+            int ilo_fb, int ihi_fb, int jlo_fb,
+            int jhi_fb, int klo_fb, int khi_fb,
+            nx=1, ny=1, nz=1, dx=1., dy=1., dz=1.):
+    """
+    /*!
+    * LSM3D_CENTRAL_GRAD_ORDER4() computes the fourth-order, central,
+    * finite difference approximation to the gradient of \f$ \phi \f$
+    * using the formula:
+    *
+    *    \f[
+    *
+    *      \left( \frac{\partial \phi}{\partial x} \right)_i \approx
+    *         \frac{ -\phi_{i+2} + 8 \phi_{i+1} - 8 \phi_{i-1} + \phi_{i-2} }
+    *              { 12 dx }
+    *
+    *    \f]
+    *
+    * Arguments:
+    *  - phi_* (out):      components of \f$ \nabla \phi \f$
+    *  - phi (in):         \f$ \phi \f$
+    *  - dx, dy, dz (in):  grid cell size
+    *  - *_gb (in):        index range for ghostbox
+    *  - *_fb (in):        index range for fillbox
+    *
+    * Return value:        none
+    */
+    """
+
+    cdef:
+        np.ndarray[double, ndim=1] phi_x = np.zeros((nx * ny * nz,))
+        np.ndarray[double, ndim=1] phi_y = np.zeros((nx * ny * nz,))
+        np.ndarray[double, ndim=1] phi_z = np.zeros((nx * ny * nz,))
+        int _ilo_grad_phi_gb = ilo_grad_phi_gb
+        int _ihi_grad_phi_gb = ihi_grad_phi_gb
+        int _jlo_grad_phi_gb = jlo_grad_phi_gb
+        int _jhi_grad_phi_gb = jhi_grad_phi_gb
+        int _klo_grad_phi_gb = klo_grad_phi_gb
+        int _khi_grad_phi_gb = khi_grad_phi_gb
+        int _ilo_phi_gb = ilo_phi_gb
+        int _ihi_phi_gb = ihi_phi_gb
+        int _jlo_phi_gb = jlo_phi_gb
+        int _jhi_phi_gb = jhi_phi_gb
+        int _klo_phi_gb = klo_phi_gb
+        int _khi_phi_gb = khi_phi_gb
+        int _ilo_fb = ilo_fb
+        int _ihi_fb = ihi_fb
+        int _jlo_fb = jlo_fb
+        int _jhi_fb = jhi_fb
+        int _klo_fb = klo_fb
+        int _khi_fb = khi_fb
+        double _dx = dx
+        double _dy = dy
+        double _dz = dz
+
+    lsm3dcentralgradorder4_(<double *> phi_x.data, <double *> phi_y.data,
+        <double *> phi_z.data,
+        &_ilo_grad_phi_gb, &_ihi_grad_phi_gb,
+        &_jlo_grad_phi_gb, &_jhi_grad_phi_gb,
+        &_klo_grad_phi_gb, &_khi_grad_phi_gb,
+        <double *> phi.data,
+        &_ilo_phi_gb, &_ihi_phi_gb,
+        &_jlo_phi_gb, &_jhi_phi_gb,
+        &_klo_phi_gb, &_khi_phi_gb,
+        &_ilo_fb, &_ihi_fb, &_jlo_fb,
+        &_jhi_fb, &_klo_fb, &_khi_fb,
+        &_dx, &_dy, &_dz)
+
+    return phi_x, phi_y, phi_z

@@ -71,10 +71,10 @@ To recompile after changing Cython code
 
 ::
 
-   $ cd .../LSMLIB
+   $ cd .../LSMLIB/pylsmlib
    $ python setup.py build_ext --inplace
 
-If have altered ``__init__.py``, will then need to copy  from
+If have altered ``__init__.py``, may need to copy  from
 ``.../LSMLIB/pylsmlib/build/lib.linux-x86_64-2.7/pylsmlib`` to ``.../LSMLIB/pylsmlib/pylsmlib``, i.e.
 
 ::
@@ -82,6 +82,14 @@ If have altered ``__init__.py``, will then need to copy  from
    $ cd .../LSMLIB/pylsmlib
    $ cp build/lib.linux-x86_64-2.7/pylsmlib/__init__.py pylsmlib/
 
+May need to copy files across to
+``/home/alice/anaconda/lib/python2.7/site-packages/pylsmlib-0.1-py2.7-linux-x86_64.egg/pylsmlib/`` if want to run package from outside the ``LSMLIB`` folder (e.g. if calling it from in ``pyro``):
+
+::
+
+  $ cd ../LSMLIB/pylsmlib/pylsmlib
+  $ cp __init__.py __init__.pyc lsmlib.so
+  /home/alice/anaconda/lib/python2.7/site-packages/pylsmlib-0.1-py2.7-linux-x86_64.egg/pylsmlib/
 
 
 Testing

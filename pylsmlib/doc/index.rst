@@ -24,6 +24,8 @@ Usage
 
 .. autofunction:: pylsmlib.computeSignedUnitNormal
 
+.. autofunction:: pylsmlib.centralGradOrder4
+
 Doctests
 ========
 
