@@ -26,6 +26,14 @@ Usage
 
 .. autofunction:: pylsmlib.centralGradOrder4
 
+.. autofunction:: pylsmlib.pythonisedfns.gradPhi
+
+.. autofunction:: pylsmlib.pythonisedfns.surfaceAreaLevelSet
+
+.. autofunction:: pylsmlib.pythonisedfns.meanCurvature
+
+.. autofunction:: pylsmlib.pythonisedfns.signedUnitNormal
+
 Doctests
 ========
 

@@ -2,7 +2,7 @@ import numpy as np
 
 __docformat__ = 'restructuredtext'
 
-def gradPhi(phi0, dx=1., dy=1., dz=1., order=2):
+def gradPhi(phi, dx=1., dy=1., dz=1.):
     r"""
     Computes the fourth-order, central,
     finite difference approximation to the gradient of :math:`\phi`
@@ -20,16 +20,16 @@ def gradPhi(phi0, dx=1., dy=1., dz=1., order=2):
     return phi_x, phi_y, phi_z
 
 
-def surfaceAreaLevelSet(phi0, phi_x, phi_y, phi_z, ibLims,
+def surfaceAreaLevelSet(phi, phi_x, phi_y, phi_z, ibLims,
                             dx=1., dy=1., dz=1.,
-                            epsilon=1., order=2):
+                            epsilon=1.):
 
     r"""
     Computes the surface area of the surface defined by the zero level set.
 
      :Parameters:
 
-      - `phi0`:              level set function
+      - `phi`:              level set function
       - `phi_*` :            components of :math:`\nabla \phi`
       - `dx`:       grid spacing
       - `epsilon`:          width of numerical smoothing to use for Heaviside function
@@ -58,7 +58,7 @@ def surfaceAreaLevelSet(phi0, phi_x, phi_y, phi_z, ibLims,
 
 
 def meanCurvature(phi, phi_x, phi_y, phi_z, fbLims,
-                            dx=1., dy=1., dz=1., zero_tol=1.e-11, order=2):
+                            dx=1., dy=1., dz=1., zero_tol=1.e-11):
     r"""
 
       Computes mean curvature
@@ -107,7 +107,7 @@ def meanCurvature(phi, phi_x, phi_y, phi_z, fbLims,
         30.*phi[ilo:ihi,jlo:jhi,klo:khi] -\
         phi[ilo-2:ihi-2,jlo:jhi,klo:khi] +\
         16.*phi[ilo-1:ihi-1,jlo:jhi,klo:khi]) / \
-        (12 * dx**2)
+        (12. * dx**2)
 
     phi_yy[ilo:ihi,jlo:jhi,klo:khi] = \
         (-phi[ilo:ihi,jlo+2:jhi+2,klo:khi] + \
@@ -115,7 +115,7 @@ def meanCurvature(phi, phi_x, phi_y, phi_z, fbLims,
         30.*phi[ilo:ihi,jlo:jhi,klo:khi] -\
         phi[ilo:ihi,jlo-2:jhi-2,klo:khi] +\
         16.*phi[ilo:ihi,jlo-1:jhi-1,klo:khi]) / \
-        (12 * dy**2)
+        (12. * dy**2)
 
     phi_zz[ilo:ihi,jlo:jhi,klo:khi] = \
         (-phi[ilo:ihi,jlo:jhi,klo+2:khi+2] + \
@@ -123,30 +123,30 @@ def meanCurvature(phi, phi_x, phi_y, phi_z, fbLims,
         30.*phi[ilo:ihi,jlo:jhi,klo:khi] -\
         phi[ilo:ihi,jlo:jhi,klo-2:khi-2] +\
         16.*phi[ilo:ihi,jlo:jhi,klo-1:khi-1]) / \
-        (12 * dz**2)
+        (12. * dz**2)
 
     phi_xy[ilo:ihi,jlo:jhi,klo:khi] = \
         (-phi_x[ilo:ihi,jlo+2:jhi+2,klo:khi] + \
         8.*phi_x[ilo:ihi,jlo+1:jhi+1,klo:khi] +\
         phi_x[ilo:ihi,jlo-2:jhi-2,klo:khi] -\
         8.*phi_x[ilo:ihi,jlo-1:jhi-1,klo:khi]) / \
-        (12 * dy)
+        (12. * dy)
 
     phi_yz[ilo:ihi,jlo:jhi,klo:khi] = \
         (-phi_y[ilo:ihi,jlo:jhi,klo+2:khi+2] + \
         8.*phi_y[ilo:ihi,jlo:jhi,klo+1:khi+1] +\
         phi_y[ilo:ihi,jlo:jhi,klo-2:khi-2] -\
         8.*phi_y[ilo:ihi,jlo:jhi,klo-1:khi-1]) / \
-        (12 * dz)
+        (12. * dz)
 
     phi_zx[ilo:ihi,jlo:jhi,klo:khi] = \
         (-phi_z[ilo+2:ihi+2,jlo:jhi,klo:khi] + \
         8.*phi_z[ilo+1:ihi+1,jlo:jhi,klo:khi] +\
         phi_z[ilo-2:ihi-2,jlo:jhi,klo:khi] -\
         8.*phi_z[ilo-1:ihi-1,jlo:jhi,klo:khi]) / \
-        (12 * dx)
+        (12. * dx)
 
-    denominator = sqrt(phi_x[:]**2 + phi_y[:]**2 + phi_z[:]**2) ** 3
+    denominator = np.sqrt(phi_x[:,:,:]**2 + phi_y[:,:,:]**2 + phi_z[:,:,:]**2) ** 3
 
     kappa[ilo:ihi,jlo:jhi,klo:khi] = phi_xx[ilo:ihi,jlo:jhi,klo:khi] * \
         phi_y[ilo:ihi,jlo:jhi,klo:khi]**2 + \
@@ -208,10 +208,10 @@ def signedUnitNormal(phi, phi_x, phi_y, phi_z,
     sgnPhi = phi[:] / np.sqrt(phi[:]**2 + normGradPhiSq[:] * np.max([dx,dy,dz])**2)
 
     normal_x[phiMask] = sgnPhi[phiMask] * phi_x[phiMask] / \
-                        np.sqrt(normGradPhiSq[:])
+                        np.sqrt(normGradPhiSq[phiMask])
     normal_y[phiMask] = sgnPhi[phiMask] * phi_y[phiMask] / \
-                        np.sqrt(normGradPhiSq[:])
+                        np.sqrt(normGradPhiSq[phiMask])
     normal_z[phiMask] = sgnPhi[phiMask] * phi_z[phiMask] / \
-                        np.sqrt(normGradPhiSq[:])
+                        np.sqrt(normGradPhiSq[phiMask])
 
     return normal_x[:], normal_y[:], normal_z[:]

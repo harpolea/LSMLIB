@@ -7,6 +7,7 @@ from lsmlib import lsm3dcomputemeancurvatureorder2local
 from lsmlib import lsm3dcomputemeancurvatureorder2
 from lsmlib import lsm3dcomputegaussiancurvatureorder2
 from lsmlib import lsm3dcentralgradorder4
+import pythonisedfns
 import numpy as np
 
 __docformat__ = 'restructuredtext'
@@ -1343,14 +1344,17 @@ def testing():
     ...                   [ 1.,  1., 1.,  1., -1., -1.],
     ...                   [ 1.,  1., 1.,  1., -1., -1.],
     ...                   [ 1.,  1., 1.,  1., -1., -1.],
+    ...                   [ 1.,  1., 1.,  1., -1., -1.]],
+    ...                   [[-1., -1., -1., -1., -1., -1.],
+    ...                   [-1., -1., -1., -1., -1., -1.],
+    ...                   [ 1.,  1., 1.,  1., -1., -1.],
+    ...                   [ 1.,  1., 1.,  1., -1., -1.],
+    ...                   [ 1.,  1., 1.,  1., -1., -1.],
     ...                   [ 1.,  1., 1.,  1., -1., -1.]]])
     >>> phi1 = computeDistanceFunction(phi1, dx=1.)
-    >>> print(phi1)
-
-    >>> phix1 = np.zeros_like(phi1, dtype=np.float64)
-    >>> phix1[:,1,2] = np.ones_like(phix1[:,1,2])
-    >>> lim = np.array([1,6,1,6,1,5], dtype=np.intc)
-    >>> fblim = np.array([3,4,3,4,3,3], dtype=np.intc)
+    >>> ##print(phi1)
+    >>> lim = np.array([0,5,0,5,0,5], dtype=np.intc)
+    >>> fblim = np.array([2,3,2,3,2,3], dtype=np.intc)
     >>> phi2 = np.array([[[-1., -1., -1., -1., -1., -1.],
     ...                   [-1., -1., -1., -1., -1., -1.],
     ...                   [10., 10.,  8.,  0., -1., -1.],
@@ -1380,33 +1384,42 @@ def testing():
     ...                   [ 3.,  2.,  1.,  0., -0.1, -1.],
     ...                   [ 3.,  2.,  0.,  -1., -1., -1.],
     ...                   [ 3.,  2.,  0.,  -1., -1.9, -6.],
+    ...                   [ 3.,  2.,  0.,  -1., -1.9, -6.]],
+    ...                  [[-1., -1., -1., -1., -1., -1.],
+    ...                   [-1., -1., -1., -1., -1., -1.],
+    ...                   [ 3.,  2.,  1.,  0., -0.1, -1.],
+    ...                   [ 3.,  2.,  0.,  -1., -1., -1.],
+    ...                   [ 3.,  2.,  0.,  -1., -1.9, -6.],
     ...                   [ 3.,  2.,  0.,  -1., -1.9, -6.]]])
     >>> phi2 = computeDistanceFunction(phi2, dx=0.5)
-    >>> print(phi2)
-
-    >>> phix2 = np.zeros_like(phi2, dtype=np.float64)
-    >>> phix2[0,:,2] = np.ones_like(phix2[0,:,2])
+    >>> ##print(phi2)
 
     ``centralGradOrder4``
 
-    >>> phi_x, phi_y, phi_z = centralGradOrder4(phi1, lim, lim, fblim)
-    >>> print(phi_x)
-
-    >>> print(phi_y)
-
-    >>> print(phi_z)
-
-    >>> phi_x, phi_y, phi_z = centralGradOrder4(phi2, lim, lim, fblim, dx=0.5)
-    >>> print(phi_z)
-
+    >>> ##phi_x, phi_y, phi_z = centralGradOrder4(phi1, lim, lim, fblim)
+    >>> phi_x, phi_y, phi_z = pythonisedfns.gradPhi(phi1)
+    >>> print(phi_x.shape)
+    (6, 6, 6)
+    >>> print(phi_y.shape)
+    (6, 6, 6)
+    >>> print(phi_z.shape)
+    (6, 6, 6)
+    >>> ##phi_x, phi_y, phi_z = centralGradOrder4(phi2, lim, lim, fblim, dx=0.5)
+    >>> phi2_x, phi2_y, phi2_z = pythonisedfns.gradPhi(phi2, dx=0.5, dy=0.5, dz=0.5)
+    >>> isSmall = abs(phi2_z) <= 0.6
+    >>> print(isSmall.all())
+    True
 
     ``surfaceAreaZeroLevelSet``
 
     This doesn't work - there is something up with the pointers as the surface area is passed by reference in ``lsmlib.pyx`` to the C function, but not updated by it. I strongly suspect it has something to do with the way the C function is called - I can change the ``#define`` statement in ``lsm_geometry3d.h`` so that it has a different name (e.g. ``lsm3dComputeSignedUnitNormal`` rather than ``lsm3dcomputesignedunitnormal_``), recompile and it will still run. If you look at the examples (e.g. ``curvature_model3d.c``), the C functions are all called using the CAPITAL_NAMES rather than the ones in the ``#define`` statements.
 
-    >>> print(surfaceAreaZeroLevelSet(phi1,phix1,phix1,phix1,lim,lim,fblim))
-
-    >>> print(surfaceAreaZeroLevelSet(phi2,phix2,phix2,phix2,lim,lim,fblim, dx=0.5, epsilon=2.))
+    >>> ##print(surfaceAreaZeroLevelSet(phi1,phix1,phix1,phix1,lim,lim,fblim))
+    >>> print(pythonisedfns.surfaceAreaLevelSet(phi1,phi_x,phi_y,phi_z, fblim))
+    0.452667464282
+    >>> ##print(surfaceAreaZeroLevelSet(phi2,phix2,phix2,phix2,lim,lim,fblim, dx=0.5, epsilon=2.))
+    >>> print(pythonisedfns.surfaceAreaLevelSet(phi2, phi2_x,phi2_y,phi2_z, fblim, dx=0.5, dy=0.5, dz=0.5, epsilon=2.))
+    0.0362361486177
 
 
     ``computeMeanCurvatureLocal``
@@ -1414,56 +1427,68 @@ def testing():
     This doesn't work either, but does at least return different answers for the two tests, implying it's doing something.
 
     >>> kappa = np.zeros_like(phi1, dtype=np.float64)
-    >>> isinstance(kappa[1,2,3], np.float64)
+    >>> ##isinstance(kappa[1,2,3], np.float64)
+    >>> ##True
+    >>> ##narrow_band = np.chararray(phi1.shape)
+    >>> ##narrow_band[:] = '0'
+    >>> ##narrow_band = narrow_band.tostring()
+    >>> ##narrow_band = '0'
+    >>> ##mark_fb = narrow_band
+    >>> ##isinstance(lim[5], np.intc)
+    >>> ##True
+    >>> ##a = np.linspace(0,3,4, dtype=np.intc)
+    >>> ##isinstance(a[3], np.intc)
+    >>> ##True
+    >>> ##print(computeMeanCurvatureLocal(phi1, phix1, phix1, phix1, kappa, phix1, lim, a, a, a, narrow_band, mark_fb, lim, lim, lim, lim))
+    >>> kappa = pythonisedfns.meanCurvature(phi1, phi_x, phi_y, phi_z, fblim)
+    >>> checkCurvy = np.ones_like(kappa, dtype=bool)
+    >>> checkCurvy[:2,:,:] = (kappa[:2,:,:] == 0.)
+    >>> checkCurvy[3:,:,:] = (kappa[3:,:,:] == 0.)
+    >>> checkCurvy[2:4,2:4,2:4] = (kappa[2:4,2:4,2:4] != 0.)
+    >>> print(checkCurvy.all())
     True
-    >>> #narrow_band = np.chararray(phi1.shape)
-    >>> #narrow_band[:] = '0'
-    >>> #narrow_band = narrow_band.tostring()
-    >>> narrow_band = '0'
-    >>> mark_fb = narrow_band
-    >>> isinstance(lim[5], np.intc)
-    True
-    >>> a = np.linspace(0,3,4, dtype=np.intc)
-    >>> isinstance(a[3], np.intc)
-    True
-    >>> print(computeMeanCurvatureLocal(phi1, phix1, phix1, phix1, kappa,
-    ...         phix1, lim,
-    ...         a, a, a, narrow_band, mark_fb,
-    ...         lim, lim, lim, lim))
 
-    >>> print(computeMeanCurvatureLocal(phi2, phix2, phix2, phix2, kappa,
-    ...         phix2, lim,
-    ...         a, a, a, narrow_band, mark_fb,
-    ...         lim, lim, lim, lim, dx=0.5))
+    >>> ##print(computeMeanCurvatureLocal(phi2, phix2, phix2, phix2, kappa,  phix2, lim, a, a, a, narrow_band, mark_fb, lim, lim, lim, lim, dx=0.5))
+    >>> kappa = pythonisedfns.meanCurvature(phi2, phi2_x, phi2_y, phi2_z, fblim, dx=0.5, dy=0.5, dz=0.5)
+    >>> checkCurvy = np.ones_like(kappa, dtype=bool)
+    >>> checkCurvy[:2,:,:] = (kappa[:2,:,:] == 0.)
+    >>> checkCurvy[3:,:,:] = (kappa[3:,:,:] == 0.)
+    >>> checkCurvy[2:4,2:4,2:4] = (kappa[2:4,2:4,2:4] != 0.)
+    >>> print(checkCurvy.all())
+    True
 
 
     ``computeMeanCurvature``
 
-    >>> print(computeMeanCurvature(phi1, phix1, phix1, phix1, kappa,
-    ...         phix1, lim, lim, lim, fblim))
+    >>> ##print(computeMeanCurvature(phi1, phix1, phix1, phix1, kappa, phix1, lim, lim, lim, fblim))
 
-    >>> print(computeMeanCurvature(phi2, phix2, phix2, phix2, kappa,
-    ...         phix2, lim, lim, lim, fblim, dx=0.5))
+    >>> ##print(computeMeanCurvature(phi2, phix2, phix2, phix2, kappa, phix2, lim, lim, lim, fblim, dx=0.5))
 
     ``computeGaussianCurvature``
 
-    >>> print(computeGaussianCurvature(phi1, phix1, phix1, phix1, kappa,
-    ...         phix1, lim, lim, lim, fblim))
+    >>> ##print(computeGaussianCurvature(phi1, phix1, phix1, phix1, kappa, phix1, lim, lim, lim, fblim))
 
-    >>> print(computeGaussianCurvature(phi2, phix2, phix2, phix2, kappa,
-    ...         phix2, lim, lim, lim, fblim, dx=0.5))
+    >>> ##print(computeGaussianCurvature(phi2, phix2, phix2, phix2, kappa, phix2, lim, lim, lim, fblim, dx=0.5))
 
 
     ``computeSignedUnitNormal``
 
     This doesn't work either, but does at least return different answers for the two tests, implying it's doing something.
 
-    >>> print(computeSignedUnitNormal(phi1,phix1, phix1, phix1,
-    ...                                 lim, lim, lim, fblim))
+    >>> ##print(computeSignedUnitNormal(phi1,phix1, phix1, phix1,#lim, lim, lim, fblim))
+    >>> norm_x, norm_y, norm_z = pythonisedfns.signedUnitNormal(phi1, phi_x, phi_y, phi_z)
+    >>> checkSign = np.ones_like(kappa, dtype=bool)
+    >>> checkSign = (np.sign(phi[:]) != np.sign(norm_x[:]))
+    >>> print(checkSign)
+    True
 
-    >>> print(computeSignedUnitNormal(phi2,phix2, phix2, phix2,
-    ...                                 lim, lim, lim, fblim, dx=0.5))
-
+    >>> ##print(computeSignedUnitNormal(phi2,phix2, phix2, phix2,#lim, lim, lim, fblim, dx=0.5))
+    >>> norm2_x, norm2_y, norm2_z = pythonisedfns.signedUnitNormal(phi2, phi2_x, phi2_y, phi2_z, dx=0.5, dy=0.5, dz=0.5)
+    >>> checkSign = np.ones_like(kappa, dtype=bool)
+    >>> checkSign = (np.sign(phi2[:]) != np.sign(norm2_x[:]))
+    >>> checkSign[1,0,0] = True
+    >>> print(checkSign.all())
+    True
 
     """
 
