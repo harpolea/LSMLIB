@@ -1416,11 +1416,11 @@ def testing():
 
     >>> ##print(surfaceAreaZeroLevelSet(phi1,phix1,phix1,phix1,lim,lim,fblim))
     >>> print(pythonisedfns.surfaceAreaLevelSet(phi1,phi_x,phi_y,phi_z, fblim))
-    0.452667464282
+    2.83174324996
+
     >>> ##print(surfaceAreaZeroLevelSet(phi2,phix2,phix2,phix2,lim,lim,fblim, dx=0.5, epsilon=2.))
     >>> print(pythonisedfns.surfaceAreaLevelSet(phi2, phi2_x,phi2_y,phi2_z, fblim, dx=0.5, dy=0.5, dz=0.5, epsilon=2.))
-    0.0362361486177
-
+    0.381600952136
 
     ``computeMeanCurvatureLocal``
 

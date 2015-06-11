@@ -8,11 +8,11 @@ def gradPhi(phi, dx=1., dy=1., dz=1.):
     finite difference approximation to the gradient of :math:`\phi`
 
     :Arguments:
-        - `\phi`:         :math:`\phi`
+        - `\phi`:            :math:`\phi`
         - `dx`, `dy`, `dz`:  grid cell size
 
     :Returns:
-        - `phi_*`:      components of  :math:`\nabla \phi`
+        - `phi_*`:           components of  :math:`\nabla \phi`
     """
 
     phi_z, phi_y, phi_x = np.gradient(phi, dx, dy, dx)
@@ -30,29 +30,31 @@ def surfaceAreaLevelSet(phi, phi_x, phi_y, phi_z, ibLims,
      :Parameters:
 
       - `phi`:              level set function
-      - `phi_*` :            components of :math:`\nabla \phi`
-      - `dx`:       grid spacing
+      - `phi_*` :           components of :math:`\nabla \phi`
+      - `dx`, `dy`, `dz`:   grid spacing
       - `epsilon`:          width of numerical smoothing to use for Heaviside function
       - `*_ib`:             index range for interior box
 
      :Returns:
 
-        - `area`:            area of the surface defined by the zero level                               set
+        - `area`:           area of the surface defined by the zero level                               set
 
     """
 
-    area = 0.
+    area = 0.   #initialise
+    dV = dx * dy * dz   #volume element
+    ilo, ihi, jlo, jhi, klo, khi = ibLims
+    ihi+=1
+    jhi+=1
+    khi+=1
 
-    dV = dx * dy * dz
+    mask = np.zeros_like(phi, dtype=bool)
+    delta = np.zeros_like(phi)
+    # define mask so don't need doubly nested for loops
+    mask[ilo:ihi, jlo:jhi, klo:khi] = (np.abs(phi[ilo:ihi, jlo:jhi, klo:khi]) < epsilon)
+    delta[mask] = 0.5 * (1. + np.cos(np.pi * phi[mask] /epsilon))/epsilon
 
-    for k in range(ibLims[4], ibLims[5]):
-        for j in range(ibLims[2], ibLims[3]):
-            for i in range(ibLims[0], ibLims[1]):
-
-                if np.abs(phi[i,j,k]) < epsilon:
-                    delta = 0.5 * (1. + np.cos(np.pi * phi[i,j,k] /epsilon))/epsilon
-
-                    area+= delta * dV * np.sqrt(phi_x[i,j,k]**2 + phi_y[i,j,k]**2 + phi_z[i,j,k]**2)
+    area = np.sum(delta[mask] * dV * np.sqrt(phi_x[mask]**2 + phi_y[mask]**2 + phi_z[mask]**2))
 
     return area
 
@@ -75,14 +77,14 @@ def meanCurvature(phi, phi_x, phi_y, phi_z, fbLims,
 
       :Parameters:
 
-        - `phi`:  level set function
-        - `phi_*`:  first order derivatives of :math:`\phi`
-        - `*_fb`:   index range for fillbox
-        - `dx`:   grid spacing
+        - `phi`:            level set function
+        - `phi_*`:          first order derivatives of :math:`\phi`
+        - `*_fb`:           index range for fillbox
+        - `dx`, `dy`, `dz`: grid spacing
 
     :Returns:
 
-        - `kappa`: curvature data array
+        - `kappa`:          curvature data array
 
     """
 
@@ -182,13 +184,13 @@ def signedUnitNormal(phi, phi_x, phi_y, phi_z,
 
       :Parameters:
 
-       - `phi_*`:         components of :math:`\nabla \phi`
-       - `phi`:           level set function
-       - `dx`:    grid spacing
+       - `phi_*`:           components of :math:`\nabla \phi`
+       - `phi`:             level set function
+       - `dx`, `dy`, `dz`:  grid spacing
 
       :Returns:
 
-        - `normal_*`:     components of unit normal vector
+        - `normal_*`:       components of unit normal vector
 
       :Notes:
 
