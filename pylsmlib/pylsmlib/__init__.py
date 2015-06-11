@@ -1490,6 +1490,31 @@ def testing():
     >>> print(checkSign.all())
     True
 
+    ``strainRate``
+
+    TEST ME PLEASE
+
+    Define velocities:
+    >>> u = np.ones_like(phi1)
+    >>> u[4:,:,:] *= -1.
+    >>> v = np.zeros_like(phi1)
+    >>> w = np.zeros_like(phi1)
+
+    >>> print(pythonisedfns.strainRate(phi1, phi_x, phi_y, phi_z, u, v, w))
+
+    >>> print(pythonisedfns.strainRate(phi2, phi2_x, phi2_y, phi2_z, u, v, w, dx=0.5, dy=0.5, dz=0.5))
+
+    ``laminarFlameSpeed``
+
+    ALSO TEST ME
+
+    >>> marksteinLength = 0.2
+    >>> sL0 = 3.
+
+    >>> print(pythonisedfns.laminarFlameSpeed(phi1, sL0, marksteinLength, u, v, w, fblim))
+
+    >>> print(pythonisedfns.laminarFlameSpeed(phi2, sL0, marksteinLength, u, v, w, fblim))
+
     """
 
     pass

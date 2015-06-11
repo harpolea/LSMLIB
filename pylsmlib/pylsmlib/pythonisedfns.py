@@ -33,7 +33,7 @@ def surfaceAreaLevelSet(phi, phi_x, phi_y, phi_z, ibLims,
       - `phi_*` :           components of :math:`\nabla \phi`
       - `dx`, `dy`, `dz`:   grid spacing
       - `epsilon`:          width of numerical smoothing to use for Heaviside function
-      - `*_ib`:             index range for interior box
+      - `ibLims`:           index range for interior box (the region which the function will actually look at - it's probably more useful to just have this as an optional mask)
 
      :Returns:
 
@@ -41,7 +41,6 @@ def surfaceAreaLevelSet(phi, phi_x, phi_y, phi_z, ibLims,
 
     """
 
-    area = 0.   #initialise
     dV = dx * dy * dz   #volume element
     ilo, ihi, jlo, jhi, klo, khi = ibLims
     ihi+=1
@@ -54,9 +53,7 @@ def surfaceAreaLevelSet(phi, phi_x, phi_y, phi_z, ibLims,
     mask[ilo:ihi, jlo:jhi, klo:khi] = (np.abs(phi[ilo:ihi, jlo:jhi, klo:khi]) < epsilon)
     delta[mask] = 0.5 * (1. + np.cos(np.pi * phi[mask] /epsilon))/epsilon
 
-    area = np.sum(delta[mask] * dV * np.sqrt(phi_x[mask]**2 + phi_y[mask]**2 + phi_z[mask]**2))
-
-    return area
+    return np.sum(delta[mask] * dV * np.sqrt(phi_x[mask]**2 + phi_y[mask]**2 + phi_z[mask]**2))
 
 
 def meanCurvature(phi, phi_x, phi_y, phi_z, fbLims,
@@ -79,8 +76,9 @@ def meanCurvature(phi, phi_x, phi_y, phi_z, fbLims,
 
         - `phi`:            level set function
         - `phi_*`:          first order derivatives of :math:`\phi`
-        - `*_fb`:           index range for fillbox
+        - `fbLims`:         index range for fillbox (the region which the function will actually look at - it's probably more useful to just have this as an optional mask)
         - `dx`, `dy`, `dz`: grid spacing
+        - `zero_tol`:       any curvature less than this will be set to zero
 
     :Returns:
 
@@ -184,9 +182,10 @@ def signedUnitNormal(phi, phi_x, phi_y, phi_z,
 
       :Parameters:
 
-       - `phi_*`:           components of :math:`\nabla \phi`
        - `phi`:             level set function
+       - `phi_*`:           components of :math:`\nabla \phi`
        - `dx`, `dy`, `dz`:  grid spacing
+       - `zero_tol`:        only calculate normal if :math:`| \nabla \phi |` is greater than this
 
       :Returns:
 
@@ -194,8 +193,7 @@ def signedUnitNormal(phi, phi_x, phi_y, phi_z,
 
       :Notes:
 
-        - When :math:`| \nabla \phi |`  is close to zero, the unit normal is arbitrarily set to be :math:`(1.0, 0.0, 0.0)`.
-        - Note: this is really inefficiently implemented currently and can deffo be improved.
+        - When :math:`| \nabla \phi |`  is close to zero, the unit normal is arbitrarily set to be :math:`(1.0, 0.0, 0.0)`
     """
 
     normal_x = np.zeros_like(phi)
@@ -217,3 +215,85 @@ def signedUnitNormal(phi, phi_x, phi_y, phi_z,
                         np.sqrt(normGradPhiSq[phiMask])
 
     return normal_x[:], normal_y[:], normal_z[:]
+
+
+def strainRate(phi, phi_x, phi_y, phi_z, u, v, w, dx=1., dy=1., dz=1.):
+    r"""
+      Computes the strain rate
+
+      .. math::
+
+        S = -\vec{n}\cdot\vec{\nabla}\vec{v}\cdot\vec{n} = -n^i\nabla_iv^jn^k\delta_{jk}
+
+      :Parameters:
+
+       - `phi`:             level set function
+       - `phi_*`:           components of :math:`\nabla \phi`
+       - `u`, `v`, `w`:     components of velocity
+       - `dx`, `dy`, `dz`:  grid spacing
+
+      :Returns:
+
+        - `S`:              strain rate
+
+    """
+
+    norm_x, norm_y, norm_z = signedUnitNormal(phi, phi_x, phi_y, phi_z,
+                            dx=dx, dy=dy, dz=dz)
+    gradu_x, gradu_y, gradu_z = np.gradient(u, dx, dy, dx)
+    gradv_x, gradv_y, gradv_z = np.gradient(v, dx, dy, dx)
+    gradw_x, gradw_y, gradw_z = np.gradient(w, dx, dy, dx)
+
+    gradvs_x = np.array([gradu_x, gradv_x, gradw_x])
+    gradvs_y = np.array([gradu_y, gradv_y, gradw_y])
+    gradvs_z = np.array([gradu_z, gradv_z, gradw_z])
+
+    norms = np.array([norm_x, norm_y, norm_z])
+
+    S = np.zeros_like(phi)
+    Stemp = np.zeros_like([phi,phi,phi])
+
+    for i in range(0,3):
+        Stemp[0,:,:] += gradvs_x[i,:,:] * norms[i,:,:]
+        Stemp[1,:,:] += gradvs_y[i,:,:] * norms[i,:,:]
+        Stemp[2,:,:] += gradvs_z[i,:,:] * norms[i,:,:]
+
+    S[:,:] = -(norm_x[:,:] * Stemp[0,:,:] + \
+          norm_y[:,:] * Stemp[1,:,:] + \
+          norm_z[:,:] * Stemp[2,:,:])
+
+    return S[:,:]
+
+
+def laminarFlameSpeed(phi, sL0, marksteinLength, u, v, w, ibLims, dx=1., dy=1., dz=1.):
+    r"""
+      Computes the laminar flame speed
+
+      .. math::
+
+        s_L = s_L^0 - s_L^0 \mathcal{L}\kappa - \mathcal{L}S
+
+      :Parameters:
+
+       - `phi`:             level set function
+       - `sL0`:             burning velocity of the unstretched laminar flame
+       - `marksteinLength`: Markstein length :math:`\mathcal{L}`
+       - `u`, `v`, `w`:     components of velocity
+       - `ibLims`:          index range for interior box (the region which the function will actually look at - it's probably more useful to just have this as an optional mask)
+       - `dx`, `dy`, `dz`:  grid spacing
+
+      :Returns:
+
+        - `sL`:              strain rate
+
+    """
+
+    phi_x, phi_y, phi_z = gradPhi(phi, dx=dx, dy=dy, dz=dz)
+    kappa = meanCurvature(phi, phi_x, phi_y, phi_z, ibLims,
+                                dx=dx, dy=dy, dz=dz)
+    S = strainRate(phi, phi_x, phi_y, phi_z, u, v, w, dx=dx, dy=dy, dz=dz)
+
+    sL = sL0 * (np.ones_like(phi) - marksteinLength * kappa[:,:]) - \
+            marksteinLength * S[:,:]
+
+    return sL[:,:]

@@ -34,6 +34,10 @@ Usage
 
 .. autofunction:: pylsmlib.pythonisedfns.signedUnitNormal
 
+.. autofunction:: pylsmlib.pythonisedfns.strainRate
+
+.. autofunction:: pylsmlib.pythonisedfns.laminarFlameSpeed
+
 Doctests
 ========
 
