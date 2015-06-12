@@ -276,7 +276,7 @@ def meanCurvature2d(phi, phi_x, phi_y, fbLims,
         phi_x[ilo:ihi,jlo-2:jhi-2] - 8.*phi_x[ilo:ihi,jlo-1:jhi-1]) / \
         (12. * dy)
 
-    denominator = phi_x[:,:,:]**2 + phi_y[:,:,:]**2
+    denominator = phi_x[:,:]**2 + phi_y[:,:]**2
 
     kappa[ilo:ihi,jlo:jhi] = phi_xx[ilo:ihi,jlo:jhi] * \
         phi_y[ilo:ihi,jlo:jhi]**2 + \

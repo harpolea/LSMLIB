@@ -88,7 +88,7 @@ May need to copy files across to
 ::
 
   $ cd ../LSMLIB/pylsmlib/pylsmlib
-  $ cp __init__.py __init__.pyc lsmlib.so
+  $ cp __init__.py __init__.pyc lsmlib.so pythonisedfns.py 
   /home/alice/anaconda/lib/python2.7/site-packages/pylsmlib-0.1-py2.7-linux-x86_64.egg/pylsmlib/
 
 
