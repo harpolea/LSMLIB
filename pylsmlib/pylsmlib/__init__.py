@@ -1492,8 +1492,6 @@ def testing():
 
     ``strainRate``
 
-    TEST ME PLEASE
-
     Define velocities:
     >>> u = np.ones_like(phi1)
     >>> u[4:,:,:] *= -1.
@@ -1505,8 +1503,6 @@ def testing():
     >>> print(pythonisedfns.strainRate(phi2, phi2_x, phi2_y, phi2_z, u, v, w, dx=0.5, dy=0.5, dz=0.5))
 
     ``laminarFlameSpeed``
-
-    ALSO TEST ME
 
     >>> marksteinLength = 0.2
     >>> sL0 = 3.
