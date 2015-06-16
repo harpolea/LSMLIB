@@ -41,7 +41,6 @@ def gradPhi2d(phi, dx=1., dy=1.):
 def surfaceAreaLevelSet(phi, phi_x, phi_y, phi_z, ibLims,
                             dx=1., dy=1., dz=1.,
                             epsilon=1.):
-
     r"""
     Computes the surface area of the surface defined by the zero level set.
 
@@ -73,10 +72,10 @@ def surfaceAreaLevelSet(phi, phi_x, phi_y, phi_z, ibLims,
 
     return np.sum(delta[mask] * dV * np.sqrt(phi_x[mask]**2 + phi_y[mask]**2 + phi_z[mask]**2))
 
+
 def surfaceAreaLevelSet2d(phi, phi_x, phi_y, ibLims,
                             dx=1., dy=1.,
                             epsilon=1.):
-
     r"""
     Computes the surface area of the surface defined by the zero level set.
 
@@ -94,7 +93,7 @@ def surfaceAreaLevelSet2d(phi, phi_x, phi_y, ibLims,
 
     """
 
-    dV = dx * dy   #volume element
+    dS = dx * dy   # surface element
     ilo, ihi, jlo, jhi = ibLims
     ihi+=1
     jhi+=1
@@ -105,13 +104,12 @@ def surfaceAreaLevelSet2d(phi, phi_x, phi_y, ibLims,
     mask[ilo:ihi, jlo:jhi] = (np.abs(phi[ilo:ihi, jlo:jhi]) < epsilon)
     delta[mask] = 0.5 * (1. + np.cos(np.pi * phi[mask] /epsilon))/epsilon
 
-    return np.sum(delta[mask] * dV * np.sqrt(phi_x[mask]**2 + phi_y[mask]**2))
+    return np.sum(delta[mask] * dS * np.sqrt(phi_x[mask]**2 + phi_y[mask]**2))
 
 
 def meanCurvature(phi, phi_x, phi_y, phi_z, fbLims,
                             dx=1., dy=1., dz=1., zero_tol=1.e-11):
     r"""
-
       Computes mean curvature
 
       .. math::
@@ -135,7 +133,6 @@ def meanCurvature(phi, phi_x, phi_y, phi_z, fbLims,
     :Returns:
 
         - `kappa`:          curvature data array
-
     """
 
     #initialise
@@ -198,7 +195,8 @@ def meanCurvature(phi, phi_x, phi_y, phi_z, fbLims,
         8.*phi_z[ilo-1:ihi-1,jlo:jhi,klo:khi]) / \
         (12. * dx)
 
-    denominator = np.sqrt(phi_x[:,:,:]**2 + phi_y[:,:,:]**2 + phi_z[:,:,:]**2) ** 3
+    denominator = np.sqrt(phi_x[:,:,:]**2 + phi_y[:,:,:]**2 + \
+                            phi_z[:,:,:]**2) ** 3
 
     kappa[ilo:ihi,jlo:jhi,klo:khi] = phi_xx[ilo:ihi,jlo:jhi,klo:khi] * \
         phi_y[ilo:ihi,jlo:jhi,klo:khi]**2 + \
@@ -223,7 +221,6 @@ def meanCurvature(phi, phi_x, phi_y, phi_z, fbLims,
 def meanCurvature2d(phi, phi_x, phi_y, fbLims,
                             dx=1., dy=1., zero_tol=1.e-11):
     r"""
-
       Computes mean curvature
 
       .. math::
@@ -247,7 +244,6 @@ def meanCurvature2d(phi, phi_x, phi_y, fbLims,
     :Returns:
 
         - `kappa`:          curvature data array
-
     """
 
     #initialise
@@ -403,7 +399,6 @@ def strainRate(phi, phi_x, phi_y, phi_z, u, v, w, dx=1., dy=1., dz=1.):
       :Returns:
 
         - `S`:              strain rate
-
     """
 
     norm_x, norm_y, norm_z = signedUnitNormal(phi, phi_x, phi_y, phi_z,
@@ -451,7 +446,6 @@ def strainRate2d(phi, phi_x, phi_y, u, v, dx=1., dy=1.):
       :Returns:
 
         - `S`:              strain rate
-
     """
     norm_x, norm_y = signedUnitNormal2d(phi, phi_x, phi_y,
                             dx=dx, dy=dy)
@@ -477,7 +471,8 @@ def strainRate2d(phi, phi_x, phi_y, u, v, dx=1., dy=1.):
     return S[:,:]
 
 
-def laminarFlameSpeed(phi, sL0, marksteinLength, u, v, w, ibLims, dx=1., dy=1., dz=1.):
+def laminarFlameSpeed(phi, sL0, marksteinLength, u, v, w, ibLims,
+                        dx=1., dy=1., dz=1.):
     r"""
       Computes the laminar flame speed
 
@@ -497,7 +492,6 @@ def laminarFlameSpeed(phi, sL0, marksteinLength, u, v, w, ibLims, dx=1., dy=1., 
       :Returns:
 
         - `sL`:             laminar flame speed
-
     """
 
     phi_x, phi_y, phi_z = gradPhi(phi, dx=dx, dy=dy, dz=dz)
@@ -510,7 +504,9 @@ def laminarFlameSpeed(phi, sL0, marksteinLength, u, v, w, ibLims, dx=1., dy=1., 
 
     return sL[:,:,:]
 
-def laminarFlameSpeed2d(phi, sL0, marksteinLength, u, v, ibLims, dx=1., dy=1., dz=1.):
+
+def laminarFlameSpeed2d(phi, sL0, marksteinLength, u, v, ibLims,
+                        dx=1., dy=1., dz=1.):
     r"""
       Computes the laminar flame speed
 
@@ -530,8 +526,8 @@ def laminarFlameSpeed2d(phi, sL0, marksteinLength, u, v, ibLims, dx=1., dy=1., d
       :Returns:
 
         - `sL`:             laminar flame speed
-
     """
+
     phi_x, phi_y = gradPhi2d(phi, dx=dx, dy=dy)
     kappa = meanCurvature2d(phi, phi_x, phi_y, ibLims,
                                 dx=dx, dy=dy)
