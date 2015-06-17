@@ -8,6 +8,7 @@ from lsmlib import lsm3dcomputemeancurvatureorder2
 from lsmlib import lsm3dcomputegaussiancurvatureorder2
 from lsmlib import lsm3dcentralgradorder4
 import pythonisedfns
+import lsmfns
 import numpy as np
 
 __docformat__ = 'restructuredtext'
@@ -1510,6 +1511,40 @@ def testing():
     >>> print(pythonisedfns.laminarFlameSpeed(phi1, sL0, marksteinLength, u, v, w, fblim))
 
     >>> print(pythonisedfns.laminarFlameSpeed(phi2, sL0, marksteinLength, u, v, w, fblim))
+
+    **Test level set functions**
+
+    ``locateLS1d``
+
+    >>> phi1d = np.array([-1.,-1.,-1.,-0.7,1.,1.,1.])
+    >>> phi1d = computeDistanceFunction(phi1d, dx=1.)
+    >>> zeros, alpha = lsmfns.locateLS1d(phi1d)
+    >>> print(phi1d)
+
+    >>> print(zeros)
+
+    >>> print(alpha)
+
+    ``locateLS2d``
+
+    >>> phi2d = np.array([[-1.,-1., -0.2, 1.,1.],
+    ...                   [-1.,-1., -0.1,0.5,1.],
+    ...                   [-1.,-1., 0.1,  1.,1.],
+    ...                   [-1.,-0.5, 0.7,  1.,1.]])
+    >>> phi2d = computeDistanceFunction(phi2d, dx=0.5)
+    >>> phi2d_y, phi2d_x = np.gradient(phi2d, 0.5, 0.5)
+    >>> norm_x, norm_y= pythonisedfns.signedUnitNormal2d(phi2d, phi2d_x, phi2d_y, dx=0.5, dy=0.5)
+    >>> print(norm_x)
+
+    >>> print(norm_y)
+
+    >>> zeros, alpha = lsmfns.locateLS2d(phi2d, norm_x, norm_y, dx=0.5, dy=0.5)
+    >>> print(phi2d)
+
+    >>> print(zeros)
+
+    >>> print(alpha)
+
 
     """
 

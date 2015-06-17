@@ -365,20 +365,20 @@ def signedUnitNormal2d(phi, phi_x, phi_y,
 
     normal_x = np.zeros_like(phi)
     normal_y = np.zeros_like(phi)
-    phiMask = (np.abs(phi[:]) > zero_tol)
+    phiMask = (np.abs(phi[:,:]) > zero_tol)
     normal_x[phiMask] = 1.0
 
-    normGradPhiSq = phi_x[:]**2 + phi_y[:]**2
-    phiMask[:] *= (normGradPhiSq[:] >= zero_tol)
+    normGradPhiSq = phi_x[:,:]**2 + phi_y[:]**2
+    phiMask[:,:] *= (normGradPhiSq[:,:] >= zero_tol)
 
-    sgnPhi = phi[:] / np.sqrt(phi[:]**2 + normGradPhiSq[:] * np.max([dx,dy])**2)
+    sgnPhi = phi[:,:] / np.sqrt(phi[:,:]**2 + normGradPhiSq[:,:] * np.max([dx,dy])**2)
 
     normal_x[phiMask] = sgnPhi[phiMask] * phi_x[phiMask] / \
                         np.sqrt(normGradPhiSq[phiMask])
     normal_y[phiMask] = sgnPhi[phiMask] * phi_y[phiMask] / \
                         np.sqrt(normGradPhiSq[phiMask])
 
-    return normal_x[:], normal_y[:]
+    return normal_x[:,:], normal_y[:,:]
 
 
 def strainRate(phi, phi_x, phi_y, phi_z, u, v, w, dx=1., dy=1., dz=1.):
