@@ -38,6 +38,10 @@ Usage
 
 .. autofunction:: pylsmlib.pythonisedfns.laminarFlameSpeed
 
+.. autofunction:: pylsmlib.lsmfns.locateLS1d
+
+.. autofunction:: pylsmlib.lsmfns.locateLS2d
+
 Doctests
 ========
 

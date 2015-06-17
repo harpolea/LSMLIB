@@ -1499,18 +1499,18 @@ def testing():
     >>> v = np.zeros_like(phi1)
     >>> w = np.zeros_like(phi1)
 
-    >>> print(pythonisedfns.strainRate(phi1, phi_x, phi_y, phi_z, u, v, w))
+    >>> ##print(pythonisedfns.strainRate(phi1, phi_x, phi_y, phi_z, u, v, w))
 
-    >>> print(pythonisedfns.strainRate(phi2, phi2_x, phi2_y, phi2_z, u, v, w, dx=0.5, dy=0.5, dz=0.5))
+    >>> ##print(pythonisedfns.strainRate(phi2, phi2_x, phi2_y, phi2_z, u, v, w, dx=0.5, dy=0.5, dz=0.5))
 
     ``laminarFlameSpeed``
 
     >>> marksteinLength = 0.2
     >>> sL0 = 3.
 
-    >>> print(pythonisedfns.laminarFlameSpeed(phi1, sL0, marksteinLength, u, v, w, fblim))
+    >>> ##print(pythonisedfns.laminarFlameSpeed(phi1, sL0, marksteinLength, u, v, w, fblim))
 
-    >>> print(pythonisedfns.laminarFlameSpeed(phi2, sL0, marksteinLength, u, v, w, fblim))
+    >>> ##print(pythonisedfns.laminarFlameSpeed(phi2, sL0, marksteinLength, u, v, w, fblim))
 
     **Test level set functions**
 
@@ -1519,11 +1519,11 @@ def testing():
     >>> phi1d = np.array([-1.,-1.,-1.,-0.7,1.,1.,1.])
     >>> phi1d = computeDistanceFunction(phi1d, dx=1.)
     >>> zeros, alpha = lsmfns.locateLS1d(phi1d)
-    >>> print(phi1d)
+    >>> ##print(phi1d)
 
-    >>> print(zeros)
+    >>> ##print(zeros)
 
-    >>> print(alpha)
+    >>> ##print(alpha)
 
     ``locateLS2d``
 
@@ -1534,16 +1534,16 @@ def testing():
     >>> phi2d = computeDistanceFunction(phi2d, dx=0.5)
     >>> phi2d_y, phi2d_x = np.gradient(phi2d, 0.5, 0.5)
     >>> norm_x, norm_y= pythonisedfns.signedUnitNormal2d(phi2d, phi2d_x, phi2d_y, dx=0.5, dy=0.5)
-    >>> print(norm_x)
+    >>> ##print(norm_x)
 
-    >>> print(norm_y)
+    >>> ##print(norm_y)
 
     >>> zeros, alpha = lsmfns.locateLS2d(phi2d, norm_x, norm_y, dx=0.5, dy=0.5)
-    >>> print(phi2d)
+    >>> ##print(phi2d)
 
-    >>> print(zeros)
+    >>> ##print(zeros)
 
-    >>> print(alpha)
+    >>> ##print(alpha)
 
 
     """
