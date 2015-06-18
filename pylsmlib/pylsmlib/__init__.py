@@ -1416,12 +1416,14 @@ def testing():
     This doesn't work - there is something up with the pointers as the surface area is passed by reference in ``lsmlib.pyx`` to the C function, but not updated by it. I strongly suspect it has something to do with the way the C function is called - I can change the ``#define`` statement in ``lsm_geometry3d.h`` so that it has a different name (e.g. ``lsm3dComputeSignedUnitNormal`` rather than ``lsm3dcomputesignedunitnormal_``), recompile and it will still run. If you look at the examples (e.g. ``curvature_model3d.c``), the C functions are all called using the CAPITAL_NAMES rather than the ones in the ``#define`` statements.
 
     >>> ##print(surfaceAreaZeroLevelSet(phi1,phix1,phix1,phix1,lim,lim,fblim))
-    >>> print(pythonisedfns.surfaceAreaLevelSet(phi1,phi_x,phi_y,phi_z, fblim))
-    2.83174324996
+    >>> norm_x, norm_y, norm_z = pythonisedfns.signedUnitNormal(phi1, phi_x, phi_y, phi_z)
+    >>> print(pythonisedfns.altSurfaceAreaLevelSet(phi1,phi_x,phi_y,phi_z, norm_x, norm_y, norm_z))
+    14.0910950538
 
     >>> ##print(surfaceAreaZeroLevelSet(phi2,phix2,phix2,phix2,lim,lim,fblim, dx=0.5, epsilon=2.))
-    >>> print(pythonisedfns.surfaceAreaLevelSet(phi2, phi2_x,phi2_y,phi2_z, fblim, dx=0.5, dy=0.5, dz=0.5, epsilon=2.))
-    0.381600952136
+    >>> norm2_x, norm2_y, norm2_z = pythonisedfns.signedUnitNormal(phi2, phi2_x, phi2_y, phi2_z, dx=0.5, dy=0.5, dz=0.5)
+    >>> print(pythonisedfns.altSurfaceAreaLevelSet(phi2, phi2_x,phi2_y,phi2_z, norm2_x, norm2_y, norm2_z, np.ones_like(phi2, dtype=bool), dx=0.5, dy=0.5, dz=0.5, epsilon=2.))
+    1.55662111361
 
     ``computeMeanCurvatureLocal``
 
@@ -1539,11 +1541,11 @@ def testing():
     >>> ##print(norm_y)
 
     >>> zeros, alpha = lsmfns.locateLS2d(phi2d, norm_x, norm_y, dx=0.5, dy=0.5)
-    >>> ##print(phi2d)
+    >>> print(phi2d)
 
-    >>> ##print(zeros)
+    >>> print(zeros)
 
-    >>> ##print(alpha)
+    >>> print(alpha)
 
 
     """

@@ -1,4 +1,5 @@
 import numpy as np
+import lsmfns
 
 __docformat__ = 'restructuredtext'
 
@@ -38,7 +39,7 @@ def gradPhi2d(phi, dx=1., dy=1.):
     return phi_x, phi_y
 
 
-def surfaceAreaLevelSet(phi, phi_x, phi_y, phi_z, ibLims,
+def surfaceAreaLevelSet(phi, phi_x, phi_y, phi_z, fnMask=None,
                             dx=1., dy=1., dz=1.,
                             epsilon=1.):
     r"""
@@ -49,31 +50,70 @@ def surfaceAreaLevelSet(phi, phi_x, phi_y, phi_z, ibLims,
       - `phi`:              level set function
       - `phi_*` :           components of :math:`\nabla \phi`
       - `dx`, `dy`, `dz`:   grid spacing
-      - `epsilon`:          width of numerical smoothing to use for Heaviside function
-      - `ibLims`:           index range for interior box (the region which the function will actually look at - it's probably more useful to just have this as an optional mask)
+      - `epsilon`:          width of numerical smoothing to use for Heaviside
+                            function
+      - `fnMask`:           boolean array defining the region which the
+                            function will actually look at
 
      :Returns:
 
-        - `area`:           area of the surface defined by the zero level                               set
+        - `area`:           area of the surface defined by the zero level set
 
     """
 
     dV = dx * dy * dz   #volume element
-    ilo, ihi, jlo, jhi, klo, khi = ibLims
-    ihi+=1
-    jhi+=1
-    khi+=1
+
+    # no mask defined, so iterate over entire array.
+    if fnMask is None:
+        fnMask = np.ones_like(phi, dtype=bool)
 
     mask = np.zeros_like(phi, dtype=bool)
     delta = np.zeros_like(phi)
     # define mask so don't need doubly nested for loops
-    mask[ilo:ihi, jlo:jhi, klo:khi] = (np.abs(phi[ilo:ihi, jlo:jhi, klo:khi]) < epsilon)
+    mask[fnMask] = (np.abs(phi[fnMask]) < epsilon)
     delta[mask] = 0.5 * (1. + np.cos(np.pi * phi[mask] /epsilon))/epsilon
 
     return np.sum(delta[mask] * dV * np.sqrt(phi_x[mask]**2 + phi_y[mask]**2 + phi_z[mask]**2))
 
 
-def surfaceAreaLevelSet2d(phi, phi_x, phi_y, ibLims,
+def altSurfaceAreaLevelSet(phi, phi_x, phi_y, phi_z,
+                            norm_x, norm_y, norm_z, fnMask=None,
+                            dx=1., dy=1., dz=1., epsilon=1.):
+    r"""
+    Computes the surface area of the surface defined by the zero level set. This version uses the level set locator function to find cells containing the zero level set.
+
+     :Parameters:
+
+      - `phi`:              level set function
+      - `phi_*` :           components of :math:`\nabla \phi`
+      - `norm_*`:           components of signed unit normal
+      - `fnMask`:           boolean array defining the region which the
+                            function will actually look at
+      - `dx`, `dy`, `dz`:   grid spacing
+      - `epsilon`:          width of numerical smoothing to use for Heaviside function
+
+     :Returns:
+
+        - `area`:           area of the surface defined by the zero level set    """
+
+    dV = dx * dy * dz   #volume element
+
+    # no mask defined, so iterate over entire array.
+    if fnMask is None:
+        fnMask = np.ones_like(phi, dtype=bool)
+
+    mask = np.zeros_like(phi, dtype=bool)
+    delta = np.zeros_like(phi)
+    # define mask
+    mask[fnMask], _ = lsmfns.locateLS3d(phi[fnMask],
+                            norm_x[fnMask], norm_y[fnMask], norm_z[fnMask],
+                            dx=dx, dy=dy, dz=dz)
+    delta[mask] = 0.5 * (1. + np.cos(np.pi * phi[mask] /epsilon))/epsilon
+
+    return np.sum(delta[mask] * dV * np.sqrt(phi_x[mask]**2 + phi_y[mask]**2 + phi_z[mask]**2))
+
+
+def surfaceAreaLevelSet2d(phi, phi_x, phi_y, fnMask=None,
                             dx=1., dy=1.,
                             epsilon=1.):
     r"""
@@ -83,25 +123,66 @@ def surfaceAreaLevelSet2d(phi, phi_x, phi_y, ibLims,
 
       - `phi`:              level set function
       - `phi_*` :           components of :math:`\nabla \phi`
-      - `dx`, `dy`:   grid spacing
-      - `epsilon`:          width of numerical smoothing to use for Heaviside function
-      - `ibLims`:           index range for interior box (the region which the function will actually look at - it's probably more useful to just have this as an optional mask)
+      - `dx`, `dy`:         grid spacing
+      - `epsilon`:          width of numerical smoothing to use for Heaviside
+                            function
+      - `fnMask`:           boolean array defining the region which the
+                            function will actually look at
 
      :Returns:
 
-        - `area`:           area of the surface defined by the zero level                               set
+        - `area`:           area of the surface defined by the zero level set
 
     """
 
     dS = dx * dy   # surface element
-    ilo, ihi, jlo, jhi = ibLims
-    ihi+=1
-    jhi+=1
+    # no mask defined, so iterate over entire array.
+    if fnMask is None:
+        fnMask = np.ones_like(phi, dtype=bool)
 
     mask = np.zeros_like(phi, dtype=bool)
     delta = np.zeros_like(phi)
     # define mask so don't need doubly nested for loops
-    mask[ilo:ihi, jlo:jhi] = (np.abs(phi[ilo:ihi, jlo:jhi]) < epsilon)
+    mask[fnMask] = (np.abs(phi[fnMask]) < epsilon)
+    delta[mask] = 0.5 * (1. + np.cos(np.pi * phi[mask] /epsilon))/epsilon
+
+    return np.sum(delta[mask] * dS * np.sqrt(phi_x[mask]**2 + phi_y[mask]**2))
+
+
+def altSurfaceAreaLevelSet2d(phi, phi_x, phi_y,
+                            norm_x, norm_y, fnMask=None,
+                            dx=1., dy=1., epsilon=1.):
+    r"""
+    Computes the surface area of the surface defined by the zero level set. This version uses the level set locator function to find cells containing the zero level set.
+
+     :Parameters:
+
+      - `phi`:              level set function
+      - `phi_*` :           components of :math:`\nabla \phi`
+      - `norm_*`:           components of signed unit normal
+      - `fnMask`:           boolean array defining the region which the
+                            function will actually look at
+      - `dx`, `dy`:         grid spacing
+      - `epsilon`:          width of numerical smoothing to use for Heaviside
+                            function
+
+     :Returns:
+
+        - `area`:           area of the surface defined by the zero level set
+
+    """
+
+    dS = dx * dy  # surface element
+    # no mask defined, so iterate over entire array.
+    if fnMask is None:
+        fnMask = np.ones_like(phi, dtype=bool)
+
+    mask = np.zeros_like(phi, dtype=bool)
+    delta = np.zeros_like(phi)
+    # define mask
+    mask[fnMask], _ = lsmfns.locateLS2d(phi[fnMask],
+                        norm_x[fnMask], norm_y[fnMask], norm_z[fnMask],
+                        dx=dx, dy=dy, dz=dz)
     delta[mask] = 0.5 * (1. + np.cos(np.pi * phi[mask] /epsilon))/epsilon
 
     return np.sum(delta[mask] * dS * np.sqrt(phi_x[mask]**2 + phi_y[mask]**2))
