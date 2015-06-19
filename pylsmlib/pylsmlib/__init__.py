@@ -1541,12 +1541,29 @@ def testing():
     >>> ##print(norm_y)
 
     >>> zeros, alpha = lsmfns.locateLS2d(phi2d, norm_x, norm_y, dx=0.5, dy=0.5)
-    >>> print(phi2d)
+    >>> ##print(phi2d)
 
-    >>> print(zeros)
+    >>> ##print(zeros)
 
-    >>> print(alpha)
+    >>> ##print(alpha)
 
+    **Flame evolution tests**
+
+    Does a circle stay circular?
+    Evolving it here is non-trivial....
+
+    >>> N     = 20
+    >>> X, Y  = np.meshgrid(np.linspace(-1, 1, N), np.linspace(-1, 1, N))
+    >>> r     = 0.5
+    >>> dx    = 2.0 / (N - 1)
+    >>> phi   = (X) ** 2 + (Y) ** 2 - r ** 2
+    >>> phi   = computeDistanceFunction(phi, dx)
+    >>> sL0 = 1.
+    >>> marksteinLength = 0.01
+    >>> u = np.zeros_like(phi)
+    >>> iblims = np.array([2,N-3, 2, N-3])
+    >>> sL = pythonisedfns.laminarFlameSpeed2d(phi, sL0, marksteinLength, u, u, iblims, dx=dx, dy=dx)
+    >>> print(sL)
 
     """
 

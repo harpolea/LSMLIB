@@ -1,5 +1,6 @@
 import numpy as np
 import lsmfns
+import pylsmlib
 
 __docformat__ = 'restructuredtext'
 
@@ -322,7 +323,7 @@ def meanCurvature2d(phi, phi_x, phi_y, fbLims,
         - `dx`, `dy`: grid spacing
         - `zero_tol`:       any curvature less than this will be set to zero
 
-    :Returns:
+      :Returns:
 
         - `kappa`:          curvature data array
     """
@@ -583,11 +584,13 @@ def laminarFlameSpeed(phi, sL0, marksteinLength, u, v, w, ibLims,
     sL = sL0 * (np.ones_like(phi) - marksteinLength * kappa[:,:,:]) - \
             marksteinLength * S[:,:,:]
 
+    _, sL[:] = pylsmlib.computeExtensionFields(phi, sL, dx=dx)
+
     return sL[:,:,:]
 
 
 def laminarFlameSpeed2d(phi, sL0, marksteinLength, u, v, ibLims,
-                        dx=1., dy=1., dz=1.):
+                        dx=1., dy=1.):
     r"""
       Computes the laminar flame speed
 
@@ -616,5 +619,7 @@ def laminarFlameSpeed2d(phi, sL0, marksteinLength, u, v, ibLims,
 
     sL = sL0 * (np.ones_like(phi) - marksteinLength * kappa[:,:]) - \
             marksteinLength * S[:,:]
+
+    _, sL[:] = pylsmlib.computeExtensionFields(phi, sL, dx=dx)
 
     return sL[:,:]
