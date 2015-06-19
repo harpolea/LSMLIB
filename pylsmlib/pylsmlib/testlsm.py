@@ -14,10 +14,10 @@ def testCircleEvolution():
     N     = 50
     t     = 0.
     X, Y  = np.meshgrid(np.linspace(-1, 1, N), np.linspace(-1, 1, N))
-    r     = 0.1
+    r     = 0.3
     dx    = 2.0 / (N - 1)
     dy    = dx
-    dt    = 0.001
+    dt    = 0.1
     phi   = (X) ** 2 + (Y) ** 2 - r ** 2
     phi   = computeDistanceFunction(phi, dx)
     title = "Circle evolution"
@@ -29,9 +29,9 @@ def testCircleEvolution():
                 [0, dx*(N-4), 0, dx*(N-4)], [2,N-3, 2, N-3], 0,0)
     plt.show(block=False)
 
-    nIt = 50
-    sL0 = 0.01
-    marksteinLength = 0.01
+    nIt = 200
+    sL0 = 0.2
+    marksteinLength = 0.0
     u = np.zeros_like(phi)
     iblims = np.array([2,N-3, 2, N-3])
     lims = np.array([2,N-2, 2, N-2])
@@ -48,9 +48,9 @@ def testCircleEvolution():
         Fx = enforceOutflowBCs(Fx, lims)
         Fy = enforceOutflowBCs(Fy, lims)
 
-        phi[ilo:ihi,jlo:jhi] += dt * ( \
-            (Fx[ilo:ihi,jlo:jhi] - Fx[ilo+1:ihi+1,jlo:jhi])/dx + \
-            (Fy[ilo:ihi,jlo:jhi] - Fy[ilo:ihi,jlo+1:jhi+1])/dy)
+        phi[ilo:ihi,jlo:jhi] -= 0.5 * dt * ( \
+            (Fx[ilo:ihi,jlo:jhi] + Fx[ilo+1:ihi+1,jlo:jhi])/dx + \
+            (Fy[ilo:ihi,jlo:jhi] + Fy[ilo:ihi,jlo+1:jhi+1])/dy)
 
         t += dt
         # enforce outflow boundary conditions
@@ -76,7 +76,7 @@ def testSquareEvolution():
     t     = 0.
     dx    = 2.0 / (N - 1)
     dy    = dx
-    dt    = 0.001
+    dt    = 0.1
     phi   = np.ones((N,N))
     phi[N/2-5:N/2+6,N/2-5:N/2+6] = -1.
     phi   = computeDistanceFunction(phi, dx)
@@ -89,9 +89,9 @@ def testSquareEvolution():
                 [0, dx*(N-4), 0, dx*(N-4)], [2,N-3, 2, N-3], 0,0)
     plt.show(block=False)
 
-    nIt = 50
-    sL0 = 0.01
-    marksteinLength = 0.01
+    nIt = 250
+    sL0 = 0.1
+    marksteinLength = 0.0
     u = np.zeros_like(phi)
     iblims = np.array([2,N-3, 2, N-3])
     lims = np.array([2,N-2, 2, N-2])
@@ -108,9 +108,9 @@ def testSquareEvolution():
         Fx = enforceOutflowBCs(Fx, lims)
         Fy = enforceOutflowBCs(Fy, lims)
 
-        phi[ilo:ihi,jlo:jhi] += dt * ( \
-            (Fx[ilo:ihi,jlo:jhi] - Fx[ilo+1:ihi+1,jlo:jhi])/dx + \
-            (Fy[ilo:ihi,jlo:jhi] - Fy[ilo:ihi,jlo+1:jhi+1])/dy)
+        phi[ilo:ihi,jlo:jhi] -= 0.5 * dt * ( \
+            (Fx[ilo:ihi,jlo:jhi] + Fx[ilo+1:ihi+1,jlo:jhi])/dx + \
+            (Fy[ilo:ihi,jlo:jhi] + Fy[ilo:ihi,jlo+1:jhi+1])/dy)
 
         t += dt
         # enforce outflow boundary conditions
@@ -131,15 +131,16 @@ def testSineEvolution():
         Evolves level set with periodic boundary conditions.
     """
 
-    # create circle
-    N     = 50
+    # create sine
+    N     = 90
+    sinewidth = np.rint(N/10)
+    sinewidth = sinewidth.astype(int)
     t     = 0.
-    r     = 0.1
     dx    = 2.0 / (N - 1)
     dy    = dx
     dt    = 0.1
     phi   = np.ones((N,N))
-    phi[N/2-5:N/2+6,:] = -1.
+    phi[N/2-sinewidth:N/2+sinewidth+1,:] = -1.
     phi   = computeDistanceFunction(phi, dx)
     title = "Periodic evolution"
 
@@ -150,8 +151,8 @@ def testSineEvolution():
     plt.show(block=False)
 
     nIt = 200
-    sL0 = 0.01
-    marksteinLength = 0.
+    sL0 = 0.1
+    marksteinLength = 0.1
     u = np.ones_like(phi)*0.1
     iblims = np.array([2,N-3, 2, N-3])
     lims = np.array([2,N-2, 2, N-2])
@@ -168,9 +169,7 @@ def testSineEvolution():
         Fx = enforcePeriodicBCs(Fx, lims)
         Fy = enforcePeriodicBCs(Fy, lims)
 
-        #print(Fx[20:-20,30]-Fx[21:-19,30])
-
-        phi[ilo:ihi,jlo:jhi] -= dt * ( \
+        phi[ilo:ihi,jlo:jhi] -= 0.5 * dt * ( \
             (Fx[ilo:ihi,jlo:jhi] + Fx[ilo+1:ihi+1,jlo:jhi])/dx + \
             (Fy[ilo:ihi,jlo:jhi] + Fy[ilo:ihi,jlo+1:jhi+1])/dy)
 
@@ -212,7 +211,6 @@ def findFluxes(phi, sL, lims, dx=1., dy=1., u=None, v=None):
     # add on laminar flame speed contribution
     u[:,:] += norm_x[:,:] * sL[:,:]
     v[:,:] += norm_y[:,:] * sL[:,:]
-    #print(norm_y[:] * sL[:])
 
     Fx[ilo:ihi, jlo:jhi] = u[ilo:ihi,jlo:jhi] * phi[ilo:ihi,jlo:jhi] - \
                            u[ilo-1:ihi-1,jlo:jhi] * phi[ilo-1:ihi-1,jlo:jhi]
@@ -266,6 +264,10 @@ def dovis(phi, title, gridLims, iblims, n, t):
                 interpolation='nearest', origin="lower",
                 extent=[xmin, xmax, ymin, ymax])
 
+    #img = plt.imshow(np.transpose(phi[ilo:ihi, jlo:jhi]),
+    #            interpolation='bilinear', origin="lower",
+    #            extent=[xmin, xmax, ymin, ymax], vmin=-0.4, vmax=1.)
+
     plt.xlabel("x")
     plt.ylabel("y")
     plt.title(title)
@@ -278,6 +280,6 @@ def dovis(phi, title, gridLims, iblims, n, t):
 
 
 if __name__ == "__main__":
-    #testCircleEvolution()
-    #testSquareEvolution()
-    testSineEvolution()
+    testCircleEvolution()
+    testSquareEvolution()
+    #testSineEvolution()
