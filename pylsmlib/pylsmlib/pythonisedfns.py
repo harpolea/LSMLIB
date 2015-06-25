@@ -584,7 +584,8 @@ def laminarFlameSpeed(phi, sL0, marksteinLength, u, v, w, ibLims,
     sL = sL0 * (np.ones_like(phi) - marksteinLength * kappa[:,:,:]) - \
             marksteinLength * S[:,:,:]
 
-    _, sL[:] = pylsmlib.computeExtensionFields(phi, sL, dx=dx)
+    # this has no 3d implementation
+    #_, sL[:] = pylsmlib.computeExtensionFields(phi, sL, dx=dx)
 
     return sL[:,:,:]
 
