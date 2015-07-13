@@ -86,7 +86,8 @@ def testSquareEvolution():
     """
 
     # create square
-    N     = 50
+    N     = 80
+    X, Y  = np.meshgrid(np.linspace(-1, 1, N), np.linspace(-1, 1, N))
     t     = 0.
     dx    = 2.0 / (N - 1)
     dy    = dx
@@ -104,18 +105,34 @@ def testSquareEvolution():
     plt.show(block=False)
 
     nIt = 250
-    sL0 = 0.1
-    marksteinLength = 0.05
-    u = 0.1 * np.ones_like(phi)
+    sL0 = 0.0
+    marksteinLength = 0.0
+    adVel = 0.05 # magnitude of advective velocity
+    u = np.zeros_like(phi)
+    v = np.zeros_like(phi)
     iblims = np.array([2,N-3, 2, N-3])
     lims = np.array([2,N-2, 2, N-2])
     ilo, ihi, jlo, jhi = lims
     gridlims = np.array([0, dx*(N-4), 0, dx*(N-4)])
 
+    #make velocities
+    #rhs
+    mask = (Y > 0.) * (Y > np.abs(X))
+    u[mask] = adVel
+    #lhs
+    mask = (Y < 0.) * (np.fabs(Y) > np.abs(X))
+    u[mask] = -1.*adVel
+    #top
+    mask = (X > 0.) * (X > np.abs(Y))
+    v[mask] = adVel
+    #bottom
+    mask = (X < 0.) * (np.fabs(X) > np.abs(Y))
+    v[mask] = -1.*adVel
+
 
     for n in range(nIt):
         # flame speed
-        sL = pythonisedfns.laminarFlameSpeed2d(phi, sL0, marksteinLength, u, u, iblims, dx=dx, dy=dx)
+        sL = pythonisedfns.laminarFlameSpeed2d(phi, sL0, marksteinLength, u, v, iblims, dx=dx, dy=dx)
 
         #calculate fluxes
         Fx, Fy = findFluxes(phi, sL, lims, dx=dx, dy=dy, u=u, v=v)
@@ -453,7 +470,7 @@ def dovis(phi, title, gridLims, iblims, n, t):
 
 
 if __name__ == "__main__":
-    testCircleEvolution()
-    #testSquareEvolution()
+    #testCircleEvolution()
+    testSquareEvolution()
     #testSineEvolution()
     #testSphereEvolution()
