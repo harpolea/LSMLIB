@@ -31,21 +31,34 @@ def testCircleEvolution():
     plt.show(block=False)
 
     nIt = 200
-    sL0 = 0.2
+    sL0 = 0.0
     marksteinLength = 0.0
     u = np.zeros_like(phi)
+    v = np.zeros_like(phi)
+    adVel = 0.1 # magnitude of advective velocity
     iblims = np.array([2,N-3, 2, N-3])
     lims = np.array([2,N-2, 2, N-2])
     ilo, ihi, jlo, jhi = lims
     gridlims = np.array([0, dx*(N-4), 0, dx*(N-4)])
 
+    #make velocities
+    hyp = np.sqrt(X[:,:]**2 + Y[:,:]**2)
+    u[:,:] = adVel * Y[:,:] / hyp[:,:]
+    v[:,:] = adVel * X[:,:] / hyp[:,:]
+
+    #fix signs
+    u[:N/2,:] = -1. * np.fabs(u[:N/2,:])
+    u[N/2:,:] = np.fabs(u[N/2:,:])
+    v[:,:N/2] = -1. * np.fabs(v[:,:N/2])
+    v[:,N/2:] = np.fabs(v[:,N/2:])
+
 
     for n in range(nIt):
         # flame speed
-        sL = pythonisedfns.laminarFlameSpeed2d(phi, sL0, marksteinLength, u, u, iblims, dx=dx, dy=dx)
+        sL = pythonisedfns.laminarFlameSpeed2d(phi, sL0, marksteinLength, u, v, iblims, dx=dx, dy=dx)
 
         #calculate fluxes
-        Fx, Fy = findFluxes(phi, sL, lims, dx=dx, dy=dy)
+        Fx, Fy = findFluxes(phi, sL, lims, dx=dx, dy=dy, u=u, v=v)
         Fx = enforceOutflowBCs(Fx, lims)
         Fy = enforceOutflowBCs(Fy, lims)
 
@@ -105,7 +118,7 @@ def testSquareEvolution():
         sL = pythonisedfns.laminarFlameSpeed2d(phi, sL0, marksteinLength, u, u, iblims, dx=dx, dy=dx)
 
         #calculate fluxes
-        Fx, Fy = findFluxes(phi, sL, lims, dx=dx, dy=dy)
+        Fx, Fy = findFluxes(phi, sL, lims, dx=dx, dy=dy, u=u, v=v)
         Fx = enforceOutflowBCs(Fx, lims)
         Fy = enforceOutflowBCs(Fy, lims)
 
@@ -144,7 +157,7 @@ def testSineEvolution():
     phi[N/2-sinewidth:N/2+sinewidth+1,:] = -1.
     phi   = computeDistanceFunction(phi, dx)
     title = "Periodic evolution"
-    toCSV = True
+    toCSV = False
 
     #set up plot
     plt.ion()
@@ -172,7 +185,7 @@ def testSineEvolution():
         sL = pythonisedfns.laminarFlameSpeed2d(phi, sL0, marksteinLength, u, u, iblims, dx=dx, dy=dx)
 
         #calculate fluxes
-        Fx, Fy = findFluxes(phi, sL, lims, dx=dx, dy=dy, u=u)
+        Fx, Fy = findFluxes(phi, sL, lims, dx=dx, dy=dy, u=u, v=u)
         Fx = enforcePeriodicBCs(Fx, lims)
         Fy = enforcePeriodicBCs(Fy, lims)
 
@@ -222,6 +235,7 @@ def testSphereEvolution():
     phi   = (X) ** 2 + (Y) ** 2 + (Z) ** 2 - r ** 2
     phi   = computeDistanceFunction(phi, dx)
     title = "Sphere evolution"
+    toCSV = False
 
     #set up plot
     plt.ion()
@@ -239,13 +253,20 @@ def testSphereEvolution():
     ilo, ihi, jlo, jhi, klo, khi = lims
     gridlims = np.array([0, dx*(N-4), 0, dx*(N-4),0, dx*(N-4)])
 
+    if toCSV:
+        headers = ['t', 'xcoord', 'ycoord', 'zcoord', 'phi']
+        filepath = '/home/alice/Documents/Dropbox/LSMLIB/pylsmlib/pylsmlib/fire/'
+        xs = [dx*n for n in range(N-4)]
+        ys = [dy*n for n in range(N-4)]
+        zs = [dz*n for n in range(N-4)]
+
 
     for n in range(nIt):
         # flame speed
         sL = pythonisedfns.laminarFlameSpeed(phi, sL0, marksteinLength, u, u, u, iblims, dx=dx, dy=dx, dz=dz)
 
         #calculate fluxes
-        Fx, Fy, Fz = findFluxes3d(phi, sL, lims, dx=dx, dy=dy, dz=dz)
+        Fx, Fy, Fz = findFluxes3d(phi, sL, lims, dx=dx, dy=dy, dz=dz, u=u, v=u, w=u)
         Fx = enforceOutflowBCs3d(Fx, lims)
         Fy = enforceOutflowBCs3d(Fy, lims)
         Fz = enforceOutflowBCs3d(Fz, lims)
@@ -263,6 +284,16 @@ def testSphereEvolution():
         dovis(np.transpose(phi[N/2,:,:]), title,
                     [0, dx*(N-4), 0, dx*(N-4)], [2,N-3, 2, N-3], n,t)
         plt.show(block=False)
+
+        # save to file
+        if toCSV:
+            #remember to ignore ghosts
+            rows = [(t, xs[i], ys[j], zs[k], phi[i,j, k]) for k in range(N-4) for j in range(N-4) for i in range(N-4)]
+
+            with open(filepath + 'sphere' + str(n) + '.csv', 'w') as f:
+                f_csv = csv.writer(f)
+                f_csv.writerow(headers)
+                f_csv.writerows(rows)
 
         # reinitialise
         phi = computeDistanceFunction(phi, dx)
@@ -347,7 +378,7 @@ def enforceOutflowBCs(phi, lims):
     r"""
         Just copy across outermost cells of inner box
     """
-    ilo, ihi, jlo, jhi = lims
+    _, _, jlo, jhi = lims
     for i in range(2):
         phi[i,jlo:jhi] = phi[2,jlo:jhi]
         phi[-(i+1),jlo:jhi] = phi[-3,jlo:jhi]
@@ -360,7 +391,7 @@ def enforceOutflowBCs3d(phi, lims):
     r"""
         Just copy across outermost cells of inner box
     """
-    ilo, ihi, jlo, jhi, klo, khi = lims
+    _, _, jlo, jhi, klo, khi = lims
     for i in range(2):
         phi[i,jlo:jhi,klo:khi] = phi[2,jlo:jhi,klo:khi]
         phi[-(i+1),jlo:jhi,klo:khi] = phi[-3,jlo:jhi,klo:khi]
@@ -375,7 +406,7 @@ def enforcePeriodicBCs(phi, lims):
     r"""
         Periodic only in x-direction - outflow still in y.
     """
-    ilo, ihi, jlo, jhi = lims
+    ilo, ihi, _, _ = lims
     for i in range(2):
         phi[ilo:ihi, i] = phi[ilo:ihi,2]
         phi[ilo:ihi, -(i+1)] = phi[ilo:ihi,-3]
@@ -417,10 +448,12 @@ def dovis(phi, title, gridLims, iblims, n, t):
     plt.figtext(0.05,0.0125, "n = %d,    t = %10.5f" % (n, t))
 
     plt.draw()
+    #if n >120:
+    #    plt.savefig("fire/sinePlot" + str(n) + ".png")
 
 
 if __name__ == "__main__":
-    #testCircleEvolution()
+    testCircleEvolution()
     #testSquareEvolution()
-    testSineEvolution()
+    #testSineEvolution()
     #testSphereEvolution()
