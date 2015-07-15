@@ -4,6 +4,7 @@ import pylsmlib
 
 __docformat__ = 'restructuredtext'
 
+
 def gradPhi(phi, dx=1., dy=1., dz=1.):
     r"""
     Computes the fourth-order, central,
@@ -41,8 +42,8 @@ def gradPhi2d(phi, dx=1., dy=1.):
 
 
 def surfaceAreaLevelSet(phi, phi_x, phi_y, phi_z, fnMask=None,
-                            dx=1., dy=1., dz=1.,
-                            epsilon=1.):
+                        dx=1., dy=1., dz=1.,
+                        epsilon=1.):
     r"""
     Computes the surface area of the surface defined by the zero level set.
 
@@ -62,7 +63,7 @@ def surfaceAreaLevelSet(phi, phi_x, phi_y, phi_z, fnMask=None,
 
     """
 
-    dV = dx * dy * dz   #volume element
+    dV = dx * dy * dz   # volume element
 
     # no mask defined, so iterate over entire array.
     if fnMask is None:
@@ -72,16 +73,19 @@ def surfaceAreaLevelSet(phi, phi_x, phi_y, phi_z, fnMask=None,
     delta = np.zeros_like(phi)
     # define mask so don't need doubly nested for loops
     mask[fnMask] = (np.abs(phi[fnMask]) < epsilon)
-    delta[mask] = 0.5 * (1. + np.cos(np.pi * phi[mask] /epsilon))/epsilon
+    delta[mask] = 0.5 * (1. + np.cos(np.pi * phi[mask] / epsilon))/epsilon
 
-    return np.sum(delta[mask] * dV * np.sqrt(phi_x[mask]**2 + phi_y[mask]**2 + phi_z[mask]**2))
+    return np.sum(delta[mask] * dV * np.sqrt(phi_x[mask]**2 + phi_y[mask]**2 +
+                  phi_z[mask]**2))
 
 
 def altSurfaceAreaLevelSet(phi, phi_x, phi_y, phi_z,
-                            norm_x, norm_y, norm_z, fnMask=None,
-                            dx=1., dy=1., dz=1., epsilon=1.):
+                           norm_x, norm_y, norm_z, fnMask=None,
+                           dx=1., dy=1., dz=1., epsilon=1.):
     r"""
-    Computes the surface area of the surface defined by the zero level set. This version uses the level set locator function to find cells containing the zero level set.
+    Computes the surface area of the surface defined by the zero level set.
+    This version uses the level set locator function to find cells containing
+    the zero level set.
 
      :Parameters:
 
@@ -91,13 +95,15 @@ def altSurfaceAreaLevelSet(phi, phi_x, phi_y, phi_z,
       - `fnMask`:           boolean array defining the region which the
                             function will actually look at
       - `dx`, `dy`, `dz`:   grid spacing
-      - `epsilon`:          width of numerical smoothing to use for Heaviside function
+      - `epsilon`:          width of numerical smoothing to use for
+                            Heaviside function
 
      :Returns:
 
-        - `area`:           area of the surface defined by the zero level set    """
+        - `area`:           area of the surface defined by the zero level set
+    """
 
-    dV = dx * dy * dz   #volume element
+    dV = dx * dy * dz   # volume element
 
     # no mask defined, so iterate over entire array.
     if fnMask is None:
@@ -107,16 +113,18 @@ def altSurfaceAreaLevelSet(phi, phi_x, phi_y, phi_z,
     delta = np.zeros_like(phi)
     # define mask
     mask[fnMask], _ = lsmfns.locateLS3d(phi[fnMask],
-                            norm_x[fnMask], norm_y[fnMask], norm_z[fnMask],
-                            dx=dx, dy=dy, dz=dz)
-    delta[mask] = 0.5 * (1. + np.cos(np.pi * phi[mask] /epsilon))/epsilon
+                                        norm_x[fnMask], norm_y[fnMask],
+                                        norm_z[fnMask],
+                                        dx=dx, dy=dy, dz=dz)
+    delta[mask] = 0.5 * (1. + np.cos(np.pi * phi[mask] / epsilon))/epsilon
 
-    return np.sum(delta[mask] * dV * np.sqrt(phi_x[mask]**2 + phi_y[mask]**2 + phi_z[mask]**2))
+    return np.sum(delta[mask] * dV * np.sqrt(phi_x[mask]**2 + phi_y[mask]**2 +
+                  phi_z[mask]**2))
 
 
 def surfaceAreaLevelSet2d(phi, phi_x, phi_y, fnMask=None,
-                            dx=1., dy=1.,
-                            epsilon=1.):
+                          dx=1., dy=1.,
+                          epsilon=1.):
     r"""
     Computes the surface area of the surface defined by the zero level set.
 
@@ -145,16 +153,18 @@ def surfaceAreaLevelSet2d(phi, phi_x, phi_y, fnMask=None,
     delta = np.zeros_like(phi)
     # define mask so don't need doubly nested for loops
     mask[fnMask] = (np.abs(phi[fnMask]) < epsilon)
-    delta[mask] = 0.5 * (1. + np.cos(np.pi * phi[mask] /epsilon))/epsilon
+    delta[mask] = 0.5 * (1. + np.cos(np.pi * phi[mask] / epsilon))/epsilon
 
     return np.sum(delta[mask] * dS * np.sqrt(phi_x[mask]**2 + phi_y[mask]**2))
 
 
 def altSurfaceAreaLevelSet2d(phi, phi_x, phi_y,
-                            norm_x, norm_y, fnMask=None,
-                            dx=1., dy=1., epsilon=1.):
+                             norm_x, norm_y, fnMask=None,
+                             dx=1., dy=1., epsilon=1.):
     r"""
-    Computes the surface area of the surface defined by the zero level set. This version uses the level set locator function to find cells containing the zero level set.
+    Computes the surface area of the surface defined by the zero level set.
+    This version uses the level set locator function to find cells containing
+    the zero level set.
 
      :Parameters:
 
@@ -182,23 +192,27 @@ def altSurfaceAreaLevelSet2d(phi, phi_x, phi_y,
     delta = np.zeros_like(phi)
     # define mask
     mask[fnMask], _ = lsmfns.locateLS2d(phi[fnMask],
-                        norm_x[fnMask], norm_y[fnMask], norm_z[fnMask],
-                        dx=dx, dy=dy, dz=dz)
-    delta[mask] = 0.5 * (1. + np.cos(np.pi * phi[mask] /epsilon))/epsilon
+                                        norm_x[fnMask], norm_y[fnMask],
+                                        norm_z[fnMask],
+                                        dx=dx, dy=dy, dz=dz)
+    delta[mask] = 0.5 * (1. + np.cos(np.pi * phi[mask] / epsilon))/epsilon
 
     return np.sum(delta[mask] * dS * np.sqrt(phi_x[mask]**2 + phi_y[mask]**2))
 
 
 def meanCurvature(phi, phi_x, phi_y, phi_z, fbLims,
-                            dx=1., dy=1., dz=1., zero_tol=1.e-11):
+                  dx=1., dy=1., dz=1., zero_tol=1.e-11):
     r"""
       Computes mean curvature
 
       .. math::
 
-        \kappa = ( \phi_{xx}\phi_y^2 + \phi_{yy}\phi_x^2 - 2\phi_{xy}\phi_x\phi_y +
-                    \phi_{xx}\phi_z^2 + \phi_{zz}\phi_x^2 - 2\phi_{xz}\phi_x\phi_z +\\
-                    \phi_{yy}\phi_z^2 + \phi_{zz}\phi_y^2 - 2\phi_{yz}\phi_y\phi_z )
+        \kappa = ( \phi_{xx}\phi_y^2 + \phi_{yy}\phi_x^2 -
+        2\phi_{xy}\phi_x\phi_y +
+                    \phi_{xx}\phi_z^2 + \phi_{zz}\phi_x^2 -
+                    2\phi_{xz}\phi_x\phi_z +\\
+                    \phi_{yy}\phi_z^2 + \phi_{zz}\phi_y^2 -
+                    2\phi_{yz}\phi_y\phi_z )
                   ( | \nabla \phi | ^ 3 )
 
       Standard centered 27 point stencil, second order differencing used.
@@ -208,7 +222,9 @@ def meanCurvature(phi, phi_x, phi_y, phi_z, fbLims,
 
         - `phi`:            level set function
         - `phi_*`:          first order derivatives of :math:`\phi`
-        - `fbLims`:         index range for fillbox (the region which the function will actually look at - it's probably more useful to just have this as an optional mask)
+        - `fbLims`:         index range for fillbox (the region which the
+        function will actually look at - it's probably more useful to just have
+        this as an optional mask)
         - `dx`, `dy`, `dz`: grid spacing
         - `zero_tol`:       any curvature less than this will be set to zero
 
@@ -217,82 +233,82 @@ def meanCurvature(phi, phi_x, phi_y, phi_z, fbLims,
         - `kappa`:          curvature data array
     """
 
-    #initialise
+    # initialise
     kappa = np.zeros_like(phi)
 
     phi_xx = np.zeros_like(phi)
-    phi_yy= np.zeros_like(phi)
+    phi_yy = np.zeros_like(phi)
     phi_zz = np.zeros_like(phi)
     phi_xy = np.zeros_like(phi)
     phi_yz = np.zeros_like(phi)
     phi_zx = np.zeros_like(phi)
 
     ilo, ihi, jlo, jhi, klo, khi = fbLims
-    ihi+=1
-    jhi+=1
-    khi+=1
+    ihi += 1
+    jhi += 1
+    khi += 1
 
-    phi_xx[ilo:ihi,jlo:jhi,klo:khi] = \
-        (-phi[ilo+2:ihi+2,jlo:jhi,klo:khi] + \
-        16.*phi[ilo+1:ihi+1,jlo:jhi,klo:khi] -\
-        30.*phi[ilo:ihi,jlo:jhi,klo:khi] -\
-        phi[ilo-2:ihi-2,jlo:jhi,klo:khi] +\
-        16.*phi[ilo-1:ihi-1,jlo:jhi,klo:khi]) / \
+    phi_xx[ilo:ihi, jlo:jhi, klo:khi] = \
+        (-phi[ilo+2:ihi+2, jlo:jhi, klo:khi] +
+         16. * phi[ilo+1:ihi+1, jlo:jhi, klo:khi] -
+         30. * phi[ilo:ihi, jlo:jhi, klo:khi] -
+         phi[ilo-2:ihi-2, jlo:jhi, klo:khi] +
+         16. * phi[ilo-1:ihi-1, jlo:jhi, klo:khi]) / \
         (12. * dx**2)
 
-    phi_yy[ilo:ihi,jlo:jhi,klo:khi] = \
-        (-phi[ilo:ihi,jlo+2:jhi+2,klo:khi] + \
-        16.*phi[ilo:ihi,jlo+1:jhi+1,klo:khi] -\
-        30.*phi[ilo:ihi,jlo:jhi,klo:khi] -\
-        phi[ilo:ihi,jlo-2:jhi-2,klo:khi] +\
-        16.*phi[ilo:ihi,jlo-1:jhi-1,klo:khi]) / \
+    phi_yy[ilo:ihi, jlo:jhi, klo:khi] = \
+        (-phi[ilo:ihi, jlo+2:jhi+2, klo:khi] +
+         16. * phi[ilo:ihi, jlo+1:jhi+1, klo:khi] -
+         30. * phi[ilo:ihi, jlo:jhi, klo:khi] -
+         phi[ilo:ihi, jlo-2:jhi-2, klo:khi] +
+         16. * phi[ilo:ihi, jlo-1:jhi-1, klo:khi]) / \
         (12. * dy**2)
 
-    phi_zz[ilo:ihi,jlo:jhi,klo:khi] = \
-        (-phi[ilo:ihi,jlo:jhi,klo+2:khi+2] + \
-        16.*phi[ilo:ihi,jlo:jhi,klo+1:khi+1] -\
-        30.*phi[ilo:ihi,jlo:jhi,klo:khi] -\
-        phi[ilo:ihi,jlo:jhi,klo-2:khi-2] +\
-        16.*phi[ilo:ihi,jlo:jhi,klo-1:khi-1]) / \
+    phi_zz[ilo:ihi, jlo:jhi, klo:khi] = \
+        (-phi[ilo:ihi, jlo:jhi, klo+2:khi+2] +
+         16. * phi[ilo:ihi, jlo:jhi, klo+1:khi+1] -
+         30. * phi[ilo:ihi, jlo:jhi, klo:khi] -
+         phi[ilo:ihi, jlo:jhi, klo-2:khi-2] +
+         16. * phi[ilo:ihi, jlo:jhi, klo-1:khi-1]) / \
         (12. * dz**2)
 
-    phi_xy[ilo:ihi,jlo:jhi,klo:khi] = \
-        (-phi_x[ilo:ihi,jlo+2:jhi+2,klo:khi] + \
-        8.*phi_x[ilo:ihi,jlo+1:jhi+1,klo:khi] +\
-        phi_x[ilo:ihi,jlo-2:jhi-2,klo:khi] -\
-        8.*phi_x[ilo:ihi,jlo-1:jhi-1,klo:khi]) / \
+    phi_xy[ilo:ihi, jlo:jhi, klo:khi] = \
+        (-phi_x[ilo:ihi, jlo+2:jhi+2, klo:khi] +
+         8. * phi_x[ilo:ihi, jlo+1:jhi+1, klo:khi] +
+         phi_x[ilo:ihi, jlo-2:jhi-2, klo:khi] -
+         8. * phi_x[ilo:ihi, jlo-1:jhi-1, klo:khi]) / \
         (12. * dy)
 
-    phi_yz[ilo:ihi,jlo:jhi,klo:khi] = \
-        (-phi_y[ilo:ihi,jlo:jhi,klo+2:khi+2] + \
-        8.*phi_y[ilo:ihi,jlo:jhi,klo+1:khi+1] +\
-        phi_y[ilo:ihi,jlo:jhi,klo-2:khi-2] -\
-        8.*phi_y[ilo:ihi,jlo:jhi,klo-1:khi-1]) / \
+    phi_yz[ilo:ihi, jlo:jhi, klo:khi] = \
+        (-phi_y[ilo:ihi, jlo:jhi, klo+2:khi+2] +
+         8.*phi_y[ilo:ihi, jlo:jhi, klo+1:khi+1] +
+         phi_y[ilo:ihi, jlo:jhi, klo-2:khi-2] -
+         8.*phi_y[ilo:ihi, jlo:jhi, klo-1:khi-1]) / \
         (12. * dz)
 
-    phi_zx[ilo:ihi,jlo:jhi,klo:khi] = \
-        (-phi_z[ilo+2:ihi+2,jlo:jhi,klo:khi] + \
-        8.*phi_z[ilo+1:ihi+1,jlo:jhi,klo:khi] +\
-        phi_z[ilo-2:ihi-2,jlo:jhi,klo:khi] -\
-        8.*phi_z[ilo-1:ihi-1,jlo:jhi,klo:khi]) / \
+    phi_zx[ilo:ihi, jlo:jhi, klo:khi] = \
+        (-phi_z[ilo+2:ihi+2, jlo:jhi, klo:khi] +
+         8.*phi_z[ilo+1:ihi+1, jlo:jhi, klo:khi] +
+         phi_z[ilo-2:ihi-2, jlo:jhi, klo:khi] -
+         8.*phi_z[ilo-1:ihi-1, jlo:jhi, klo:khi]) / \
         (12. * dx)
 
-    denominator = np.sqrt(phi_x[:,:,:]**2 + phi_y[:,:,:]**2 + \
-                            phi_z[:,:,:]**2) ** 3
+    denominator = np.sqrt(phi_x[:, :, :]**2 + phi_y[:, :, :]**2 +
+                          phi_z[:, :, :]**2) ** 3
 
-    kappa[ilo:ihi,jlo:jhi,klo:khi] = phi_xx[ilo:ihi,jlo:jhi,klo:khi] * \
-        phi_y[ilo:ihi,jlo:jhi,klo:khi]**2 + \
-        phi_yy[ilo:ihi,jlo:jhi,klo:khi]*phi_x[ilo:ihi,jlo:jhi,klo:khi]**2 -\
-        2.* phi_xy[ilo:ihi,jlo:jhi,klo:khi] * phi_x[ilo:ihi,jlo:jhi,klo:khi]*\
-        phi_y[ilo:ihi,jlo:jhi,klo:khi] + \
-        phi_xx[ilo:ihi,jlo:jhi,klo:khi]*phi_z[ilo:ihi,jlo:jhi,klo:khi]**2 +\
-        phi_zz[ilo:ihi,jlo:jhi,klo:khi]*phi_x[ilo:ihi,jlo:jhi,klo:khi]**2 -\
-        2.* phi_zx[ilo:ihi,jlo:jhi,klo:khi] * phi_x[ilo:ihi,jlo:jhi,klo:khi]*\
-        phi_z[ilo:ihi,jlo:jhi,klo:khi] +\
-        phi_yy[ilo:ihi,jlo:jhi,klo:khi]*phi_z[ilo:ihi,jlo:jhi,klo:khi]**2 +\
-        phi_zz[ilo:ihi,jlo:jhi,klo:khi]*phi_y[ilo:ihi,jlo:jhi,klo:khi]**2 -\
-        2.* phi_yz[ilo:ihi,jlo:jhi,klo:khi]*phi_y[ilo:ihi,jlo:jhi,klo:khi] *\
-        phi_z[ilo:ihi,jlo:jhi,klo:khi]
+    kappa[ilo:ihi, jlo:jhi, klo:khi] = phi_xx[ilo:ihi, jlo:jhi, klo:khi] * \
+        phi_y[ilo:ihi, jlo:jhi, klo:khi]**2 + \
+        phi_yy[ilo:ihi, jlo:jhi, klo:khi]*phi_x[ilo:ihi, jlo:jhi, klo:khi]**2 -\
+        2. * phi_xy[ilo:ihi, jlo:jhi, klo:khi] * phi_x[ilo:ihi, jlo:jhi, klo:khi] *\
+        phi_y[ilo:ihi, jlo:jhi, klo:khi] + \
+        phi_xx[ilo:ihi, jlo:jhi, klo:khi]*phi_z[ilo:ihi, jlo:jhi, klo:khi]**2 +\
+        phi_zz[ilo:ihi, jlo:jhi, klo:khi]*phi_x[ilo:ihi, jlo:jhi, klo:khi]**2 -\
+        2. * phi_zx[ilo:ihi, jlo:jhi, klo:khi] * phi_x[ilo:ihi, jlo:jhi, klo:khi] *\
+        phi_z[ilo:ihi, jlo:jhi, klo:khi] +\
+        phi_yy[ilo:ihi, jlo:jhi, klo:khi]*phi_z[ilo:ihi, jlo:jhi, klo:khi]**2 +\
+        phi_zz[ilo:ihi, jlo:jhi, klo:khi]*phi_y[ilo:ihi, jlo:jhi, klo:khi]**2 -\
+        2. * phi_yz[ilo:ihi, jlo:jhi, klo:khi]*phi_y[ilo:ihi, jlo:jhi, klo:khi] *\
+        phi_z[ilo:ihi, jlo:jhi, klo:khi]
 
     kappa[denominator < zero_tol] = 0.
     kappa[denominator >= zero_tol] /= denominator[denominator >= zero_tol]
@@ -301,15 +317,18 @@ def meanCurvature(phi, phi_x, phi_y, phi_z, fbLims,
 
 
 def meanCurvature2d(phi, phi_x, phi_y, fbLims,
-                            dx=1., dy=1., zero_tol=1.e-11):
+                    dx=1., dy=1., zero_tol=1.e-11):
     r"""
       Computes mean curvature
 
       .. math::
 
-        \kappa = ( \phi_{xx}\phi_y^2 + \phi_{yy}\phi_x^2 - 2\phi_{xy}\phi_x\phi_y +
-                    \phi_{xx}\phi_z^2 + \phi_{zz}\phi_x^2 - 2\phi_{xz}\phi_x\phi_z +\\
-                    \phi_{yy}\phi_z^2 + \phi_{zz}\phi_y^2 - 2\phi_{yz}\phi_y\phi_z )
+        \kappa = ( \phi_{xx}\phi_y^2 + \phi_{yy}\phi_x^2 -
+        2\phi_{xy}\phi_x\phi_y +
+                    \phi_{xx}\phi_z^2 + \phi_{zz}\phi_x^2 -
+                    2\phi_{xz}\phi_x\phi_z +\\
+                    \phi_{yy}\phi_z^2 + \phi_{zz}\phi_y^2 -
+                    2\phi_{yz}\phi_y\phi_z )
                   ( | \nabla \phi | ^ 3 )
 
       Standard centered 27 point stencil, second order differencing used.
@@ -319,7 +338,9 @@ def meanCurvature2d(phi, phi_x, phi_y, fbLims,
 
         - `phi`:            level set function
         - `phi_*`:          first order derivatives of :math:`\phi`
-        - `fbLims`:         index range for fillbox (the region which the function will actually look at - it's probably more useful to just have this as an optional mask)
+        - `fbLims`:         index range for fillbox (the region which the
+        function will actually look at - it's probably more useful to just have
+        this as an optional mask)
         - `dx`, `dy`: grid spacing
         - `zero_tol`:       any curvature less than this will be set to zero
 
@@ -328,39 +349,39 @@ def meanCurvature2d(phi, phi_x, phi_y, fbLims,
         - `kappa`:          curvature data array
     """
 
-    #initialise
+    # initialise
     kappa = np.zeros_like(phi)
 
     phi_xx = np.zeros_like(phi)
-    phi_yy= np.zeros_like(phi)
+    phi_yy = np.zeros_like(phi)
     phi_xy = np.zeros_like(phi)
 
     ilo, ihi, jlo, jhi = fbLims
-    ihi+=1
-    jhi+=1
+    ihi += 1
+    jhi += 1
 
-    phi_xx[ilo:ihi,jlo:jhi] = \
-        (-phi[ilo+2:ihi+2,jlo:jhi] + 16.*phi[ilo+1:ihi+1,jlo:jhi] - \
-        30.*phi[ilo:ihi,jlo:jhi] - phi[ilo-2:ihi-2,jlo:jhi] + \
-        16.*phi[ilo-1:ihi-1,jlo:jhi]) / (12. * dx**2)
+    phi_xx[ilo:ihi, jlo:jhi] = \
+        (-phi[ilo+2:ihi+2, jlo:jhi] + 16.*phi[ilo+1:ihi+1, jlo:jhi] -
+         30.*phi[ilo:ihi, jlo:jhi] - phi[ilo-2:ihi-2, jlo:jhi] +
+         16.*phi[ilo-1:ihi-1, jlo:jhi]) / (12. * dx**2)
 
-    phi_yy[ilo:ihi,jlo:jhi] = \
-        (-phi[ilo:ihi,jlo+2:jhi+2] + 16.*phi[ilo:ihi,jlo+1:jhi+1,] - \
-        30.*phi[ilo:ihi,jlo:jhi] - phi[ilo:ihi,jlo-2:jhi-2] + \
-        16.*phi[ilo:ihi,jlo-1:jhi-1]) / (12. * dy**2)
+    phi_yy[ilo:ihi, jlo:jhi] = \
+        (-phi[ilo:ihi, jlo+2:jhi+2] + 16.*phi[ilo:ihi, jlo+1:jhi+1] -
+         30.*phi[ilo:ihi, jlo:jhi] - phi[ilo:ihi, jlo-2:jhi-2] +
+         16.*phi[ilo:ihi, jlo-1:jhi-1]) / (12. * dy**2)
 
-    phi_xy[ilo:ihi,jlo:jhi] = \
-        (-phi_x[ilo:ihi,jlo+2:jhi+2] + 8.*phi_x[ilo:ihi,jlo+1:jhi+1] + \
-        phi_x[ilo:ihi,jlo-2:jhi-2] - 8.*phi_x[ilo:ihi,jlo-1:jhi-1]) / \
+    phi_xy[ilo:ihi, jlo:jhi] = \
+        (-phi_x[ilo:ihi, jlo+2:jhi+2] + 8.*phi_x[ilo:ihi, jlo+1:jhi+1] +
+         phi_x[ilo:ihi, jlo-2:jhi-2] - 8.*phi_x[ilo:ihi, jlo-1:jhi-1]) / \
         (12. * dy)
 
-    denominator = phi_x[:,:]**2 + phi_y[:,:]**2
+    denominator = phi_x[:, :]**2 + phi_y[:, :]**2
 
-    kappa[ilo:ihi,jlo:jhi] = phi_xx[ilo:ihi,jlo:jhi] * \
-        phi_y[ilo:ihi,jlo:jhi]**2 + \
-        phi_yy[ilo:ihi,jlo:jhi]*phi_x[ilo:ihi,jlo:jhi]**2 - \
-        2.* phi_xy[ilo:ihi,jlo:jhi] * phi_x[ilo:ihi,jlo:jhi] * \
-        phi_y[ilo:ihi,jlo:jhi]
+    kappa[ilo:ihi, jlo:jhi] = phi_xx[ilo:ihi, jlo:jhi] * \
+        phi_y[ilo:ihi, jlo:jhi]**2 + \
+        phi_yy[ilo:ihi, jlo:jhi]*phi_x[ilo:ihi, jlo:jhi]**2 - \
+        2. * phi_xy[ilo:ihi, jlo:jhi] * phi_x[ilo:ihi, jlo:jhi] * \
+        phi_y[ilo:ihi, jlo:jhi]
 
     kappa[denominator < zero_tol] = 0.
     kappa[denominator >= zero_tol] /= denominator[denominator >= zero_tol]
@@ -369,7 +390,7 @@ def meanCurvature2d(phi, phi_x, phi_y, fbLims,
 
 
 def signedUnitNormal(phi, phi_x, phi_y, phi_z,
-                        dx=1., dy=1., dz=1., zero_tol=1.e-11):
+                     dx=1., dy=1., dz=1., zero_tol=1.e-11):
     r"""
       Computes the signed unit normal
       vector (sgn(phi)*normal) to the interface from :math:`\nabla \phi`
@@ -385,7 +406,8 @@ def signedUnitNormal(phi, phi_x, phi_y, phi_z,
        - `phi`:             level set function
        - `phi_*`:           components of :math:`\nabla \phi`
        - `dx`, `dy`, `dz`:  grid spacing
-       - `zero_tol`:        only calculate normal if :math:`| \nabla \phi |` is greater than this
+       - `zero_tol`:        only calculate normal if :math:`| \nabla \phi |` is
+       greater than this
 
       :Returns:
 
@@ -393,7 +415,8 @@ def signedUnitNormal(phi, phi_x, phi_y, phi_z,
 
       :Notes:
 
-        - When :math:`| \nabla \phi |`  is close to zero, the unit normal is arbitrarily set to be :math:`(1.0, 0.0, 0.0)`
+        - When :math:`| \nabla \phi |`  is close to zero, the unit normal is
+        arbitrarily set to be :math:`(1.0, 0.0, 0.0)`
     """
 
     normal_x = np.zeros_like(phi)
@@ -405,20 +428,21 @@ def signedUnitNormal(phi, phi_x, phi_y, phi_z,
     normGradPhiSq = phi_x[:]**2 + phi_y[:]**2 + phi_z[:]**2
     phiMask[:] *= (normGradPhiSq[:] >= zero_tol)
 
-    sgnPhi = phi[:] / np.sqrt(phi[:]**2 + normGradPhiSq[:] * np.max([dx,dy,dz])**2)
+    sgnPhi = phi[:] / np.sqrt(phi[:]**2 + normGradPhiSq[:] *
+                              np.max([dx, dy, dz])**2)
 
     normal_x[phiMask] = sgnPhi[phiMask] * phi_x[phiMask] / \
-                        np.sqrt(normGradPhiSq[phiMask])
+        np.sqrt(normGradPhiSq[phiMask])
     normal_y[phiMask] = sgnPhi[phiMask] * phi_y[phiMask] / \
-                        np.sqrt(normGradPhiSq[phiMask])
+        np.sqrt(normGradPhiSq[phiMask])
     normal_z[phiMask] = sgnPhi[phiMask] * phi_z[phiMask] / \
-                        np.sqrt(normGradPhiSq[phiMask])
+        np.sqrt(normGradPhiSq[phiMask])
 
     return normal_x[:], normal_y[:], normal_z[:]
 
 
 def signedUnitNormal2d(phi, phi_x, phi_y,
-                        dx=1., dy=1., zero_tol=1.e-11):
+                       dx=1., dy=1., zero_tol=1.e-11):
     r"""
       Computes the signed unit normal
       vector (sgn(phi)*normal) to the interface from :math:`\nabla \phi`
@@ -434,7 +458,8 @@ def signedUnitNormal2d(phi, phi_x, phi_y,
        - `phi`:             level set function
        - `phi_*`:           components of :math:`\nabla \phi`
        - `dx`, `dy`:  grid spacing
-       - `zero_tol`:        only calculate normal if :math:`| \nabla \phi |` is greater than this
+       - `zero_tol`:        only calculate normal if :math:`| \nabla \phi |` is
+       greater than this
 
       :Returns:
 
@@ -442,25 +467,27 @@ def signedUnitNormal2d(phi, phi_x, phi_y,
 
       :Notes:
 
-        - When :math:`| \nabla \phi |`  is close to zero, the unit normal is arbitrarily set to be :math:`(1.0, 0.0, 0.0)`
+        - When :math:`| \nabla \phi |`  is close to zero, the unit normal is
+        arbitrarily set to be :math:`(1.0, 0.0, 0.0)`
     """
 
     normal_x = np.zeros_like(phi)
     normal_y = np.zeros_like(phi)
-    phiMask = (np.abs(phi[:,:]) > zero_tol)
+    phiMask = (np.abs(phi[:, :]) > zero_tol)
     normal_x[phiMask] = 1.0
 
-    normGradPhiSq = phi_x[:,:]**2 + phi_y[:]**2
-    phiMask[:,:] *= (normGradPhiSq[:,:] >= zero_tol)
+    normGradPhiSq = phi_x[:, :]**2 + phi_y[:]**2
+    phiMask[:, :] *= (normGradPhiSq[:, :] >= zero_tol)
 
-    sgnPhi = phi[:,:] / np.sqrt(phi[:,:]**2 + normGradPhiSq[:,:] * np.max([dx,dy])**2)
+    sgnPhi = phi[:, :] / np.sqrt(phi[:, :]**2 + normGradPhiSq[:, :] *
+                                 np.max([dx, dy])**2)
 
     normal_x[phiMask] = sgnPhi[phiMask] * phi_x[phiMask] / \
-                        np.sqrt(normGradPhiSq[phiMask])
+        np.sqrt(normGradPhiSq[phiMask])
     normal_y[phiMask] = sgnPhi[phiMask] * phi_y[phiMask] / \
-                        np.sqrt(normGradPhiSq[phiMask])
+        np.sqrt(normGradPhiSq[phiMask])
 
-    return normal_x[:,:], normal_y[:,:]
+    return normal_x[:, :], normal_y[:, :]
 
 
 def strainRate(phi, phi_x, phi_y, phi_z, u, v, w, dx=1., dy=1., dz=1.):
@@ -469,7 +496,8 @@ def strainRate(phi, phi_x, phi_y, phi_z, u, v, w, dx=1., dy=1., dz=1.):
 
       .. math::
 
-        S = -\vec{n}\cdot\vec{\nabla}\vec{v}\cdot\vec{n} = -n^i\nabla_iv^jn^k\delta_{jk}
+        S = -\vec{n}\cdot\vec{\nabla}\vec{v}\cdot\vec{n} =
+        -n^i\nabla_iv^jn^k\delta_{jk}
 
       :Parameters:
 
@@ -484,7 +512,7 @@ def strainRate(phi, phi_x, phi_y, phi_z, u, v, w, dx=1., dy=1., dz=1.):
     """
 
     norm_x, norm_y, norm_z = signedUnitNormal(phi, phi_x, phi_y, phi_z,
-                            dx=dx, dy=dy, dz=dz)
+                                              dx=dx, dy=dy, dz=dz)
     gradu_x, gradu_y, gradu_z = np.gradient(u, dx, dy, dz)
     gradv_x, gradv_y, gradv_z = np.gradient(v, dx, dy, dz)
     gradw_x, gradw_y, gradw_z = np.gradient(w, dx, dy, dz)
@@ -496,18 +524,18 @@ def strainRate(phi, phi_x, phi_y, phi_z, u, v, w, dx=1., dy=1., dz=1.):
     norms = np.array([norm_x, norm_y, norm_z])
 
     S = np.zeros_like(phi)
-    Stemp = np.zeros_like([phi,phi,phi])
+    Stemp = np.zeros_like([phi, phi, phi])
 
-    for i in range(0,3):
-        Stemp[0,:,:,:] += gradvs_x[i,:,:,:] * norms[i,:,:,:]
-        Stemp[1,:,:,:] += gradvs_y[i,:,:,:] * norms[i,:,:,:]
-        Stemp[2,:,:,:] += gradvs_z[i,:,:,:] * norms[i,:,:,:]
+    for i in range(0, 3):
+        Stemp[0, :, :, :] += gradvs_x[i, :, :, :] * norms[i, :, :, :]
+        Stemp[1, :, :, :] += gradvs_y[i, :, :, :] * norms[i, :, :, :]
+        Stemp[2, :, :, :] += gradvs_z[i, :, :, :] * norms[i, :, :, :]
 
-    S[:,:,:] = -(norm_x[:,:,:] * Stemp[0,:,:,:] + \
-          norm_y[:,:,:] * Stemp[1,:,:,:] + \
-          norm_z[:,:,:] * Stemp[2,:,:,:])
+    S[:, :, :] = -(norm_x[:, :, :] * Stemp[0, :, :, :] +
+                   norm_y[:, :, :] * Stemp[1, :, :, :] +
+                   norm_z[:, :, :] * Stemp[2, :, :, :])
 
-    return S[:,:,:]
+    return S[:, :, :]
 
 
 def strainRate2d(phi, phi_x, phi_y, u, v, dx=1., dy=1.):
@@ -516,7 +544,8 @@ def strainRate2d(phi, phi_x, phi_y, u, v, dx=1., dy=1.):
 
       .. math::
 
-        S = -\vec{n}\cdot\vec{\nabla}\vec{v}\cdot\vec{n} = -n^i\nabla_iv^jn^k\delta_{jk}
+        S = -\vec{n}\cdot\vec{\nabla}\vec{v}\cdot\vec{n} =
+        -n^i\nabla_iv^jn^k\delta_{jk}
 
       :Parameters:
 
@@ -530,10 +559,9 @@ def strainRate2d(phi, phi_x, phi_y, u, v, dx=1., dy=1.):
         - `S`:              strain rate
     """
     norm_x, norm_y = signedUnitNormal2d(phi, phi_x, phi_y,
-                            dx=dx, dy=dy)
+                                        dx=dx, dy=dy)
     gradu_x, gradu_y = np.gradient(u, dx, dy)
     gradv_x, gradv_y = np.gradient(v, dx, dy)
-
 
     gradvs_x = np.array([gradu_x, gradv_x])
     gradvs_y = np.array([gradu_y, gradv_y])
@@ -541,20 +569,20 @@ def strainRate2d(phi, phi_x, phi_y, u, v, dx=1., dy=1.):
     norms = np.array([norm_x, norm_y])
 
     S = np.zeros_like(phi)
-    Stemp = np.zeros_like([phi,phi])
+    Stemp = np.zeros_like([phi, phi])
 
-    for i in range(0,2):
-        Stemp[0,:,:] += gradvs_x[i,:,:] * norms[i,:,:]
-        Stemp[1,:,:] += gradvs_y[i,:,:] * norms[i,:,:]
+    for i in range(0, 2):
+        Stemp[0, :, :] += gradvs_x[i, :, :] * norms[i, :, :]
+        Stemp[1, :, :] += gradvs_y[i, :, :] * norms[i, :, :]
 
-    S[:,:] = -(norm_x[:,:] * Stemp[0,:,:] + \
-          norm_y[:,:] * Stemp[1,:,:])
+    S[:, :] = -(norm_x[:, :] * Stemp[0, :, :] +
+                norm_y[:, :] * Stemp[1, :, :])
 
-    return S[:,:]
+    return S[:, :]
 
 
 def laminarFlameSpeed(phi, sL0, marksteinLength, u, v, w, ibLims,
-                        dx=1., dy=1., dz=1.):
+                      dx=1., dy=1., dz=1.):
     r"""
       Computes the laminar flame speed
 
@@ -568,7 +596,9 @@ def laminarFlameSpeed(phi, sL0, marksteinLength, u, v, w, ibLims,
        - `sL0`:             burning velocity of the unstretched laminar flame
        - `marksteinLength`: Markstein length :math:`\mathcal{L}`
        - `u`, `v`, `w`:     components of velocity
-       - `ibLims`:          index range for interior box (the region which the function will actually look at - it's probably more useful to just have this as an optional mask)
+       - `ibLims`:          index range for interior box (the region which the
+       function will actually look at - it's probably more useful to just have
+       this as an optional mask)
        - `dx`, `dy`, `dz`:  grid spacing
 
       :Returns:
@@ -578,16 +608,16 @@ def laminarFlameSpeed(phi, sL0, marksteinLength, u, v, w, ibLims,
 
     phi_x, phi_y, phi_z = gradPhi(phi, dx=dx, dy=dy, dz=dz)
     kappa = meanCurvature(phi, phi_x, phi_y, phi_z, ibLims,
-                                dx=dx, dy=dy, dz=dz)
+                          dx=dx, dy=dy, dz=dz)
     S = strainRate(phi, phi_x, phi_y, phi_z, u, v, w, dx=dx, dy=dy, dz=dz)
 
-    sL = sL0 * (np.ones_like(phi) - marksteinLength * kappa[:,:,:]) - \
-            marksteinLength * S[:,:,:]
+    sL = sL0 * (np.ones_like(phi) - marksteinLength * kappa[:, :, :]) - \
+        marksteinLength * S[:, :, :]
 
     # this has no 3d implementation
-    #_, sL[:] = pylsmlib.computeExtensionFields(phi, sL, dx=dx)
+    # _, sL[:] = pylsmlib.computeExtensionFields(phi, sL, dx=dx)
 
-    return sL[:,:,:]
+    return sL[:, :, :]
 
 
 def laminarFlameSpeed2d(phi, sL0, marksteinLength, u, v, ibLims,
@@ -605,7 +635,9 @@ def laminarFlameSpeed2d(phi, sL0, marksteinLength, u, v, ibLims,
        - `sL0`:             burning velocity of the unstretched laminar flame
        - `marksteinLength`: Markstein length :math:`\mathcal{L}`
        - `u`, `v`:     components of velocity
-       - `ibLims`:          index range for interior box (the region which the function will actually look at - it's probably more useful to just have this as an optional mask)
+       - `ibLims`:          index range for interior box (the region which the
+       function will actually look at - it's probably more useful to just have
+       this as an optional mask)
        - `dx`, `dy`:  grid spacing
 
       :Returns:
@@ -615,12 +647,12 @@ def laminarFlameSpeed2d(phi, sL0, marksteinLength, u, v, ibLims,
 
     phi_x, phi_y = gradPhi2d(phi, dx=dx, dy=dy)
     kappa = meanCurvature2d(phi, phi_x, phi_y, ibLims,
-                                dx=dx, dy=dy)
+                            dx=dx, dy=dy)
     S = strainRate2d(phi, phi_x, phi_y, u, v, dx=dx, dy=dy)
 
-    sL = sL0 * (np.ones_like(phi) - marksteinLength * kappa[:,:]) - \
-            marksteinLength * S[:,:]
+    sL = sL0 * (np.ones_like(phi) - marksteinLength * kappa[:, :]) - \
+        marksteinLength * S[:, :]
 
     _, sL[:] = pylsmlib.computeExtensionFields(phi, sL, dx=dx)
 
-    return sL[:,:]
+    return sL[:, :]
