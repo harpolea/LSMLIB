@@ -344,6 +344,9 @@ def testVortexEvolution():
         The vortex reverses direction after a certain number of timesteps to see
         how close the system returns to the initial conditions.
 
+        Test found in:
+        Enright, D.P., 2002. Use of the Particle Level Set Method for Enhanced Resolution of Free Surface Flows. Stanford University. Available at: http://web.stanford.edu/group/fpc/Publications/Enright Thesis.pdf.
+
     """
 
     # create circle
@@ -427,6 +430,123 @@ def testVortexEvolution():
         t += dt
         # enforce outflow boundary conditions
         phi = enforceOutflowBCs(phi, lims)
+
+        # plotting
+        dovis(np.transpose(phi), title, gridlims, iblims, n+nIt, t)
+        #streamplot(np.linspace(-0.5, 0.5, N), u, v, title)
+        plt.show(block=False)
+
+        # reinitialise
+        phi = computeDistanceFunction(phi, dx)
+
+    return
+
+
+def testPeriodicVortexEvolution():
+    r"""
+        Evolves a circle in periodic vortex field. The vortex is initialised
+        with the stream function
+
+        ..math::
+
+            \Psi = \frac{1}{4\pi}\sin(4\pi (x+0.5))\sin(4\pi (y+0.5)),
+
+        where the velocities are then given by
+        :math:`u = \partial\Psi/\partial y`,
+        :math:`v = -\partial\Psi/\partial x`.
+
+        The vortex reverses direction after a certain number of timesteps to see
+        how close the system returns to the initial conditions.
+
+        Test found in:
+        Enright, D.P., 2002. Use of the Particle Level Set Method for Enhanced Resolution of Free Surface Flows. Stanford University. Available at: http://web.stanford.edu/group/fpc/Publications/Enright Thesis.pdf.
+
+    """
+
+    # create circle
+    N = 180
+    t = 0.
+    X, Y = np.meshgrid(np.linspace(0., 1., N), np.linspace(0., 1., N))
+    r = 0.2
+    dx = 1.0 / (N - 1.)
+    dy = dx
+    dt = 0.05
+    phi = (X-0.5) ** 2 + (Y-0.5) ** 2 - r ** 2
+    phi = computeDistanceFunction(phi, dx)
+    phi = enforce2dPeriodicBCs(phi)
+    title = "Vortex evolution"
+
+    # set up plot
+    plt.ion()
+    plt.figure(num=1, figsize=(12, 9), dpi=100, facecolor='w')
+    dovis(np.transpose(phi), title,
+          [0, dx*(N-4), 0, dx*(N-4)], [2, N-3, 2, N-3], 0, 0)
+    plt.show(block=False)
+
+    nIt = 200
+    sL0 = 0.0
+    marksteinLength = 0.0
+    u = np.zeros_like(phi)
+    v = np.zeros_like(phi)
+    adVel = 0.1  # magnitude of advective velocity
+    iblims = np.array([2, N-3, 2, N-3])
+    lims = np.array([2, N-2, 2, N-2])
+    ilo, ihi, jlo, jhi = lims
+    gridlims = np.array([0, dx*(N-4), 0, dx*(N-4)])
+
+    # make velocities
+    u[:, :] = -adVel * np.sin(4. * (Y[:, :] + 0.5) * np.pi) * \
+        np.sin(4. * (X[:,:] + 0.5) * np.pi)
+    v[:, :] = -adVel * np.cos(4. * (Y[:, :] + 0.5) * np.pi) * \
+        np.cos(4. * (X[:,:] + 0.5) * np.pi)
+
+    for n in range(nIt):
+        # flame speed
+        sL = pythonisedfns.laminarFlameSpeed2d(phi, sL0, marksteinLength, u, v,
+                                               iblims, dx=dx, dy=dx)
+
+        # calculate fluxes
+        Fx, Fy = findFluxes(phi, sL, lims, dx=dx, dy=dy, u=u, v=v)
+        Fx = enforce2dPeriodicBCs(Fx)
+        Fy = enforce2dPeriodicBCs(Fy)
+
+        phi[ilo:ihi, jlo:jhi] -= 0.5 * dt * (
+            (Fx[ilo:ihi, jlo:jhi] + Fx[ilo+1:ihi+1, jlo:jhi])/dx +
+            (Fy[ilo:ihi, jlo:jhi] + Fy[ilo:ihi, jlo+1:jhi+1])/dy)
+
+        t += dt
+        # enforce outflow boundary conditions
+        phi = enforce2dPeriodicBCs(phi)
+
+        # plotting
+        dovis(np.transpose(phi), title, gridlims, iblims, n, t)
+        #streamplot(np.linspace(-0.5, 0.5, N), u, v, title)
+        plt.show(block=False)
+
+        # reinitialise
+        phi = computeDistanceFunction(phi, dx)
+
+    # now reverse the direction of the vortex and rewind
+    u[:, :] = -u[:, :]
+    v[:, :] = -v[:, :]
+
+    for n in range(nIt):
+        # flame speed
+        sL = pythonisedfns.laminarFlameSpeed2d(phi, sL0, marksteinLength, u, v,
+                                               iblims, dx=dx, dy=dx)
+
+        # calculate fluxes
+        Fx, Fy = findFluxes(phi, sL, lims, dx=dx, dy=dy, u=u, v=v)
+        Fx = enforce2dPeriodicBCs(Fx)
+        Fy = enforce2dPeriodicBCs(Fy)
+
+        phi[ilo:ihi, jlo:jhi] -= 0.5 * dt * (
+            (Fx[ilo:ihi, jlo:jhi] + Fx[ilo+1:ihi+1, jlo:jhi])/dx +
+            (Fy[ilo:ihi, jlo:jhi] + Fy[ilo:ihi, jlo+1:jhi+1])/dy)
+
+        t += dt
+        # enforce periodic boundary conditions
+        phi = enforce2dPeriodicBCs(phi)
 
         # plotting
         dovis(np.transpose(phi), title, gridlims, iblims, n+nIt, t)
@@ -559,6 +679,17 @@ def enforcePeriodicBCs(phi, lims):
         phi[-(i+1), :] = phi[3-i, :]
     return phi
 
+def enforce2dPeriodicBCs(phi):
+    r"""
+        Periodic in both directions
+    """
+    for i in range(2):
+        phi[i, :] = phi[-4+i, :]
+        phi[-(i+1), :] = phi[3-i, :]
+        phi[:, i] = phi[:, -4+i]
+        phi[:, -(i+1)] = phi[:, 3-i]
+    return phi
+
 
 def dovis(phi, title, gridLims, iblims, n, t):
     """
@@ -624,4 +755,5 @@ if __name__ == "__main__":
     # testSquareEvolution()
     # testSineEvolution()
     testVortexEvolution()
+    #testPeriodicVortexEvolution()
     # testSphereEvolution()
