@@ -268,11 +268,11 @@ def testSphereEvolution():
     nIt = 100
     sL0 = 0.2
     marksteinLength = 0.05
-    u = 0.1*np.zeros_like(phi)
+    u = 0.1 * np.zeros_like(phi)
     iblims = np.array([2, N-3, 2, N-3, 2, N-3])
     lims = np.array([2, N-2, 2, N-2, 2, N-2])
     ilo, ihi, jlo, jhi, klo, khi = lims
-    gridlims = np.array([0, dx*(N-4), 0, dx*(N-4), 0, dx*(N-4)])
+    # gridlims = np.array([0, dx*(N-4), 0, dx*(N-4), 0, dx*(N-4)])
 
     if toCSV:
         headers = ['t', 'xcoord', 'ycoord', 'zcoord', 'phi']
@@ -321,6 +321,117 @@ def testSphereEvolution():
                 f_csv = csv.writer(f)
                 f_csv.writerow(headers)
                 f_csv.writerows(rows)
+
+        # reinitialise
+        phi = computeDistanceFunction(phi, dx)
+
+    return
+
+
+def testVortexEvolution():
+    r"""
+        Evolves a circle in a vortex. The vortex is initialised with the stream
+        function
+
+        ..math::
+
+            \Psi = \frac{1}{\pi}\sin^2(\pi x)\sin^2(\pi y),
+
+        where the velocities are then given by
+        :math:`u = \partial\Psi/\partial y`,
+        :math:`v = -\partial\Psi/\partial x`.
+
+        The vortex reverses direction after a certain number of timesteps to see
+        how close the system returns to the initial conditions.
+
+    """
+
+    # create circle
+    N = 80
+    t = 0.
+    X, Y = np.meshgrid(np.linspace(0., 1., N), np.linspace(0., 1., N))
+    r = 0.15
+    dx = 1.0 / (N - 1.)
+    dy = dx
+    dt = 0.05
+    phi = (X-0.5) ** 2 + (Y-0.75) ** 2 - r ** 2
+    phi = computeDistanceFunction(phi, dx)
+    title = "Vortex evolution"
+
+    # set up plot
+    plt.ion()
+    plt.figure(num=1, figsize=(12, 9), dpi=100, facecolor='w')
+    dovis(np.transpose(phi), title,
+          [0, dx*(N-4), 0, dx*(N-4)], [2, N-3, 2, N-3], 0, 0)
+    plt.show(block=False)
+
+    nIt = 200
+    sL0 = 0.0
+    marksteinLength = 0.0
+    u = np.zeros_like(phi)
+    v = np.zeros_like(phi)
+    adVel = 0.1  # magnitude of advective velocity
+    iblims = np.array([2, N-3, 2, N-3])
+    lims = np.array([2, N-2, 2, N-2])
+    ilo, ihi, jlo, jhi = lims
+    gridlims = np.array([0, dx*(N-4), 0, dx*(N-4)])
+
+    # make velocities
+    u[:, :] = adVel * np.sin(Y[:, :] * np.pi)**2 * np.sin(2. * X[:,:] * np.pi)
+    v[:, :] = -adVel * np.sin(2. * Y[:, :] * np.pi) * np.sin(X[:,:] * np.pi)**2
+
+    for n in range(nIt):
+        # flame speed
+        sL = pythonisedfns.laminarFlameSpeed2d(phi, sL0, marksteinLength, u, v,
+                                               iblims, dx=dx, dy=dx)
+
+        # calculate fluxes
+        Fx, Fy = findFluxes(phi, sL, lims, dx=dx, dy=dy, u=u, v=v)
+        Fx = enforceOutflowBCs(Fx, lims)
+        Fy = enforceOutflowBCs(Fy, lims)
+
+        phi[ilo:ihi, jlo:jhi] -= 0.5 * dt * (
+            (Fx[ilo:ihi, jlo:jhi] + Fx[ilo+1:ihi+1, jlo:jhi])/dx +
+            (Fy[ilo:ihi, jlo:jhi] + Fy[ilo:ihi, jlo+1:jhi+1])/dy)
+
+        t += dt
+        # enforce outflow boundary conditions
+        phi = enforceOutflowBCs(phi, lims)
+
+        # plotting
+        dovis(np.transpose(phi), title, gridlims, iblims, n, t)
+        #streamplot(np.linspace(-0.5, 0.5, N), u, v, title)
+        plt.show(block=False)
+
+        # reinitialise
+        phi = computeDistanceFunction(phi, dx)
+
+    # now reverse the direction of the vortex and rewind
+    u[:, :] = -u[:, :]
+    v[:, :] = -v[:, :]
+
+    for n in range(nIt):
+        # flame speed
+        sL = pythonisedfns.laminarFlameSpeed2d(phi, sL0, marksteinLength, u, v,
+                                               iblims, dx=dx, dy=dx)
+
+        # calculate fluxes
+        Fx, Fy = findFluxes(phi, sL, lims, dx=dx, dy=dy, u=u, v=v)
+        Fx = enforceOutflowBCs(Fx, lims)
+        Fy = enforceOutflowBCs(Fy, lims)
+
+        phi[ilo:ihi, jlo:jhi] -= 0.5 * dt * (
+            (Fx[ilo:ihi, jlo:jhi] + Fx[ilo+1:ihi+1, jlo:jhi])/dx +
+            (Fy[ilo:ihi, jlo:jhi] + Fy[ilo:ihi, jlo+1:jhi+1])/dy)
+
+        t += dt
+        # enforce outflow boundary conditions
+        phi = enforceOutflowBCs(phi, lims)
+
+        # plotting
+        dovis(np.transpose(phi), title, gridlims, iblims, n+nIt, t)
+        #streamplot(np.linspace(-0.5, 0.5, N), u, v, title)
+        plt.show(block=False)
 
         # reinitialise
         phi = computeDistanceFunction(phi, dx)
@@ -483,8 +594,34 @@ def dovis(phi, title, gridLims, iblims, n, t):
     #    plt.savefig("fire/sinePlot" + str(n) + ".png")
 
 
+def streamplot(x, u, v, title):
+    """
+    Plot velocity streamlines.
+    """
+    plt.clf()
+
+    plt.rc("font", size=10)
+
+    img = plt.streamplot(x, x, np.transpose(u), np.transpose(v))
+
+    #img = plt.imshow(np.transpose(u**2 + v**2),
+    #            interpolation='bilinear', origin="lower")
+
+    plt.xlabel("x")
+    plt.ylabel("y")
+    plt.title(title)
+
+    #plt.colorbar(img)
+
+    #plt.figtext(0.05, 0.0125, "n = %d,    t = %10.5f" % (n, t))
+
+    plt.draw()
+
+
+
 if __name__ == "__main__":
-    testCircleEvolution()
+    # testCircleEvolution()
     # testSquareEvolution()
     # testSineEvolution()
+    testVortexEvolution()
     # testSphereEvolution()
