@@ -72,7 +72,7 @@ def testCircleEvolution():
         phi = enforceOutflowBCs(phi, lims)
 
         # plotting
-        dovis(phi, title, gridlims, iblims, n, t)
+        dovis(phi, title, gridlims, iblims, n, t, u=u, v=v)
         plt.show(block=False)
 
         # reinitialise
@@ -149,7 +149,7 @@ def testSquareEvolution():
         phi = enforceOutflowBCs(phi, lims)
 
         # plotting
-        dovis(phi, title, gridlims, iblims, n, t)
+        dovis(phi, title, gridlims, iblims, n, t, u=u, v=v)
         plt.show(block=False)
 
         # reinitialise
@@ -361,6 +361,8 @@ def testVortexEvolution():
     phi = computeDistanceFunction(phi, dx)
     title = "Vortex evolution"
 
+    print("Initial area enclosed: " + str(enclosedArea(phi, dx, dy)))
+
     # set up plot
     plt.ion()
     plt.figure(num=1, figsize=(12, 9), dpi=100, facecolor='w')
@@ -402,7 +404,8 @@ def testVortexEvolution():
         phi = enforceOutflowBCs(phi, lims)
 
         # plotting
-        dovis(np.transpose(phi), title, gridlims, iblims, n, t)
+        dovis(np.transpose(phi), title, gridlims, iblims, n, t, u=u, v=v,
+              area=enclosedArea(phi, dx, dy))
         #streamplot(np.linspace(-0.5, 0.5, N), u, v, title)
         plt.show(block=False)
 
@@ -432,12 +435,15 @@ def testVortexEvolution():
         phi = enforceOutflowBCs(phi, lims)
 
         # plotting
-        dovis(np.transpose(phi), title, gridlims, iblims, n+nIt, t)
+        dovis(np.transpose(phi), title, gridlims, iblims, n+nIt, t, u=u, v=v,
+              area=enclosedArea(phi, dx, dy))
         #streamplot(np.linspace(-0.5, 0.5, N), u, v, title)
         plt.show(block=False)
 
         # reinitialise
         phi = computeDistanceFunction(phi, dx)
+
+    print("Final area enclosed: " + str(enclosedArea(phi, dx, dy)))
 
     return
 
@@ -474,7 +480,7 @@ def testPeriodicVortexEvolution():
     phi = (X-0.5) ** 2 + (Y-0.5) ** 2 - r ** 2
     phi = computeDistanceFunction(phi, dx)
     phi = enforce2dPeriodicBCs(phi)
-    title = "Vortex evolution"
+    title = "Distortion field evolution"
 
     # set up plot
     plt.ion()
@@ -519,7 +525,7 @@ def testPeriodicVortexEvolution():
         phi = enforce2dPeriodicBCs(phi)
 
         # plotting
-        dovis(np.transpose(phi), title, gridlims, iblims, n, t)
+        dovis(np.transpose(phi), title, gridlims, iblims, n, t, u=u, v=v)
         #streamplot(np.linspace(-0.5, 0.5, N), u, v, title)
         plt.show(block=False)
 
@@ -549,7 +555,7 @@ def testPeriodicVortexEvolution():
         phi = enforce2dPeriodicBCs(phi)
 
         # plotting
-        dovis(np.transpose(phi), title, gridlims, iblims, n+nIt, t)
+        dovis(np.transpose(phi), title, gridlims, iblims, n+nIt, t, u=u, v=v)
         #streamplot(np.linspace(-0.5, 0.5, N), u, v, title)
         plt.show(block=False)
 
@@ -691,8 +697,8 @@ def enforce2dPeriodicBCs(phi):
     return phi
 
 
-def dovis(phi, title, gridLims, iblims, n, t):
-    """
+def dovis(phi, title, gridLims, iblims, n, t, u=None, v=None, area=None):
+    r"""
     Do runtime visualization.
     """
 
@@ -704,13 +710,24 @@ def dovis(phi, title, gridLims, iblims, n, t):
     ilo, ihi, jlo, jhi = iblims
     levels = np.linspace(-0.4, 1.0, 8)
 
+    if u is not None:  # do streamplot
+        if v is None:
+            v = np.zeros_like(u)
+        x = np.linspace(xmin, xmax, ihi-ilo)
+        y = np.linspace(ymin, ymax, jhi-jlo)
+        img = plt.streamplot(x, y, np.transpose(u[ilo:ihi, jlo:jhi]),
+                             np.transpose(v[ilo:ihi, jlo:jhi]),
+                             color='0.8')
+        plt.hold(True)
+
     img = plt.contour(np.transpose(phi[ilo:ihi, jlo:jhi]), levels,
                       interpolation='nearest', origin="lower",
-                      extent=[xmin, xmax, ymin, ymax])
+                      extent=[xmin, xmax, ymin, ymax], linewidths=2)
 
     # img = plt.imshow(np.transpose(phi[ilo:ihi, jlo:jhi]),
     #            interpolation='bilinear', origin="lower",
     #            extent=[xmin, xmax, ymin, ymax], vmin=-0.4, vmax=1.)
+
 
     plt.xlabel("x")
     plt.ylabel("y")
@@ -718,7 +735,10 @@ def dovis(phi, title, gridLims, iblims, n, t):
 
     plt.colorbar(img)
 
-    plt.figtext(0.05, 0.0125, "n = %d,    t = %10.5f" % (n, t))
+    if area is None:
+        plt.figtext(0.05, 0.0125, "n = %d,    t = %10.5f" % (n, t))
+    else:
+        plt.figtext(0.05, 0.0125, "n = %d,    t = %10.5f,     area= %5.5f" % (n, t, area))
 
     plt.draw()
     # if n >120:
@@ -726,7 +746,7 @@ def dovis(phi, title, gridLims, iblims, n, t):
 
 
 def streamplot(x, u, v, title):
-    """
+    r"""
     Plot velocity streamlines.
     """
     plt.clf()
@@ -744,10 +764,17 @@ def streamplot(x, u, v, title):
 
     #plt.colorbar(img)
 
-    #plt.figtext(0.05, 0.0125, "n = %d,    t = %10.5f" % (n, t))
-
     plt.draw()
 
+
+def enclosedArea(phi, dx, dy):
+    r"""
+    Find area enclosed by the zero level set.
+    """
+    mask = np.zeros_like(phi)
+    mask[phi <= 0.] += dx * dy
+
+    return np.sum(mask)
 
 
 if __name__ == "__main__":
