@@ -60,8 +60,8 @@ def locateLS2d(phi, norm_x, norm_y, dx=1., dy=1.):
         - `alpha`:           2d float array containing burnt fraction
     """
     # check input is 2d
-    if len(phi.shape) != 2:
-        raise ValueError, "phi must be 2d"
+    #if len(phi.shape) != 2:
+    #    raise ValueError, "phi must be 2d"
 
     #initialise
     zeros = np.zeros_like(phi, dtype=bool)

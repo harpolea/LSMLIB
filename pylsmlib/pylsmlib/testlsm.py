@@ -361,7 +361,7 @@ def testVortexEvolution():
     phi = computeDistanceFunction(phi, dx)
     title = "Vortex evolution"
 
-    print("Initial area enclosed: " + str(enclosedArea(phi, dx, dy)))
+    print("Initial area enclosed: " + str(pythonisedfns.enclosedArea2d(phi, dx=dx, dy=dy)))
 
     # set up plot
     plt.ion()
@@ -405,7 +405,7 @@ def testVortexEvolution():
 
         # plotting
         dovis(np.transpose(phi), title, gridlims, iblims, n, t, u=u, v=v,
-              area=enclosedArea(phi, dx, dy))
+              area=pythonisedfns.enclosedArea2d(phi, dx=dx, dy=dy))
         #streamplot(np.linspace(-0.5, 0.5, N), u, v, title)
         plt.show(block=False)
 
@@ -436,14 +436,14 @@ def testVortexEvolution():
 
         # plotting
         dovis(np.transpose(phi), title, gridlims, iblims, n+nIt, t, u=u, v=v,
-              area=enclosedArea(phi, dx, dy))
+              area=pythonisedfns.enclosedArea2d(phi, dx=dx, dy=dy))
         #streamplot(np.linspace(-0.5, 0.5, N), u, v, title)
         plt.show(block=False)
 
         # reinitialise
         phi = computeDistanceFunction(phi, dx)
 
-    print("Final area enclosed: " + str(enclosedArea(phi, dx, dy)))
+    print("Final area enclosed: " + str(pythonisedfns.enclosedArea2d(phi, dx=dx, dy=dy)))
 
     return
 
@@ -470,7 +470,7 @@ def testPeriodicVortexEvolution():
     """
 
     # create circle
-    N = 180
+    N = 50
     t = 0.
     X, Y = np.meshgrid(np.linspace(0., 1., N), np.linspace(0., 1., N))
     r = 0.2
@@ -481,6 +481,8 @@ def testPeriodicVortexEvolution():
     phi = computeDistanceFunction(phi, dx)
     phi = enforce2dPeriodicBCs(phi)
     title = "Distortion field evolution"
+
+    print("Initial area enclosed: " + str(enclosedArea(phi, dx, dy)))
 
     # set up plot
     plt.ion()
@@ -525,7 +527,8 @@ def testPeriodicVortexEvolution():
         phi = enforce2dPeriodicBCs(phi)
 
         # plotting
-        dovis(np.transpose(phi), title, gridlims, iblims, n, t, u=u, v=v)
+        dovis(np.transpose(phi), title, gridlims, iblims, n, t, u=u, v=v,
+              area=enclosedArea(phi, dx, dy))
         #streamplot(np.linspace(-0.5, 0.5, N), u, v, title)
         plt.show(block=False)
 
@@ -555,12 +558,15 @@ def testPeriodicVortexEvolution():
         phi = enforce2dPeriodicBCs(phi)
 
         # plotting
-        dovis(np.transpose(phi), title, gridlims, iblims, n+nIt, t, u=u, v=v)
+        dovis(np.transpose(phi), title, gridlims, iblims, n+nIt, t, u=u, v=v,
+              area=enclosedArea(phi, dx, dy))
         #streamplot(np.linspace(-0.5, 0.5, N), u, v, title)
         plt.show(block=False)
 
         # reinitialise
         phi = computeDistanceFunction(phi, dx)
+
+    print("Final area enclosed: " + str(enclosedArea(phi, dx, dy)))
 
     return
 
@@ -728,7 +734,6 @@ def dovis(phi, title, gridLims, iblims, n, t, u=None, v=None, area=None):
     #            interpolation='bilinear', origin="lower",
     #            extent=[xmin, xmax, ymin, ymax], vmin=-0.4, vmax=1.)
 
-
     plt.xlabel("x")
     plt.ylabel("y")
     plt.title(title)
@@ -769,7 +774,9 @@ def streamplot(x, u, v, title):
 
 def enclosedArea(phi, dx, dy):
     r"""
-    Find area enclosed by the zero level set.
+    Find area enclosed by the zero level set. This is a rather rough
+    calculation: cells are taken to be full if phi at the centre is
+    <= 0.
     """
     mask = np.zeros_like(phi)
     mask[phi <= 0.] += dx * dy
@@ -781,6 +788,6 @@ if __name__ == "__main__":
     # testCircleEvolution()
     # testSquareEvolution()
     # testSineEvolution()
-    testVortexEvolution()
-    #testPeriodicVortexEvolution()
+    # testVortexEvolution()
+    testPeriodicVortexEvolution()
     # testSphereEvolution()

@@ -183,7 +183,7 @@ def altSurfaceAreaLevelSet2d(phi, phi_x, phi_y,
 
     """
 
-    dS = dx * dy  # surface element
+    # dS = dx * dy  # surface element
     # no mask defined, so iterate over entire array.
     if fnMask is None:
         fnMask = np.ones_like(phi, dtype=bool)
@@ -193,11 +193,68 @@ def altSurfaceAreaLevelSet2d(phi, phi_x, phi_y,
     # define mask
     mask[fnMask], _ = lsmfns.locateLS2d(phi[fnMask],
                                         norm_x[fnMask], norm_y[fnMask],
-                                        norm_z[fnMask],
-                                        dx=dx, dy=dy, dz=dz)
-    delta[mask] = 0.5 * (1. + np.cos(np.pi * phi[mask] / epsilon))/epsilon
+                                        dx=dx, dy=dy)
+    # delta[mask] = 0.5 * (1. + np.cos(np.pi * phi[mask] / epsilon))/epsilon
+    norm_x[:,:] = np.fabs(norm_x[:,:])
+    norm_y[:,:] = np.fabs(norm_y[:,:])
 
-    return np.sum(delta[mask] * dS * np.sqrt(phi_x[mask]**2 + phi_y[mask]**2))
+    delta[mask] = np.sqrt(1 + (norm_y[mask]/norm_x[mask])**2) * \
+        (0.5 * (dy + dx * norm_x[mask] / norm_y[mask] -
+         phi[mask] * np.sqrt(1 + (norm_y[mask] / norm_x[mask])**2) *
+         norm_x[mask] / norm_y[mask]))
+
+    # return np.sum(delta[mask] * dS * np.sqrt(phi_x[mask]**2 + phi_y[mask]**2))
+    return np.sum(delta[mask])
+
+
+def enclosedArea2d(phi, norm_x=None, norm_y=None, fnMask=None, dx=1., dy=1.):
+    r"""
+    Computes the area envlosed by the zero level set.
+    Uses the level set locator function to find cells containing
+    the zero level set.
+
+     :Parameters:
+
+      - `phi`:              level set function
+      - `norm_*`:           components of signed unit normal
+      - `fnMask`:           boolean array defining the region which the
+                            function will actually look at
+      - `dx`, `dy`:         grid spacing
+
+     :Returns:
+
+        - `area`:           area enclosed by the zero level set
+
+    """
+    if fnMask is None:
+        fnMask = np.ones_like(phi, dtype=bool)
+
+    if (norm_x is None) or (norm_y is None):
+        phi_x, phi_y = gradPhi2d(phi, dx=dx, dy=dy)
+        norm_x, norm_y = signedUnitNormal2d(phi, phi_x, phi_y,
+                               dx=dx, dy=dy)
+
+    mask = np.zeros_like(phi, dtype=bool)
+    delta = np.zeros_like(phi)
+    # define mask
+    mask[fnMask], _ = lsmfns.locateLS2d(phi[fnMask],
+                                        norm_x[fnMask], norm_y[fnMask],
+                                        dx=dx, dy=dy)
+
+    norm_x[:,:] = np.fabs(norm_x[:,:])
+    norm_y[:,:] = np.fabs(norm_y[:,:])
+
+    # cells intersected by set
+    delta[mask] = 0.5 * (0.5 * dy -
+        (phi[mask] * np.sqrt(1 + (norm_y[mask] / norm_x[mask])**2) -
+                             0.5 * dx) *
+         norm_x[mask]/norm_y[mask])**2 * norm_y[mask]/norm_x[mask]
+
+    # add on whole cells inside zero level set
+    mask = (phi < 0) * np.invert((phi < 0) * mask)
+    delta[mask] += dx * dy
+
+    return np.sum(delta[:,:])
 
 
 def meanCurvature(phi, phi_x, phi_y, phi_z, fbLims,
